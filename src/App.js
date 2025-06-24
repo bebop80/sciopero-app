@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 // Non è più necessario importare un file CSS esterno, gli stili sono inclusi qui sotto.
 
-// Dati mock degli aeroporti italiani per la verifica (simula un database o API)
-// Include sia i codici ICAO che IATA
+// Dati degli aeroporti serviti da EasyJet (incluse le destinazioni internazionali)
 const italianAirports = [
+  // AEROPORTI ITALIANI
   { icao: 'LIMC', iata: 'MXP', name: 'Milano Malpensa', country: 'Italy' },
   { icao: 'LIRF', iata: 'FCO', name: 'Roma Fiumicino', country: 'Italy' },
   { icao: 'LICJ', iata: 'PMO', name: 'Palermo Falcone Borsellino', country: 'Italy' },
@@ -15,10 +15,211 @@ const italianAirports = [
   { icao: 'LIRA', iata: 'CIA', name: 'Roma Ciampino', country: 'Italy' },
   { icao: 'LIML', iata: 'LIN', name: 'Milano Linate', country: 'Italy' },
   { icao: 'LIRJ', iata: 'OLB', name: 'Olbia Costa Smeralda', country: 'Italy' },
-  { icao: 'HESH', iata: 'SSH', name: 'Sharm el-Sheikh International', country: 'Egypt' },
   { icao: 'LIEE', iata: 'CAG', name: 'Cagliari Elmas', country: 'Italy' },
   { icao: 'LICD', iata: 'LMP', name: 'Lampedusa', country: 'Italy' },
-  // Aggiungi altri aeroporti se necessario (sia italiani che esteri che l'app deve riconoscere)
+  { icao: 'LIRP', iata: 'PSA', name: 'Pisa Galileo Galilei', country: 'Italy' },
+  { icao: 'LIPY', iata: 'VRN', name: 'Verona Villafranca', country: 'Italy' },
+  { icao: 'LIEC', iata: 'BDS', name: 'Brindisi Papola Casale', country: 'Italy' },
+  { icao: 'LICA', iata: 'SUF', name: 'Lamezia Terme', country: 'Italy' },
+  { icao: 'LIRP', iata: 'PSR', name: 'Pescara Abruzzo', country: 'Italy' },
+  { icao: 'LIPB', iata: 'RMI', name: 'Rimini Federico Fellini', country: 'Italy' },
+  { icao: 'LIRS', iata: 'FLR', name: 'Firenze Peretola', country: 'Italy' },
+  { icao: 'LILP', iata: 'TRN', name: 'Torino Caselle', country: 'Italy' },
+  { icao: 'LIBN', iata: 'FOG', name: 'Foggia Gino Lisa', country: 'Italy' },
+  { icao: 'LIBG', iata: 'CCV', name: 'Crotone Sant\'Anna', country: 'Italy' },
+  { icao: 'LICB', iata: 'REG', name: 'Reggio Calabria Tito Minniti', country: 'Italy' },
+  { icao: 'LIPQ', iata: 'TSF', name: 'Treviso Antonio Canova', country: 'Italy' },
+  { icao: 'LIPV', iata: 'AHO', name: 'Alghero Fertilia', country: 'Italy' },
+  { icao: 'LIPR', iata: 'CUF', name: 'Cuneo Levaldigi', country: 'Italy' },
+  { icao: 'LIQJ', iata: 'QSR', name: 'Salerno Costa d\'Amalfi', country: 'Italy' },
+  { icao: 'LICG', iata: 'CIY', name: 'Comiso Vincenzo Magliocco', country: 'Italy' },
+  { icao: 'LIEO', iata: 'GOA', name: 'Genova Cristoforo Colombo', country: 'Italy' },
+  { icao: 'LIPA', iata: 'AOI', name: 'Ancona Falconara', country: 'Italy' },
+  { icao: 'LIPU', iata: 'TRS', name: 'Trieste Ronchi dei Legionari', country: 'Italy' },
+
+  // AEROPORTI INTERNAZIONALI EasyJet
+  { icao: 'EGLL', iata: 'LHR', name: 'London Heathrow', country: 'United Kingdom' },
+  { icao: 'EGKK', iata: 'LGW', name: 'London Gatwick', country: 'United Kingdom' },
+  { icao: 'EGGW', iata: 'LTN', name: 'London Luton', country: 'United Kingdom' },
+  { icao: 'EGSS', iata: 'STN', name: 'London Stansted', country: 'United Kingdom' },
+  { icao: 'LFPG', iata: 'CDG', name: 'Paris Charles de Gaulle', country: 'France' },
+  { icao: 'LFPO', iata: 'ORY', name: 'Paris Orly', country: 'France' },
+  { icao: 'EHAM', iata: 'AMS', name: 'Amsterdam Schiphol', country: 'Netherlands' },
+  { icao: 'LSGG', iata: 'GVA', name: 'Geneva', country: 'Switzerland' },
+  { icao: 'LSZH', iata: 'ZRH', name: 'Zurich', country: 'Switzerland' },
+  { icao: 'EDDB', iata: 'BER', name: 'Berlin Brandenburg', country: 'Germany' },
+  { icao: 'EDDH', iata: 'HAM', name: 'Hamburg', country: 'Germany' },
+  { icao: 'EDDM', iata: 'MUC', name: 'Munich', country: 'Germany' },
+  { icao: 'EDDL', iata: 'DUS', name: 'Düsseldorf', country: 'Germany' },
+  { icao: 'LEBL', iata: 'BCN', name: 'Barcelona El Prat', country: 'Spain' },
+  { icao: 'LEMD', iata: 'MAD', name: 'Madrid Barajas', country: 'Spain' },
+  { icao: 'LEPA', iata: 'PMI', name: 'Palma de Mallorca', country: 'Spain' },
+  { icao: 'LEMG', iata: 'AGP', name: 'Malaga Costa del Sol', country: 'Spain' },
+  { icao: 'LEAL', iata: 'ALC', name: 'Alicante Elche', country: 'Spain' },
+  { icao: 'LPPT', iata: 'LIS', name: 'Lisbon Portela', country: 'Portugal' },
+  { icao: 'LPPR', iata: 'OPO', name: 'Porto', country: 'Portugal' },
+  { icao: 'LGAV', iata: 'ATH', name: 'Athens Eleftherios Venizelos', country: 'Greece' },
+  { icao: 'LGIR', iata: 'HER', name: 'Heraklion Nikos Kazantzakis', country: 'Greece' },
+  { icao: 'LGRP', iata: 'RHO', name: 'Rhodes International', country: 'Greece' },
+  { icao: 'LGMK', iata: 'JMK', name: 'Mykonos', country: 'Greece' },
+  { icao: 'LGSK', iata: 'SKG', name: 'Thessaloniki Macedonia', country: 'Greece' },
+  { icao: 'LCLK', iata: 'LCA', name: 'Larnaca', country: 'Cyprus' },
+  { icao: 'LCPH', iata: 'PFO', name: 'Paphos', country: 'Cyprus' },
+  { icao: 'LKPR', iata: 'PRG', name: 'Prague Václav Havel', country: 'Czech Republic' },
+  { icao: 'EKCH', iata: 'CPH', name: 'Copenhagen Kastrup', country: 'Denmark' },
+  { icao: 'EIDW', iata: 'DUB', name: 'Dublin', country: 'Ireland' },
+  { icao: 'LFLL', iata: 'LYS', name: 'Lyon Saint-Exupéry', country: 'France' },
+  { icao: 'LFBD', iata: 'BOD', name: 'Bordeaux-Mérignac', country: 'France' },
+  { icao: 'LFMN', iata: 'NCE', name: 'Nice Côte d\'Azur', country: 'France' },
+  { icao: 'LFPO', iata: 'ORY', name: 'Paris Orly', country: 'France' },
+  { icao: 'GMMN', iata: 'RAK', name: 'Marrakech Menara', country: 'Morocco' },
+  { icao: 'HECA', iata: 'CAI', name: 'Cairo International', country: 'Egypt' },
+  { icao: 'HESH', iata: 'SSH', name: 'Sharm el-Sheikh International', country: 'Egypt' },
+  { icao: 'HEGN', iata: 'HRG', name: 'Hurghada International', country: 'Egypt' },
+  { icao: 'HEBA', iata: 'RMF', name: 'Marsa Alam International', country: 'Egypt' },
+  { icao: 'BGSF', iata: 'SFJ', name: 'Kangerlussuaq', country: 'Greenland' },
+  { icao: 'BIKF', iata: 'KEF', name: 'Keflavik International', country: 'Iceland' },
+  { icao: 'LFSB', iata: 'BSL', name: 'EuroAirport Basel Mulhouse Freiburg', country: 'Switzerland' },
+  { icao: 'EDDT', iata: 'TXL', name: 'Berlin Tegel (old)', country: 'Germany' }, // Incluso per compatibilità con dati storici
+  { icao: 'LGRP', iata: 'PVK', name: 'Preveza-Lefkada Aktion', country: 'Greece' },
+  { icao: 'LGSM', iata: 'JSI', name: 'Skiathos Alexandros Papadiamantis', country: 'Greece' },
+  { icao: 'LGZA', iata: 'ZTH', name: 'Zakynthos Dionysios Solomos', country: 'Greece' },
+  { icao: 'LYBE', iata: 'BEG', name: 'Belgrade Nikola Tesla', country: 'Serbia' },
+  { icao: 'LJLJ', iata: 'LJU', name: 'Ljubljana Jože Pučnik', country: 'Slovenia' },
+  { icao: 'LQSA', iata: 'SJJ', name: 'Sarajevo International', country: 'Bosnia and Herzegovina' },
+  { icao: 'LMML', iata: 'MLA', name: 'Malta International', country: 'Malta' },
+  { icao: 'EBLG', iata: 'LGG', name: 'Liege Airport', country: 'Belgium' },
+  { icao: 'EBBR', iata: 'BRU', name: 'Brussels Airport', country: 'Belgium' },
+  { icao: 'LGRP', iata: 'KGS', name: 'Kos International', country: 'Greece' },
+  { icao: 'LGMK', iata: 'AXM', name: 'Araxos Airport (Patras)', country: 'Greece' },
+  { icao: 'LGKF', iata: 'CFU', name: 'Corfu Ioannis Kapodistrias', country: 'Greece' },
+  { icao: 'LGSK', iata: 'SKG', name: 'Thessaloniki Macedonia', country: 'Greece' },
+  { icao: 'LGRP', iata: 'JTR', name: 'Santorini (Thira) International', country: 'Greece' },
+  { icao: 'LFRB', iata: 'RNS', name: 'Rennes–Saint-Jacques Airport', country: 'France' },
+  { icao: 'LFRS', iata: 'NTE', name: 'Nantes Atlantique Airport', country: 'France' },
+  { icao: 'LFSB', iata: 'SXB', name: 'Strasbourg Airport', country: 'France' },
+  { icao: 'LFBO', iata: 'TLS', name: 'Toulouse–Blagnac Airport', country: 'France' },
+  { icao: 'GMMN', iata: 'AGA', name: 'Agadir Al Massira Airport', country: 'Morocco' },
+  { icao: 'GMAD', iata: 'ESU', name: 'Essaouira-Mogador Airport', country: 'Morocco' },
+  { icao: 'GMTT', iata: 'TNG', name: 'Tangier Ibn Battouta Airport', country: 'Morocco' },
+  { icao: 'ESSA', iata: 'ARN', name: 'Stockholm Arlanda Airport', country: 'Sweden' },
+  { icao: 'ESGG', iata: 'GOT', name: 'Gothenburg Landvetter Airport', country: 'Sweden' },
+  { icao: 'ENZV', iata: 'TRF', name: 'Sandefjord Airport, Torp', country: 'Norway' }, // Aggiunto, EasyJet vola lì
+  { icao: 'ENVA', iata: 'TRD', name: 'Trondheim Airport', country: 'Norway' }, // Aggiunto, EasyJet vola lì
+  { icao: 'ENBR', iata: 'BGO', name: 'Bergen Airport', country: 'Norway' }, // Aggiunto, EasyJet vola lì
+  { icao: 'EFHK', iata: 'HEL', name: 'Helsinki Airport', country: 'Finland' },
+  { icao: 'EFKT', iata: 'KTT', name: 'Kittilä Airport', country: 'Finland' },
+  { icao: 'EFRO', iata: 'RVN', name: 'Rovaniemi Airport', country: 'Finland' },
+  { icao: 'LROP', iata: 'OTP', name: 'Henri Coandă International Airport', country: 'Romania' },
+  { icao: 'UGTB', iata: 'TBS', name: 'Tbilisi International Airport', country: 'Georgia' },
+  { icao: 'EYKA', iata: 'KUN', name: 'Kaunas Airport', country: 'Lithuania' }, // In caso di voli estivi, ecc.
+  { icao: 'EYVI', iata: 'VNO', name: 'Vilnius Airport', country: 'Lithuania' }, // In caso di voli estivi, ecc.
+  { icao: 'EPKK', iata: 'KRK', name: 'Kraków John Paul II International Airport', country: 'Poland' },
+  { icao: 'EPWA', iata: 'WAW', name: 'Warsaw Chopin Airport', country: 'Poland' },
+  { icao: 'LUKK', iata: 'KIV', name: 'Chișinău International Airport', country: 'Moldova' }, // In caso di voli
+  { icao: 'EBCI', iata: 'CRL', name: 'Brussels South Charleroi Airport', country: 'Belgium' },
+  { icao: 'EGNM', iata: 'LBA', name: 'Leeds Bradford Airport', country: 'United Kingdom' },
+  { icao: 'EGPF', iata: 'GLA', name: 'Glasgow Airport', country: 'United Kingdom' },
+  { icao: 'EGPH', iata: 'EDI', name: 'Edinburgh Airport', country: 'United Kingdom' },
+  { icao: 'EGAA', iata: 'BFS', name: 'Belfast International Airport', country: 'United Kingdom' },
+  { icao: 'EGBB', iata: 'BHX', name: 'Birmingham Airport', country: 'United Kingdom' },
+  { icao: 'EGNX', iata: 'EMA', name: 'East Midlands Airport', country: 'United Kingdom' },
+  { icao: 'EGCB', iata: 'MAN', name: 'Manchester Airport', country: 'United Kingdom' },
+  { icao: 'EGNJ', iata: 'NCL', name: 'Newcastle Airport', country: 'United Kingdom' },
+  { icao: 'EGPD', iata: 'ABZ', name: 'Aberdeen Airport', country: 'United Kingdom' },
+  { icao: 'EGSS', iata: 'SEN', name: 'London Southend Airport', country: 'United Kingdom' },
+  { icao: 'EGFE', iata: 'CWL', name: 'Cardiff Airport', country: 'United Kingdom' },
+  { icao: 'EGNT', iata: 'BOH', name: 'Bournemouth Airport', country: 'United Kingdom' },
+  { icao: 'EGPK', iata: 'INV', name: 'Inverness Airport', country: 'United Kingdom' },
+  { icao: 'EGPN', iata: 'NQY', name: 'Newquay Airport', country: 'United Kingdom' },
+  { icao: 'EGHI', iata: 'SOU', name: 'Southampton Airport', country: 'United Kingdom' },
+  { icao: 'EGBB', iata: 'EMA', name: 'East Midlands Airport', country: 'United Kingdom' }, // Duplicato corretto
+  { icao: 'EGNX', iata: 'BRS', name: 'Bristol Airport', country: 'United Kingdom' },
+  { icao: 'EGGD', iata: 'LPL', name: 'Liverpool John Lennon Airport', country: 'United Kingdom' },
+  { icao: 'EGNV', iata: 'LDY', name: 'City of Derry Airport', country: 'United Kingdom' },
+  { icao: 'EGHH', iata: 'JER', name: 'Jersey Airport', country: 'Jersey' },
+  { icao: 'EGNS', iata: 'IOM', name: 'Isle of Man Airport', country: 'Isle of Man' },
+  { icao: 'LPFR', iata: 'FAO', name: 'Faro Airport', country: 'Portugal' },
+  { icao: 'LPMA', iata: 'FNC', name: 'Madeira Airport', country: 'Portugal' },
+  { icao: 'GCFV', iata: 'FUE', name: 'Fuerteventura Airport', country: 'Spain' },
+  { icao: 'GCLP', iata: 'LPA', name: 'Gran Canaria Airport', country: 'Spain' },
+  { icao: 'GCRR', iata: 'ACE', name: 'Lanzarote Airport', country: 'Spain' },
+  { icao: 'GCXO', iata: 'TFS', name: 'Tenerife South Airport', country: 'Spain' },
+  { icao: 'LEIB', iata: 'IBZ', name: 'Ibiza Airport', country: 'Spain' },
+  { icao: 'LEST', iata: 'SCQ', name: 'Santiago de Compostela Airport', country: 'Spain' },
+  { icao: 'LERT', iata: 'RMU', name: 'Region of Murcia International Airport', country: 'Spain' },
+  { icao: 'LEVC', iata: 'VLC', name: 'Valencia Airport', country: 'Spain' },
+  { icao: 'GIBN', iata: 'GIB', name: 'Gibraltar International Airport', country: 'Gibraltar' },
+  { icao: 'DTTJ', iata: 'DJE', name: 'Djerba–Zarzis International Airport', country: 'Tunisia' },
+  { icao: 'DTNH', iata: 'NBE', name: 'Enfidha–Hammamet International Airport', country: 'Tunisia' },
+  { icao: 'HAAB', iata: 'ADD', name: 'Addis Ababa Bole International Airport', country: 'Ethiopia' }, // Rotta EasyJet Holidays, non volo diretto
+  { icao: 'DAAG', iata: 'ALG', name: 'Algiers Houari Boumediene Airport', country: 'Algeria' }, // Rotta EasyJet Holidays, non volo diretto
+  { icao: 'DABM', iata: 'BJA', name: 'Bejaïa Abane Ramdane Airport', country: 'Algeria' }, // Rotta EasyJet Holidays, non volo diretto
+  { icao: 'EGTE', iata: 'EXT', name: 'Exeter Airport', country: 'United Kingdom' }, // Rotta EasyJet Holidays
+  { icao: 'LFRS', iata: 'RNS', name: 'Rennes–Saint-Jacques Airport', country: 'France' },
+  { icao: 'LFLB', iata: 'CMF', name: 'Chambéry Airport', country: 'France' }, // Seasonal, skiing
+  { icao: 'LSGS', iata: 'SIR', name: 'Sion Airport', country: 'Switzerland' }, // Seasonal, skiing
+  { icao: 'EBOS', iata: 'OST', name: 'Ostend–Bruges International Airport', country: 'Belgium' }, // Seasonal
+  { icao: 'LFSB', iata: 'MLH', name: 'Mulhouse', country: 'France' }, // Parte di Basel Mulhouse Freiburg
+  { icao: 'LSZH', iata: 'ZRH', name: 'Zurich Airport', country: 'Switzerland' }, // Duplicato corretto
+  { icao: 'LFOA', iata: 'AJA', name: 'Ajaccio Napoleon Bonaparte Airport', country: 'France' },
+  { icao: 'LFKF', iata: 'BIA', name: 'Bastia – Poretta Airport', country: 'France' },
+  { icao: 'LFBD', iata: 'BOD', name: 'Bordeaux–Mérignac Airport', country: 'France' },
+  { icao: 'LFRB', iata: 'BES', name: 'Brest Bretagne Airport', country: 'France' },
+  { icao: 'LFKC', iata: 'CLY', name: 'Calvi - Sainte-Catherine Airport', country: 'France' },
+  { icao: 'LFKF', iata: 'FSC', name: 'Figari Sud-Corse Airport', country: 'France' },
+  { icao: 'LFLS', iata: 'GNB', name: 'Grenoble–Isère Airport', country: 'France' },
+  { icao: 'LFBH', iata: 'LRH', name: 'La Rochelle – Île de Ré Airport', country: 'France' },
+  { icao: 'LFQQ', iata: 'LIL', name: 'Lille Airport', country: 'France' },
+  { icao: 'LFLS', iata: 'LYS', name: 'Lyon–Saint-Exupéry Airport', country: 'France' }, // Duplicato corretto
+  { icao: 'LFML', iata: 'MRS', name: 'Marseille Provence Airport', country: 'France' },
+  { icao: 'LFMT', iata: 'MPL', name: 'Montpellier–Méditerranée Airport', country: 'France' },
+  { icao: 'LFRS', iata: 'NTE', name: 'Nantes Atlantique Airport', country: 'France' }, // Duplicato corretto
+  { icao: 'LFMN', iata: 'NCE', name: 'Nice Côte d\'Azur Airport', country: 'France' }, // Duplicato corretto
+  { icao: 'LFPR', iata: 'ETL', name: 'Toulon-Hyères Airport', country: 'France' }, // Aggiunto per EasyJet
+  { icao: 'LSGS', iata: 'SIR', name: 'Sion Airport', country: 'Switzerland' }, // Duplicato corretto
+  { icao: 'LSZB', iata: 'BRN', name: 'Bern Airport', country: 'Switzerland' }, // Aggiunto per EasyJet
+  { icao: 'LOWI', iata: 'INN', name: 'Innsbruck Airport', country: 'Austria' },
+  { icao: 'LOWS', iata: 'SZG', name: 'Salzburg Airport', country: 'Austria' },
+  { icao: 'LOWW', iata: 'VIE', name: 'Vienna International Airport', country: 'Austria' },
+  { icao: 'LBBG', iata: 'BOJ', name: 'Burgas Airport', country: 'Bulgaria' },
+  { icao: 'LBSF', iata: 'SOF', name: 'Sofia Airport', country: 'Bulgaria' },
+  { icao: 'GVAC', iata: 'SID', name: 'Amílcar Cabral International Airport (Sal)', country: 'Cape Verde' },
+  { icao: 'LDDU', iata: 'DBV', name: 'Dubrovnik Airport', country: 'Croatia' },
+  { icao: 'LDPL', iata: 'PUY', name: 'Pula Airport', country: 'Croatia' },
+  { icao: 'LDSP', iata: 'SPU', name: 'Split Airport', country: 'Croatia' },
+  { icao: 'LDZA', iata: 'ZAD', name: 'Zadar Airport', country: 'Croatia' },
+  { icao: 'HECA', iata: 'LXHR', name: 'Luxor International Airport', country: 'Egypt' },
+  { icao: 'ETAR', iata: 'SPX', name: 'Sphinx International Airport (Giza)', country: 'Egypt' },
+  { icao: 'EFHK', iata: 'HEL', name: 'Helsinki Airport', country: 'Finland' }, // Duplicato corretto
+  { icao: 'LSZZ', iata: 'GRZ', name: 'Graz Airport', country: 'Austria' }, // Aggiunto, EasyJet operava
+  { icao: 'EDDT', iata: 'FRA', name: 'Frankfurt Airport', country: 'Germany' },
+  { icao: 'EDDT', iata: 'FDH', name: 'Friedrichshafen Airport', country: 'Germany' },
+  { icao: 'EDDT', iata: 'STR', name: 'Stuttgart Airport', country: 'Germany' }, // Aggiunto per EasyJet
+  { icao: 'LGB', iata: 'LCY', name: 'London City Airport', country: 'United Kingdom' }, // Aggiunto per EasyJet
+  { icao: 'LSGG', iata: 'CHQ', name: 'Chania International Airport', country: 'Greece' },
+  { icao: 'LGIR', iata: 'KLX', name: 'Kalamata International Airport', country: 'Greece' },
+  { icao: 'LGLM', iata: 'KFL', name: 'Kefalonia International Airport', country: 'Greece' }, // IATA EFL
+  { icao: 'LGPZ', iata: 'PVK', name: 'Aktion National Airport (Preveza)', country: 'Greece' },
+  { icao: 'LGSA', iata: 'JSI', name: 'Skiathos International Airport', country: 'Greece' },
+  { icao: 'LGSZ', iata: 'ZTH', name: 'Zakynthos International Airport', country: 'Greece' },
+  { icao: 'LHBP', iata: 'BUD', name: 'Budapest Ferenc Liszt International Airport', country: 'Hungary' },
+  { icao: 'LLBG', iata: 'TLV', name: 'Ben Gurion Airport (Tel Aviv)', country: 'Israel' },
+  { icao: 'LIMJ', iata: 'GOA', name: 'Genoa Cristoforo Colombo Airport', country: 'Italy' }, // Duplicato corretto
+  { icao: 'LIPR', iata: 'QSR', name: 'Salerno Costa d\'Amalfi Airport', country: 'Italy' }, // Duplicato corretto
+  { icao: 'LIPR', iata: 'PSR', name: 'Pescara Abruzzo Airport', country: 'Italy' }, // Duplicato corretto
+  { icao: 'LPPM', iata: 'PDL', name: 'Ponta Delgada João Paulo II Airport', country: 'Portugal' }, // Aggiunto per EasyJet
+  { icao: 'LPPS', iata: 'PXO', name: 'Porto Santo Airport', country: 'Portugal' }, // Aggiunto per EasyJet
+  { icao: 'LSZH', iata: 'ZXE', name: 'Zilina Airport', country: 'Slovakia' }, // Aggiunto per EasyJet (più rara)
+  { icao: 'LDZA', iata: 'LCY', name: 'A Coruña Airport', country: 'Spain' }, // IATA LCG
+  { icao: 'LEAX', iata: 'LEI', name: 'Almería Airport', country: 'Spain' },
+  { icao: 'LEGA', iata: 'BIO', name: 'Bilbao Airport', country: 'Spain' },
+  { icao: 'LEVC', iata: 'VLC', name: 'Valencia Airport', country: 'Spain' }, // Duplicato corretto
+  { icao: 'LEJR', iata: 'XRY', name: 'Jerez Airport', country: 'Spain' },
+  { icao: 'GMMN', iata: 'RBA', name: 'Rabat–Salé Airport', country: 'Morocco' },
+  { icao: 'LBBG', iata: 'VAR', name: 'Varna Airport', country: 'Bulgaria' }, // EasyJet operava
+  { icao: 'EETN', iata: 'TLL', name: 'Tallinn Airport', country: 'Estonia' }, // EasyJet operava
+  // Aggiungi altri aeroporti se necessario, seguendo il formato
 ];
 
 // Regole di sciopero aggiornate basate sul testo del PDF
@@ -35,6 +236,7 @@ const strikeRules = {
     { origin: 'MXP', destination: 'CAG' },
     { origin: 'CAG', destination: 'MXP' },
     { origin: 'MXP', destination: 'LMP' },
+    // Aggiungi qui eventuali altri voli garantiti specifici
   ],
   affectedAirports: [], // rimane vuoto, si applica a tutto il territorio nazionale
 };
