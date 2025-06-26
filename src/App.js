@@ -398,7 +398,7 @@ function App() {
                   eligible = false;
               } else {
                   eligible = true;
-                  reason.push(`Eligibile per lo sciopero generale del ${strikeRules.strikeDate}.`);
+                  reason.push(`Eligibile per lo sciopero del ${strikeRules.strikeDate}.`);
 
                   if (segment.origin.toUpperCase() !== baseIcao.toUpperCase()) {
                     reason.push("(<strong>SCIOPERABILE FUORI BASE</strong>)");
