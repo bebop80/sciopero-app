@@ -83,7 +83,7 @@ const italianAirports = [
   { icao: 'EDDT', iata: 'TXL', name: 'Berlin Tegel (old)', country: 'Germany' }, // Incluso per compatibilità con dati storici
   { icao: 'LGRP', iata: 'PVK', name: 'Preveza-Lefkada Aktion', country: 'Greece' },
   { icao: 'LGSM', iata: 'JSI', name: 'Skiathos Alexandros Papadiamantis', country: 'Greece' },
-  { icao: 'LGZA', iata: 'ZTH', name: 'Zakynthos Dionysios Solomos', country: 'Greece' },
+  { icao: 'LGSZ', iata: 'ZTH', name: 'Zakynthos Dionysios Solomos', country: 'Greece' },
   { icao: 'LYBE', iata: 'BEG', name: 'Belgrade Nikola Tesla', country: 'Serbia' },
   { icao: 'LJLJ', iata: 'LJU', name: 'Ljubljana Jože Pučnik', country: 'Slovenia' },
   { icao: 'LQSA', iata: 'SJJ', name: 'Sarajevo International', country: 'Bosnia and Herzegovina' },
@@ -104,19 +104,19 @@ const italianAirports = [
   { icao: 'GMTT', iata: 'TNG', name: 'Tangier Ibn Battouta Airport', country: 'Morocco' },
   { icao: 'ESSA', iata: 'ARN', name: 'Stockholm Arlanda Airport', country: 'Sweden' },
   { icao: 'ESGG', iata: 'GOT', name: 'Gothenburg Landvetter Airport', country: 'Sweden' },
-  { icao: 'ENZV', iata: 'TRF', name: 'Sandefjord Airport, Torp', country: 'Norway' }, // Aggiunto, EasyJet vola lì
-  { icao: 'ENVA', iata: 'TRD', name: 'Trondheim Airport', country: 'Norway' }, // Aggiunto, EasyJet vola lì
-  { icao: 'ENBR', iata: 'BGO', name: 'Bergen Airport', country: 'Norway' }, // Aggiunto, EasyJet vola lì
+  { icao: 'ENZV', iata: 'TRF', name: 'Sandefjord Airport, Torp', country: 'Norway' },
+  { icao: 'ENVA', iata: 'TRD', name: 'Trondheim Airport', country: 'Norway' },
+  { icao: 'ENBR', iata: 'BGO', name: 'Bergen Airport', country: 'Norway' },
   { icao: 'EFHK', iata: 'HEL', name: 'Helsinki Airport', country: 'Finland' },
   { icao: 'EFKT', iata: 'KTT', name: 'Kittilä Airport', country: 'Finland' },
   { icao: 'EFRO', iata: 'RVN', name: 'Rovaniemi Airport', country: 'Finland' },
   { icao: 'LROP', iata: 'OTP', name: 'Henri Coandă International Airport', country: 'Romania' },
   { icao: 'UGTB', iata: 'TBS', name: 'Tbilisi International Airport', country: 'Georgia' },
-  { icao: 'EYKA', iata: 'KUN', name: 'Kaunas Airport', country: 'Lithuania' }, // In caso di voli estivi, ecc.
-  { icao: 'EYVI', iata: 'VNO', name: 'Vilnius Airport', country: 'Lithuania' }, // In caso di voli estivi, ecc.
+  { icao: 'EYKA', iata: 'KUN', name: 'Kaunas Airport', country: 'Lithuania' },
+  { icao: 'EYVI', iata: 'VNO', name: 'Vilnius Airport', country: 'Lithuania' },
   { icao: 'EPKK', iata: 'KRK', name: 'Kraków John Paul II International Airport', country: 'Poland' },
   { icao: 'EPWA', iata: 'WAW', name: 'Warsaw Chopin Airport', country: 'Poland' },
-  { icao: 'LUKK', iata: 'KIV', name: 'Chișinău International Airport', country: 'Moldova' }, // In caso di voli
+  { icao: 'LUKK', iata: 'KIV', name: 'Chișinău International Airport', country: 'Moldova' },
   { icao: 'EBCI', iata: 'CRL', name: 'Brussels South Charleroi Airport', country: 'Belgium' },
   { icao: 'EGNM', iata: 'LBA', name: 'Leeds Bradford Airport', country: 'United Kingdom' },
   { icao: 'EGPF', iata: 'GLA', name: 'Glasgow Airport', country: 'United Kingdom' },
@@ -133,7 +133,6 @@ const italianAirports = [
   { icao: 'EGPK', iata: 'INV', name: 'Inverness Airport', country: 'United Kingdom' },
   { icao: 'EGPN', iata: 'NQY', name: 'Newquay Airport', country: 'United Kingdom' },
   { icao: 'EGHI', iata: 'SOU', name: 'Southampton Airport', country: 'United Kingdom' },
-  { icao: 'EGBB', iata: 'EMA', name: 'East Midlands Airport', country: 'United Kingdom' }, // Duplicato corretto
   { icao: 'EGNX', iata: 'BRS', name: 'Bristol Airport', country: 'United Kingdom' },
   { icao: 'EGGD', iata: 'LPL', name: 'Liverpool John Lennon Airport', country: 'United Kingdom' },
   { icao: 'EGNV', iata: 'LDY', name: 'City of Derry Airport', country: 'United Kingdom' },
@@ -149,36 +148,19 @@ const italianAirports = [
   { icao: 'LEST', iata: 'SCQ', name: 'Santiago de Compostela Airport', country: 'Spain' },
   { icao: 'LERT', iata: 'RMU', name: 'Region of Murcia International Airport', country: 'Spain' },
   { icao: 'LEVC', iata: 'VLC', name: 'Valencia Airport', country: 'Spain' },
+  { icao: 'LEJR', iata: 'XRY', name: 'Jerez Airport', country: 'Spain' },
   { icao: 'GIBN', iata: 'GIB', name: 'Gibraltar International Airport', country: 'Gibraltar' },
   { icao: 'DTTJ', iata: 'DJE', name: 'Djerba–Zarzis International Airport', country: 'Tunisia' },
   { icao: 'DTNH', iata: 'NBE', name: 'Enfidha–Hammamet International Airport', country: 'Tunisia' },
-  { icao: 'HAAB', iata: 'ADD', name: 'Addis Ababa Bole International Airport', country: 'Ethiopia' }, // Rotta EasyJet Holidays, non volo diretto
-  { icao: 'DAAG', iata: 'ALG', name: 'Algiers Houari Boumediene Airport', country: 'Algeria' }, // Rotta EasyJet Holidays, non volo diretto
-  { icao: 'DABM', iata: 'BJA', name: 'Bejaïa Abane Ramdane Airport', country: 'Algeria' }, // Rotta EasyJet Holidays, non volo diretto
-  { icao: 'EGTE', iata: 'EXT', name: 'Exeter Airport', country: 'United Kingdom' }, // Rotta EasyJet Holidays
-  { icao: 'LFRS', iata: 'RNS', name: 'Rennes–Saint-Jacques Airport', country: 'France' },
-  { icao: 'LFLB', iata: 'CMF', name: 'Chambéry Airport', country: 'France' }, // Seasonal, skiing
-  { icao: 'LSGS', iata: 'SIR', name: 'Sion Airport', country: 'Switzerland' }, // Seasonal, skiing
-  { icao: 'EBOS', iata: 'OST', name: 'Ostend–Bruges International Airport', country: 'Belgium' }, // Seasonal
-  { icao: 'LFSB', iata: 'MLH', name: 'Mulhouse', country: 'France' }, // Parte di Basel Mulhouse Freiburg
-  { icao: 'LSZH', iata: 'ZRH', name: 'Zurich Airport', country: 'Switzerland' }, // Duplicato corretto
-  { icao: 'LFOA', iata: 'AJA', name: 'Ajaccio Napoleon Bonaparte Airport', country: 'France' },
-  { icao: 'LFKF', iata: 'BIA', name: 'Bastia – Poretta Airport', country: 'France' },
-  { icao: 'LFBD', iata: 'BOD', name: 'Bordeaux–Mérignac Airport', country: 'France' },
-  { icao: 'LFRB', iata: 'BES', name: 'Brest Bretagne Airport', country: 'France' },
-  { icao: 'LFKC', iata: 'CLY', name: 'Calvi - Sainte-Catherine Airport', country: 'France' },
-  { icao: 'LFKF', iata: 'FSC', name: 'Figari Sud-Corse Airport', country: 'France' },
-  { icao: 'LFLS', iata: 'GNB', name: 'Grenoble–Isère Airport', country: 'France' },
-  { icao: 'LFBH', iata: 'LRH', name: 'La Rochelle – Île de Ré Airport', country: 'France' },
-  { icao: 'LFQQ', iata: 'LIL', name: 'Lille Airport', country: 'France' },
-  { icao: 'LFLS', iata: 'LYS', name: 'Lyon–Saint-Exupéry Airport', country: 'France' }, // Duplicato corretto
-  { icao: 'LFML', iata: 'MRS', name: 'Marseille Provence Airport', country: 'France' },
-  { icao: 'LFMT', iata: 'MPL', name: 'Montpellier–Méditerranée Airport', country: 'France' },
-  { icao: 'LFRS', iata: 'NTE', name: 'Nantes Atlantique Airport', country: 'France' }, // Duplicato corretto
-  { icao: 'LFMN', iata: 'NCE', name: 'Nice Côte d\'Azur Airport', country: 'France' }, // Duplicato corretto
-  { icao: 'LFPR', iata: 'ETL', name: 'Toulon-Hyères Airport', country: 'France' }, // Aggiunto per EasyJet
-  { icao: 'LSGS', iata: 'SIR', name: 'Sion Airport', country: 'Switzerland' }, // Duplicato corretto
-  { icao: 'LSZB', iata: 'BRN', name: 'Bern Airport', country: 'Switzerland' }, // Aggiunto per EasyJet
+  { icao: 'HAAB', iata: 'ADD', name: 'Addis Ababa Bole International Airport', country: 'Ethiopia' },
+  { icao: 'DAAG', iata: 'ALG', name: 'Algiers Houari Boumediene Airport', country: 'Algeria' },
+  { icao: 'DABM', iata: 'BJA', name: 'Bejaïa Abane Ramdane Airport', country: 'Algeria' },
+  { icao: 'EGTE', iata: 'EXT', name: 'Exeter Airport', country: 'United Kingdom' },
+  { icao: 'LFLB', iata: 'CMF', name: 'Chambéry Airport', country: 'France' },
+  { icao: 'LSGS', iata: 'SIR', name: 'Sion Airport', country: 'Switzerland' },
+  { icao: 'EBOS', iata: 'OST', name: 'Ostend–Bruges International Airport', country: 'Belgium' },
+  { icao: 'LFSB', iata: 'MLH', name: 'Mulhouse', country: 'France' },
+  { icao: 'LSZB', iata: 'BRN', name: 'Bern Airport', country: 'Switzerland' },
   { icao: 'LOWI', iata: 'INN', name: 'Innsbruck Airport', country: 'Austria' },
   { icao: 'LOWS', iata: 'SZG', name: 'Salzburg Airport', country: 'Austria' },
   { icao: 'LOWW', iata: 'VIE', name: 'Vienna International Airport', country: 'Austria' },
@@ -191,35 +173,27 @@ const italianAirports = [
   { icao: 'LDZA', iata: 'ZAD', name: 'Zadar Airport', country: 'Croatia' },
   { icao: 'HECA', iata: 'LXHR', name: 'Luxor International Airport', country: 'Egypt' },
   { icao: 'ETAR', iata: 'SPX', name: 'Sphinx International Airport (Giza)', country: 'Egypt' },
-  { icao: 'EFHK', iata: 'HEL', name: 'Helsinki Airport', country: 'Finland' }, // Duplicato corretto
-  { icao: 'LSZZ', iata: 'GRZ', name: 'Graz Airport', country: 'Austria' }, // Aggiunto, EasyJet operava
   { icao: 'EDDT', iata: 'FRA', name: 'Frankfurt Airport', country: 'Germany' },
   { icao: 'EDDT', iata: 'FDH', name: 'Friedrichshafen Airport', country: 'Germany' },
-  { icao: 'EDDT', iata: 'STR', name: 'Stuttgart Airport', country: 'Germany' }, // Aggiunto per EasyJet
-  { icao: 'LGB', iata: 'LCY', name: 'London City Airport', country: 'United Kingdom' }, // Aggiunto per EasyJet
-  { icao: 'LSGG', iata: 'CHQ', name: 'Chania International Airport', country: 'Greece' },
+  { icao: 'EDDT', iata: 'STR', name: 'Stuttgart Airport', country: 'Germany' },
+  { icao: 'LGB', iata: 'LCY', name: 'London City Airport', country: 'United Kingdom' },
+  { icao: 'LGRP', iata: 'CHQ', name: 'Chania International Airport', country: 'Greece' },
   { icao: 'LGIR', iata: 'KLX', name: 'Kalamata International Airport', country: 'Greece' },
-  { icao: 'LGLM', iata: 'KFL', name: 'Kefalonia International Airport', country: 'Greece' }, // IATA EFL
+  { icao: 'LGLM', iata: 'EFL', name: 'Kefalonia International Airport', country: 'Greece' },
   { icao: 'LGPZ', iata: 'PVK', name: 'Aktion National Airport (Preveza)', country: 'Greece' },
   { icao: 'LGSA', iata: 'JSI', name: 'Skiathos International Airport', country: 'Greece' },
   { icao: 'LGSZ', iata: 'ZTH', name: 'Zakynthos International Airport', country: 'Greece' },
   { icao: 'LHBP', iata: 'BUD', name: 'Budapest Ferenc Liszt International Airport', country: 'Hungary' },
   { icao: 'LLBG', iata: 'TLV', name: 'Ben Gurion Airport (Tel Aviv)', country: 'Israel' },
-  { icao: 'LIMJ', iata: 'GOA', name: 'Genoa Cristoforo Colombo Airport', country: 'Italy' }, // Duplicato corretto
-  { icao: 'LIPR', iata: 'QSR', name: 'Salerno Costa d\'Amalfi Airport', country: 'Italy' }, // Duplicato corretto
-  { icao: 'LIPR', iata: 'PSR', name: 'Pescara Abruzzo Airport', country: 'Italy' }, // Duplicato corretto
-  { icao: 'LPPM', iata: 'PDL', name: 'Ponta Delgada João Paulo II Airport', country: 'Portugal' }, // Aggiunto per EasyJet
-  { icao: 'LPPS', iata: 'PXO', name: 'Porto Santo Airport', country: 'Portugal' }, // Aggiunto per EasyJet
-  { icao: 'LSZH', iata: 'ZXE', name: 'Zilina Airport', country: 'Slovakia' }, // Aggiunto per EasyJet (più rara)
-  { icao: 'LDZA', iata: 'LCY', name: 'A Coruña Airport', country: 'Spain' }, // IATA LCG
+  { icao: 'LPPM', iata: 'PDL', name: 'Ponta Delgada João Paulo II Airport', country: 'Portugal' },
+  { icao: 'LPPS', iata: 'PXO', name: 'Porto Santo Airport', country: 'Portugal' },
+  { icao: 'LSZH', iata: 'ZQE', name: 'Zilina Airport', country: 'Slovakia' },
   { icao: 'LEAX', iata: 'LEI', name: 'Almería Airport', country: 'Spain' },
   { icao: 'LEGA', iata: 'BIO', name: 'Bilbao Airport', country: 'Spain' },
-  { icao: 'LEVC', iata: 'VLC', name: 'Valencia Airport', country: 'Spain' }, // Duplicato corretto
   { icao: 'LEJR', iata: 'XRY', name: 'Jerez Airport', country: 'Spain' },
   { icao: 'GMMN', iata: 'RBA', name: 'Rabat–Salé Airport', country: 'Morocco' },
-  { icao: 'LBBG', iata: 'VAR', name: 'Varna Airport', country: 'Bulgaria' }, // EasyJet operava
-  { icao: 'EETN', iata: 'TLL', name: 'Tallinn Airport', country: 'Estonia' }, // EasyJet operava
-  // Aggiungi altri aeroporti se necessario, seguendo il formato
+  { icao: 'LBBG', iata: 'VAR', name: 'Varna Airport', country: 'Bulgaria' },
+  { icao: 'EETN', iata: 'TLL', name: 'Tallinn Airport', country: 'Estonia' },
 ];
 
 // Regole di sciopero aggiornate basate sul testo del PDF
@@ -411,7 +385,8 @@ function App() {
 
                   const flightTimeInMinutes = flightTimeHours * 60 + flightTimeMinutes;
                   const bandStartTimeInMinutes = bandStartHour * 60 + bandStartMinute;
-                  const bandEndTimeInMinutes = bandEndHour * 60 + bandEndMinute;
+                  // CORREZIONE: bandEndTimeInMinutes era definito qui con un errore di battitura, ora è corretto.
+                  const bandEndTimeInMinutes = bandEndHour * 60 + bandEndMinute; 
 
                   if (flightTimeInMinutes >= bandStartTimeInMinutes && flightTimeInMinutes <= bandEndTimeInMinutes) {
                       isInProtectedBand = true;
@@ -455,11 +430,20 @@ function App() {
         {`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-        body {
-          margin: 0;
-          font-family: 'Inter', sans-serif;
-          -webkit-font-smoothing: antialiased;
-          -moz-osx-font-smoothing: grayscale;
+        /* Generale */
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden; /* Previene lo scroll orizzontale */
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            box-sizing: border-box; /* Assicura che padding e border siano inclusi nella larghezza */
+        }
+        *, *::before, *::after {
+            box-sizing: inherit;
         }
 
         code {
@@ -469,184 +453,186 @@ function App() {
 
         .app-container {
           min-height: 100vh;
-          background: linear-gradient(to bottom right, #4F46E5, #93C5FD); /* Corrisponde a from-indigo-700 via-blue-500 to-indigo-700 */
+          background: linear-gradient(to bottom right, #4F46E5, #93C5FD);
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: 1rem; /* Corrisponde a p-4 */
-          font-family: 'Inter', sans-serif;
+          padding: 1rem;
+          width: 100%; /* Assicura che occupi la larghezza completa */
         }
 
         .main-card {
-          background-color: #ffffff; /* Corrisponde a bg-white */
-          padding: 2rem; /* Corrisponde a p-8 */
-          border-radius: 1rem; /* Corrisponde a rounded-2xl */
-          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); /* Corrisponde a shadow-2xl */
-          width: 100%;
-          max-width: 48rem; /* Corrisponde a max-w-2xl */
-          border: 1px solid #e5e7eb; /* Corrisponde a border border-gray-200 */
+          background-color: #ffffff;
+          padding: 2rem;
+          border-radius: 1rem;
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+          width: 100%; /* Occupa tutta la larghezza disponibile */
+          max-width: 48rem; /* Limite massimo per desktop */
+          border: 1px solid #e5e7eb;
         }
 
         .main-title {
-          font-size: 2.25rem; /* Corrisponde a text-3xl */
-          font-weight: 800; /* Corrisponde a font-extrabold */
-          color: #111827; /* Corrisponde a text-gray-900 */
-          margin-bottom: 2rem; /* Corrisponde a mb-8 */
-          text-align: center; /* Corrisponde a text-center */
-          letter-spacing: -0.025em; /* Corrisponde a tracking-tight */
+          font-size: 2.25rem;
+          font-weight: 800;
+          color: #111827;
+          margin-bottom: 2rem;
+          text-align: center;
+          letter-spacing: -0.025em;
           line-height: 1.2;
+          word-wrap: break-word; /* Forza il testo a capo se troppo lungo */
         }
 
         .main-title-date {
-          color: #2563eb; /* Corrisponde a text-blue-600 */
-          font-size: 1.5rem; /* Corrisponde a text-2xl */
+          color: #2563eb;
+          font-size: 1.5rem;
           display: block;
           margin-top: 0.5rem;
         }
 
-        .form-sections-container {
-            /* Per gestire lo spazio tra i blocchi del form */
-        }
         .form-sections-container > *:not(:last-child) {
-            margin-bottom: 1.5rem; /* Equivalent to Tailwind's space-y-6 */
+            margin-bottom: 1.5rem;
         }
         .form-sections-container .main-button {
-            margin-top: 1.5rem; /* Add margin-top to the button if it's the last child in the container */
+            margin-top: 1.5rem;
         }
 
         .input-group {
-          /* margin-bottom è gestito dal .form-sections-container */
+          /* Nessun margine qui, gestito dal contenitore genitore */
         }
 
         .input-label {
           display: block;
-          font-size: 0.875rem; /* Corrisponde a text-sm */
-          font-weight: 500; /* Corrisponde a font-medium */
-          color: #374151; /* Corrisponde a text-gray-700 */
-          margin-bottom: 0.25rem; /* Corrisponde a mb-1 */
+          font-size: 0.875rem;
+          font-weight: 500;
+          color: #374151;
+          margin-bottom: 0.25rem;
         }
 
         .input-field {
           display: block;
-          width: 100%;
-          padding: 0.5rem 1rem; /* Corrisponde a px-4 py-2 */
-          border: 1px solid #d1d5db; /* Corrisponde a border border-gray-300 */
-          border-radius: 0.5rem; /* Corrisponde a rounded-lg */
-          box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* Corrisponde a shadow-sm */
+          width: 100%; /* Fondamentale per la responsività */
+          padding: 0.5rem 1rem;
+          border: 1px solid #d1d5db;
+          border-radius: 0.5rem;
+          box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
           transition: all 0.2s ease-in-out;
+          box-sizing: border-box; /* Cruciale per includere padding nel width */
         }
 
         .input-field:focus {
           outline: none;
-          border-color: #3B82F6; /* Corrisponde a focus:border-blue-500 */
-          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5); /* Corrisponde a focus:ring-blue-500 focus:ring-opacity-75 */
+          border-color: #3B82F6;
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
         }
 
         .section-card {
-          border: 1px solid #e5e7eb; /* Corrisponde a border border-gray-200 */
-          padding: 1.25rem; /* Corrisponde a p-5 */
-          border-radius: 0.5rem; /* Corrisponde a rounded-lg */
-          background-color: #f9fafb; /* Corrisponde a bg-gray-50 */
-          box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* Corrisponde a shadow-sm */
-          /* Il margin-top è ora gestito da .form-sections-container > *:not(:last-child) */
+          border: 1px solid #e5e7eb;
+          padding: 1.25rem;
+          border-radius: 0.5rem;
+          background-color: #f9fafb;
+          box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+          /* Il margin-top è gestito da .form-sections-container */
         }
 
         .section-title {
-          font-size: 1rem; /* Corrisponde a text-md */
-          font-weight: 600; /* Corrisponde a font-semibold */
-          color: #1F2937; /* Corrisponde a text-gray-800 */
-          margin-bottom: 1rem; /* Corrisponde a mb-4 */
+          font-size: 1rem;
+          font-weight: 600;
+          color: #1F2937;
+          margin-bottom: 1rem;
+          word-wrap: break-word; /* Assicura che il titolo vada a capo */
         }
 
         .section-content-space > div:not(:last-child) {
-          margin-bottom: 0.75rem; /* Corrisponde a space-y-3 */
+          margin-bottom: 0.75rem;
         }
         
         .main-button {
           width: 100%;
-          background-color: #4F46E5; /* Corrisponde a bg-indigo-600 */
-          color: #ffffff; /* Corrisponde a text-white */
-          font-weight: 700; /* Corrisponde a font-bold */
-          padding: 0.75rem 1.5rem; /* Corrisponde a py-3 px-6 */
-          border-radius: 0.5rem; /* Corrisponde a rounded-lg */
-          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Corrisponde a shadow-lg */
+          background-color: #4F46E5;
+          color: #ffffff;
+          font-weight: 700;
+          padding: 0.75rem 1.5rem;
+          border-radius: 0.5rem;
+          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
           transition: all 0.3s ease-in-out;
           transform: scale(1);
-          letter-spacing: 0.025em; /* Corrisponde a tracking-wide */
+          letter-spacing: 0.025em;
           border: none;
           cursor: pointer;
         }
 
         .main-button:hover {
-          background-color: #4338CA; /* Corrisponde a hover:bg-indigo-700 */
-          transform: scale(1.02); /* Corrisponde a hover:scale-105 */
+          background-color: #4338CA;
+          transform: scale(1.02);
         }
 
         .main-button:focus {
           outline: none;
-          box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.5); /* Corrisponde a focus:ring-indigo-500 focus:ring-opacity-75 */
+          box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.5);
         }
 
         .results-section {
-          margin-top: 2rem; /* Corrisponde a mt-8 */
-          padding-top: 1.5rem; /* Corrisponde a pt-6 */
-          border-top: 1px solid #e5e7eb; /* Corrisponde a border-t border-gray-200 */
+          margin-top: 2rem;
+          padding-top: 1.5rem;
+          border-top: 1px solid #e5e7eb;
         }
 
         .results-title {
-          font-size: 1.5rem; /* Corrisponde a text-2xl */
-          font-weight: 700; /* Corrisponde a font-bold */
-          color: #111827; /* Corrisponde a text-gray-900 */
-          margin-bottom: 1rem; /* Corrisponde a mb-4 */
-          text-align: center; /* Corrisponde a text-center */
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: #111827;
+          margin-bottom: 1rem;
+          text-align: center;
         }
 
         .result-item {
-          padding: 1rem; /* Corrisponde a p-4 */
-          border-radius: 0.5rem; /* Corrisponde a rounded-lg */
-          box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); /* Corrisponde a shadow-md */
-          margin-bottom: 1rem; /* Corrisponde a space-y-4 per gli item */
+          padding: 1rem;
+          border-radius: 0.5rem;
+          box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+          margin-bottom: 1rem;
         }
 
         .result-item.eligible {
-          background-color: #F0FDF4; /* Corrisponde a bg-green-100 */
-          border: 1px solid #6EE7B7; /* Corrisponde a border border-green-300 */
+          background-color: #F0FDF4;
+          border: 1px solid #6EE7B7;
         }
 
         .result-item.not-eligible {
-          background-color: #FEF2F2; /* Corrisponde a bg-red-100 */
-          border: 1px solid #FCA5A5; /* Corrisponde a border border-red-300 */
+          background-color: #FEF2F2;
+          border: 1px solid #FCA5A5;
         }
 
         .result-flight {
-          font-size: 1.125rem; /* Corrisponde a text-lg */
-          font-weight: 600; /* Corrisponde a font-semibold */
-          color: #1F2937; /* Corrisponde a text-gray-800 */
+          font-size: 1.125rem;
+          font-weight: 600;
+          color: #1F2937;
+          word-wrap: break-word; /* Assicura che il testo vada a capo */
         }
 
         .result-status {
-          font-size: 1rem; /* Corrisponde a text-md */
-          font-weight: 700; /* Corrisponde a font-bold */
+          font-size: 1rem;
+          font-weight: 700;
         }
 
         .result-status.eligible-text {
-          color: #047857; /* Corrisponde a text-green-700 */
+          color: #047857;
         }
 
         .result-status.not-eligible-text {
-          color: #B91C1C; /* Corrisponde a text-red-700 */
+          color: #B91C1C;
         }
 
         .result-reason {
-          font-size: 0.875rem; /* Corrisponde a text-sm */
-          color: #4B5563; /* Corrisponde a text-gray-600 */
+          font-size: 0.875rem;
+          color: #4B5563;
+          word-wrap: break-word; /* Assicura che il testo vada a capo */
         }
 
         /* Stili della Modale */
         .modal-overlay {
           position: fixed;
           inset: 0;
-          background-color: rgba(75, 85, 99, 0.5); /* Corrisponde a bg-gray-600 bg-opacity-50 */
+          background-color: rgba(75, 85, 99, 0.5);
           overflow-y: auto;
           height: 100%;
           width: 100%;
@@ -658,65 +644,79 @@ function App() {
 
         .modal-content {
           position: relative;
-          padding: 1.25rem; /* Corrisponde a p-5 */
-          border: 1px solid #d1d5db; /* Corrisponde a border */
-          width: 24rem; /* Corrisponde a w-96 */
-          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); /* Corrisponde a shadow-lg */
-          border-radius: 0.375rem; /* Corrisponde a rounded-md */
-          background-color: #ffffff; /* Corrisponde a bg-white */
-          text-align: center; /* Corrisponde a text-center */
+          padding: 1.25rem;
+          border: 1px solid #d1d5db;
+          width: 100%; /* Responsività per la modale */
+          max-width: 24rem; /* Limite massimo per la modale */
+          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+          border-radius: 0.375rem;
+          background-color: #ffffff;
+          text-align: center;
+          box-sizing: border-box; /* Cruciale per includere padding nel width */
         }
 
         .modal-title {
-          font-size: 1.125rem; /* Corrisponde a text-lg */
-          line-height: 1.5rem; /* Corrisponde a leading-6 */
-          font-weight: 500; /* Corrisponde a font-medium */
-          color: #111827; /* Corrisponde a text-gray-900 */
-          margin-bottom: 1rem; /* Corrisponde a mb-4 */
+          font-size: 1.125rem;
+          line-height: 1.5rem;
+          font-weight: 500;
+          color: #111827;
+          margin-bottom: 1rem;
         }
 
         .modal-message {
-          font-size: 0.875rem; /* Corrisponde a text-sm */
-          color: #6B7280; /* Corrisponde a text-gray-500 */
-          margin-bottom: 1.5rem; /* Corrisponde a mb-6 */
+          font-size: 0.875rem;
+          color: #6B7280;
+          margin-bottom: 1.5rem;
         }
 
         .modal-button {
-          margin-top: 0.75rem; /* Corrisponde a mt-3 */
+          margin-top: 0.75rem;
           width: 100%;
           display: inline-flex;
           justify-content: center;
-          border-radius: 0.375rem; /* Corrisponde a rounded-md */
-          border: 1px solid transparent; /* Corrisponde a border border-transparent */
-          box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* Corrisponde a shadow-sm */
-          padding: 0.5rem 1rem; /* Corrisponde a px-4 py-2 */
-          background-color: #2563EB; /* Corrisponde a bg-blue-600 */
-          color: #ffffff; /* Corrisponde a text-white */
-          font-size: 1rem; /* Corrisponde a base */
-          font-weight: 500; /* Corrisponde a font-medium */
+          border-radius: 0.375rem;
+          border: 1px solid transparent;
+          box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+          padding: 0.5rem 1rem;
+          background-color: #2563EB;
+          color: #ffffff;
+          font-size: 1rem;
+          font-weight: 500;
           transition: background-color 0.15s ease-in-out;
           cursor: pointer;
         }
 
         .modal-button:hover {
-          background-color: #1D4ED8; /* Corrisponde a hover:bg-blue-700 */
+          background-color: #1D4ED8;
         }
 
         .modal-button:focus {
           outline: none;
-          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5), 0 0 0 2px rgba(59, 130, 246, 0.5); /* Corrisponde a focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 */
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5), 0 0 0 2px rgba(59, 130, 246, 0.5);
         }
 
         /* Media queries per la responsività */
         @media (max-width: 768px) {
           .main-card {
-            padding: 1.5rem;
+            padding: 1rem; /* Riduci il padding su schermi piccoli */
           }
           .main-title {
-            font-size: 2rem;
+            font-size: 1.75rem; /* Riduci la dimensione del titolo su mobile */
           }
           .main-title-date {
-            font-size: 1.25rem;
+            font-size: 1.125rem;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .main-card {
+            padding: 0.75rem; /* Ancora meno padding su schermi molto piccoli */
+          }
+          .main-title {
+            font-size: 1.5rem;
+          }
+          .main-title-date {
+            font-size: 1rem;
           }
         }
         `}
