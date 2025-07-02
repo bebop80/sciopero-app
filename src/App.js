@@ -64,7 +64,7 @@ const italianAirports = [
   { icao: 'LGSK', iata: 'SKG', name: 'Thessaloniki Macedonia', country: 'Greece' },
   { icao: 'LCLK', iata: 'LCA', name: 'Larnaca', country: 'Cyprus' },
   { icao: 'LCPH', iata: 'PFO', name: 'Paphos', country: 'Cyprus' },
-  { icao: 'LKPR', iata: 'PRG', name: 'Prague Václav Havel', rely: 'Czech Republic' },
+  { icao: 'LKPR', iata: 'PRG', name: 'Prague Václav Havel', country: 'Czech Republic' },
   { icao: 'EKCH', iata: 'CPH', name: 'Copenhagen Kastrup', country: 'Denmark' },
   { icao: 'EIDW', iata: 'DUB', name: 'Dublin', country: 'Ireland' },
   { icao: 'LFLL', iata: 'LYS', name: 'Lyon Saint-Exupéry', country: 'France' },
@@ -476,6 +476,7 @@ function App() {
           align-items: center; /* Allinea verticalmente al centro */
           justify-content: center; /* Centra il contenuto */
           gap: 0.75rem; /* Spazio tra logo e testo */
+          flex-wrap: wrap; /* Permette al contenuto di andare a capo su schermi piccoli */
         }
 
         .union-logo {
@@ -484,6 +485,12 @@ function App() {
             border-radius: 0.5rem; /* Bordi arrotondati */
             object-fit: contain; /* Assicura che l'immagine sia contenuta senza distorsioni */
             margin-right: 0.5rem; /* Spazio a destra del logo */
+        }
+
+        .main-title-text-container {
+          display: flex;
+          flex-direction: column;
+          align-items: center; /* Centra il testo all'interno del suo contenitore */
         }
 
         .main-title-date {
@@ -740,15 +747,16 @@ function App() {
 
       <div className="main-card">
         <h1 className="main-title">
-          {/* Nota: In un'applicazione reale, 'favicon.ico' verrebbe gestito dal sistema di build
-              o posizionato nella cartella 'public'. Qui usiamo un placeholder. */}
+          {/* Il logo del sindacato, caricato dalla cartella public */}
           <img
-            src="https://placehold.co/128x128/4F46E5/ffffff?text=LOGO"
+            src="/favicon.ico" // Percorso corretto per il file nella cartella public
             alt="Logo Sindacato"
             className="union-logo"
-            onError={(e) => { e.target.onerror = null; e.target.src="https://placehold.co/128x128/cccccc/000000?text=Error"; }}
           />
-          Verifica Eleggibilità Sciopero Aereo <span className="main-title-date">{strikeDurationText}</span>
+          <div className="main-title-text-container">
+            Verifica Eleggibilità Sciopero Aereo
+            <span className="main-title-date">{strikeDurationText}</span>
+          </div>
         </h1>
 
         {/* Form di input */}
