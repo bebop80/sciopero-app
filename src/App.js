@@ -385,8 +385,7 @@ function App() {
 
                   const flightTimeInMinutes = flightTimeHours * 60 + flightTimeMinutes;
                   const bandStartTimeInMinutes = bandStartHour * 60 + bandStartMinute;
-                  // CORREZIONE: bandEndTimeInMinutes era definito qui con un errore di battitura, ora è corretto.
-                  const bandEndTimeInMinutes = bandEndHour * 60 + bandEndMinute; 
+                  const bandEndTimeInMinutes = bandEndHour * 60 + bandEndMinute;
 
                   if (flightTimeInMinutes >= bandStartTimeInMinutes && flightTimeInMinutes <= bandEndTimeInMinutes) {
                       isInProtectedBand = true;
@@ -398,7 +397,7 @@ function App() {
                   eligible = false;
               } else {
                   eligible = true;
-                  reason.push(`Eligibile per lo sciopero del ${strikeRules.strikeDate}.`);
+                  reason.push(`Eligibile per lo sciopero generale del ${strikeRules.strikeDate}.`);
 
                   if (segment.origin.toUpperCase() !== baseIcao.toUpperCase()) {
                     reason.push("(<strong>SCIOPERABILE FUORI BASE</strong>)");
@@ -471,15 +470,31 @@ function App() {
           border: 1px solid #e5e7eb;
         }
 
+        .title-container {
+            display: flex;
+            align-items: center; /* Allinea verticalmente logo e titolo */
+            justify-content: center; /* Centra orizzontalmente il blocco */
+            margin-bottom: 2rem; /* Spazio sotto il titolo */
+            text-align: center; /* Per centrare il testo all'interno dell'h1 */
+        }
+
+        .union-logo {
+            width: 48px; /* Dimensione del logo */
+            height: 48px;
+            margin-right: 1rem; /* Spazio tra logo e titolo */
+            border-radius: 50%; /* Rende il logo circolare */
+            object-fit: contain; /* Assicura che l'immagine si adatti senza distorsioni */
+        }
+
         .main-title {
           font-size: 2.25rem;
           font-weight: 800;
           color: #111827;
-          margin-bottom: 2rem;
+          margin-bottom: 0; /* Rimuovi il margine inferiore dall'h1 se è in un flex container */
           text-align: center;
           letter-spacing: -0.025em;
           line-height: 1.2;
-          word-wrap: break-word; /* Forza il testo a capo se troppo lungo */
+          word-wrap: break-word;
         }
 
         .main-title-date {
@@ -510,13 +525,13 @@ function App() {
 
         .input-field {
           display: block;
-          width: 100%; /* Fondamentale per la responsività */
+          width: 100%;
           padding: 0.5rem 1rem;
           border: 1px solid #d1d5db;
           border-radius: 0.5rem;
           box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
           transition: all 0.2s ease-in-out;
-          box-sizing: border-box; /* Cruciale per includere padding nel width */
+          box-sizing: border-box;
         }
 
         .input-field:focus {
@@ -531,7 +546,6 @@ function App() {
           border-radius: 0.5rem;
           background-color: #f9fafb;
           box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-          /* Il margin-top è gestito da .form-sections-container */
         }
 
         .section-title {
@@ -539,7 +553,7 @@ function App() {
           font-weight: 600;
           color: #1F2937;
           margin-bottom: 1rem;
-          word-wrap: break-word; /* Assicura che il titolo vada a capo */
+          word-wrap: break-word;
         }
 
         .section-content-space > div:not(:last-child) {
@@ -606,7 +620,7 @@ function App() {
           font-size: 1.125rem;
           font-weight: 600;
           color: #1F2937;
-          word-wrap: break-word; /* Assicura che il testo vada a capo */
+          word-wrap: break-word;
         }
 
         .result-status {
@@ -625,7 +639,7 @@ function App() {
         .result-reason {
           font-size: 0.875rem;
           color: #4B5563;
-          word-wrap: break-word; /* Assicura che il testo vada a capo */
+          word-wrap: break-word;
         }
 
         /* Stili della Modale */
@@ -646,13 +660,13 @@ function App() {
           position: relative;
           padding: 1.25rem;
           border: 1px solid #d1d5db;
-          width: 100%; /* Responsività per la modale */
-          max-width: 24rem; /* Limite massimo per la modale */
+          width: 100%;
+          max-width: 24rem;
           box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
           border-radius: 0.375rem;
           background-color: #ffffff;
           text-align: center;
-          box-sizing: border-box; /* Cruciale per includere padding nel width */
+          box-sizing: border-box;
         }
 
         .modal-title {
@@ -698,19 +712,24 @@ function App() {
         /* Media queries per la responsività */
         @media (max-width: 768px) {
           .main-card {
-            padding: 1rem; /* Riduci il padding su schermi piccoli */
+            padding: 1rem;
           }
           .main-title {
-            font-size: 1.75rem; /* Riduci la dimensione del titolo su mobile */
+            font-size: 1.75rem;
           }
           .main-title-date {
             font-size: 1.125rem;
+          }
+          .union-logo {
+            width: 40px; /* Riduci dimensione logo su mobile */
+            height: 40px;
+            margin-right: 0.75rem;
           }
         }
 
         @media (max-width: 480px) {
           .main-card {
-            padding: 0.75rem; /* Ancora meno padding su schermi molto piccoli */
+            padding: 0.75rem;
           }
           .main-title {
             font-size: 1.5rem;
@@ -718,12 +737,22 @@ function App() {
           .main-title-date {
             font-size: 1rem;
           }
+          .union-logo {
+            width: 32px; /* Riduci ancora su schermi molto piccoli */
+            height: 32px;
+            margin-right: 0.5rem;
+          }
         }
         `}
       </style>
 
       <div className="main-card">
-        <h1 className="main-title">Verifica Eleggibilità Sciopero Aereo <span className="main-title-date">{strikeDurationText}</span></h1>
+        {/* Nuovo contenitore per logo e titolo */}
+        <div className="title-container">
+          {/* L'attributo src punta al file favicon.ico nella cartella public */}
+          <img src="/favicon.ico" alt="Logo Sindacato" className="union-logo" />
+          <h1 className="main-title">Verifica Eleggibilità Sciopero Aereo <span className="main-title-date">{strikeDurationText}</span></h1>
+        </div>
 
         {/* Form di input */}
         <div className="form-sections-container">
