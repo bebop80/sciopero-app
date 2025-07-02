@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-// Non è più necessario importare un file CSS esterno, gli stili sono inclusi qui sotto.
 
 // Dati degli aeroporti serviti da EasyJet (incluse le destinazioni internazionali)
 const italianAirports = [
@@ -65,7 +64,7 @@ const italianAirports = [
   { icao: 'LGSK', iata: 'SKG', name: 'Thessaloniki Macedonia', country: 'Greece' },
   { icao: 'LCLK', iata: 'LCA', name: 'Larnaca', country: 'Cyprus' },
   { icao: 'LCPH', iata: 'PFO', name: 'Paphos', country: 'Cyprus' },
-  { icao: 'LKPR', iata: 'PRG', name: 'Prague Václav Havel', country: 'Czech Republic' },
+  { icao: 'LKPR', iata: 'PRG', name: 'Prague Václav Havel', rely: 'Czech Republic' },
   { icao: 'EKCH', iata: 'CPH', name: 'Copenhagen Kastrup', country: 'Denmark' },
   { icao: 'EIDW', iata: 'DUB', name: 'Dublin', country: 'Ireland' },
   { icao: 'LFLL', iata: 'LYS', name: 'Lyon Saint-Exupéry', country: 'France' },
@@ -196,7 +195,7 @@ const italianAirports = [
   { icao: 'EETN', iata: 'TLL', name: 'Tallinn Airport', country: 'Estonia' },
 ];
 
-// Regole di sciopero aggiornate basate sul testo del PDF
+// Regole di sciopero aggiornate
 const strikeRules = {
   strikeDate: '2025-07-10', // Data di sciopero: 10 Luglio 2025
   guaranteedTimeBands: [
@@ -204,15 +203,20 @@ const strikeRules = {
     { start: '18:00', end: '21:00' }
   ],
   guaranteedFlights: [
-    { origin: 'NAP', destination: 'OLB' },
-    { origin: 'OLB', destination: 'NAP' },
-    { origin: 'NAP', destination: 'SSH' },
-    { origin: 'MXP', destination: 'CAG' },
-    { origin: 'CAG', destination: 'MXP' },
-    { origin: 'MXP', destination: 'LMP' },
-    // Aggiungi qui eventuali altri voli garantiti specifici
+    // La nuova regola indica che i voli da/per PMO non sono scioperabili, quindi li aggiungiamo qui
+    // Nota: I codici ICAO e IATA sono trattati in modo interscambiabile nella funzione isKnownAirport
+    // e per confronto con la lista `italianAirports`. Qui usiamo 'PMO' come IATA per chiarezza.
+    { origin: 'LICJ', destination: 'ANY' }, // Voli in partenza da Palermo (ICAO: LICJ)
+    { origin: 'ANY', destination: 'LICJ' }, // Voli in arrivo a Palermo (ICAO: LICJ)
+    { origin: 'PMO', destination: 'ANY' }, // Voli in partenza da Palermo (IATA: PMO)
+    { origin: 'ANY', destination: 'PMO' }, // Voli in arrivo a Palermo (IATA: PMO)
   ],
   affectedAirports: [], // rimane vuoto, si applica a tutto il territorio nazionale
+  // Nuova regola per Palermo: "TUTTI i voli da/per PMO DEVONO essere operati da ogni base."
+  // Questo non si traduce direttamente in una regola di "non scioperabilità" generale
+  // ma piuttosto una condizione operativa che l'app, per ora, non valida.
+  // La gestione della "totale esclusione dei voli in partenza ed in arrivo all'aeroporto di Palermo"
+  // è già coperta dall'aggiunta a guaranteedFlights.
 };
 
 // Componente principale dell'applicazione
@@ -231,7 +235,6 @@ function App() {
     const baseCode = base.toUpperCase();
     const destinations = destInput.toUpperCase().split('-').filter(d => d);
     let sectorNum = 1;
-
     if (num === 2 && destinations.length === 1) {
       segments.push({ origin: baseCode, destination: destinations[0], type: `settore ${sectorNum++}` });
       segments.push({ origin: destinations[0], destination: baseCode, type: `settore ${sectorNum++}` });
@@ -281,7 +284,6 @@ function App() {
   const calculateStrikeEligibility = () => {
     setResults([]);
     setMessage('');
-
     const parsedNumSectors = parseInt(numSectors);
 
     if (!baseIcao || (parsedNumSectors !== 2 && parsedNumSectors !== 4)) {
@@ -303,7 +305,6 @@ function App() {
     }
 
     const currentFlightSegments = generateFlightSegments(baseIcao, parsedNumSectors, destinationInput);
-
     if (currentFlightSegments.length === 0) {
       setMessage('Impossibile generare i segmenti di volo. Controlla il numero di settori e il formato delle destinazioni.');
       setIsModalOpen(true);
@@ -346,7 +347,6 @@ function App() {
 
     const newResults = [];
     let flightCounter = 0;
-
     // Elabora ogni segmento di volo generato con il suo orario schedulato specifico
     currentFlightSegments.forEach((segment, index) => {
         flightCounter++;
@@ -354,56 +354,49 @@ function App() {
         let reason = [];
         const flightDateTime = new Date(`${strikeRules.strikeDate}T${scheduledTimes[index]}`);
         const currentFlightDate = flightDateTime.toISOString().slice(0, 10);
+        const flightTimeHours = flightDateTime.getHours();
+        const flightTimeMinutes = flightDateTime.getMinutes();
+        const flightTimeInMinutes = flightTimeHours * 60 + flightTimeMinutes;
 
-        // 0. Verifica se il volo è uno dei voli specificamente garantiti
-        const isSpecificallyGuaranteed = strikeRules.guaranteedFlights.some(gf =>
-          gf.origin.toUpperCase() === segment.origin.toUpperCase() &&
-          gf.destination.toUpperCase() === segment.destination.toUpperCase()
-        );
+        const isOriginPMO = segment.origin.toUpperCase() === 'PMO' || segment.origin.toUpperCase() === 'LICJ';
+        const isDestinationPMO = segment.destination.toUpperCase() === 'PMO' || segment.destination.toUpperCase() === 'LICJ';
 
-        if (isSpecificallyGuaranteed) {
-          reason.push('Volo garantito da ENAC, non scioperabile.');
-          eligible = false;
+        // 1. Lo sciopero si applica solo ai voli in partenza da tutto il territorio nazionale
+        if (!isItalianAirport(segment.origin)) {
+            reason.push(`L'aeroporto di partenza (${segment.origin}) non è italiano. Sciopero valido solo dal territorio nazionale.`);
+            eligible = false;
+        } else if (currentFlightDate !== strikeRules.strikeDate) {
+            reason.push(`La data del volo (${currentFlightDate}) non rientra nel giorno di sciopero (${strikeRules.strikeDate}).`);
+            eligible = false;
+        } else if (isOriginPMO || isDestinationPMO) {
+            reason.push('Volo non scioperabile: esclusi i voli in partenza e in arrivo all\'aeroporto di Palermo (PMO).');
+            eligible = false;
         } else {
-          // 1. Lo sciopero deve partire dal territorio italiano
-          if (!isItalianAirport(segment.origin)) {
-              reason.push(`L'aeroporto di partenza (${segment.origin}) non è italiano. Sciopero valido solo dal territorio nazionale.`);
-              eligible = false;
-          } else if (currentFlightDate !== strikeRules.strikeDate) {
-              reason.push(`La data del volo (${currentFlightDate}) non rientra nel giorno di sciopero (${strikeRules.strikeDate}).`);
-              eligible = false;
-          }
-          else {
-              // 2. Verifica se l'orario del volo rientra in una fascia protetta
-              let isInProtectedBand = false;
-              const flightTimeHours = flightDateTime.getHours();
-              const flightTimeMinutes = flightDateTime.getMinutes();
+            // 2. Verifica se l'orario del volo rientra in una fascia protetta
+            let isInProtectedBand = false;
+            strikeRules.guaranteedTimeBands.forEach(band => {
+                const [bandStartHour, bandStartMinute] = band.start.split(':').map(Number);
+                const [bandEndHour, bandEndMinute] = band.end.split(':').map(Number);
 
-              strikeRules.guaranteedTimeBands.forEach(band => {
-                  const [bandStartHour, bandStartMinute] = band.start.split(':').map(Number);
-                  const [bandEndHour, bandEndMinute] = band.end.split(':').map(Number);
+                const bandStartTimeInMinutes = bandStartHour * 60 + bandStartMinute;
+                const bandEndTimeInMinutes = bandEndHour * 60 + bandEndMinute; 
 
-                  const flightTimeInMinutes = flightTimeHours * 60 + flightTimeMinutes;
-                  const bandStartTimeInMinutes = bandStartHour * 60 + bandStartMinute;
-                  const bandEndTimeInMinutes = bandEndHour * 60 + bandEndMinute;
+                if (flightTimeInMinutes >= bandStartTimeInMinutes && flightTimeInMinutes <= bandEndTimeInMinutes) {
+                    isInProtectedBand = true;
+                }
+            });
 
-                  if (flightTimeInMinutes >= bandStartTimeInMinutes && flightTimeInMinutes <= bandEndTimeInMinutes) {
-                      isInProtectedBand = true;
-                  }
-              });
+            if (isInProtectedBand) {
+                reason.push(`Volo non scioperabile: l'orario di decollo schedulato (${scheduledTimes[index]}) rientra in una fascia oraria garantita.`);
+                eligible = false;
+            } else {
+                eligible = true;
+                reason.push(`Volo scioperabile: l'orario di decollo schedulato (${scheduledTimes[index]}) è fuori dalle fasce orarie garantite.`);
 
-              if (isInProtectedBand) {
-                  reason.push(`L'orario di decollo schedulato (${scheduledTimes[index]}) rientra in una fascia oraria garantita.`);
-                  eligible = false;
-              } else {
-                  eligible = true;
-                  reason.push(`Eligibile per lo sciopero generale del ${strikeRules.strikeDate}.`);
-
-                  if (segment.origin.toUpperCase() !== baseIcao.toUpperCase()) {
-                    reason.push("(<strong>SCIOPERABILE FUORI BASE</strong>)");
-                  }
-              }
-          }
+                if (segment.origin.toUpperCase() !== baseIcao.toUpperCase()) {
+                  reason.push("(<strong>SCIOPERABILE FUORI BASE</strong>)");
+                }
+            }
         }
 
         newResults.push({
@@ -419,9 +412,7 @@ function App() {
   const handleDestinationInputChange = (e) => {
     setDestinationInput(e.target.value);
   };
-
   const strikeDurationText = `10 Luglio 2025 (24 ORE, fasce garantite 07:00-10:00 e 18:00-21:00)`;
-
   return (
     <div className="app-container">
       {/* Stili CSS integrati direttamente nel componente */}
@@ -465,36 +456,34 @@ function App() {
           padding: 2rem;
           border-radius: 1rem;
           box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-          width: 100%; /* Occupa tutta la larghezza disponibile */
-          max-width: 48rem; /* Limite massimo per desktop */
+          width: 100%;
+          /* Occupa tutta la larghezza disponibile */
+          max-width: 48rem;
+          /* Limite massimo per desktop */
           border: 1px solid #e5e7eb;
-        }
-
-        .title-container {
-            display: flex;
-            align-items: center; /* Allinea verticalmente logo e titolo */
-            justify-content: center; /* Centra orizzontalmente il blocco */
-            margin-bottom: 2rem; /* Spazio sotto il titolo */
-            text-align: center; /* Per centrare il testo all'interno dell'h1 */
-        }
-
-        .union-logo {
-            width: 48px; /* Dimensione del logo */
-            height: 48px;
-            margin-right: 1rem; /* Spazio tra logo e titolo */
-            border-radius: 50%; /* Rende il logo circolare */
-            object-fit: contain; /* Assicura che l'immagine si adatti senza distorsioni */
         }
 
         .main-title {
           font-size: 2.25rem;
           font-weight: 800;
           color: #111827;
-          margin-bottom: 0; /* Rimuovi il margine inferiore dall'h1 se è in un flex container */
+          margin-bottom: 2rem;
           text-align: center;
           letter-spacing: -0.025em;
           line-height: 1.2;
-          word-wrap: break-word;
+          word-wrap: break-word; /* Forza il testo a capo se troppo lungo */
+          display: flex; /* Permette all'immagine e al testo di stare sulla stessa riga */
+          align-items: center; /* Allinea verticalmente al centro */
+          justify-content: center; /* Centra il contenuto */
+          gap: 0.75rem; /* Spazio tra logo e testo */
+        }
+
+        .union-logo {
+            width: 3rem; /* Dimensione del logo */
+            height: 3rem; /* Rende il logo quadrato */
+            border-radius: 0.5rem; /* Bordi arrotondati */
+            object-fit: contain; /* Assicura che l'immagine sia contenuta senza distorsioni */
+            margin-right: 0.5rem; /* Spazio a destra del logo */
         }
 
         .main-title-date {
@@ -525,13 +514,13 @@ function App() {
 
         .input-field {
           display: block;
-          width: 100%;
+          width: 100%; /* Fondamentale per la responsività */
           padding: 0.5rem 1rem;
           border: 1px solid #d1d5db;
           border-radius: 0.5rem;
           box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
           transition: all 0.2s ease-in-out;
-          box-sizing: border-box;
+          box-sizing: border-box; /* Cruciale per includere padding nel width */
         }
 
         .input-field:focus {
@@ -546,6 +535,7 @@ function App() {
           border-radius: 0.5rem;
           background-color: #f9fafb;
           box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+          /* Il margin-top è gestito da .form-sections-container */
         }
 
         .section-title {
@@ -553,7 +543,7 @@ function App() {
           font-weight: 600;
           color: #1F2937;
           margin-bottom: 1rem;
-          word-wrap: break-word;
+          word-wrap: break-word; /* Assicura che il titolo vada a capo */
         }
 
         .section-content-space > div:not(:last-child) {
@@ -620,7 +610,7 @@ function App() {
           font-size: 1.125rem;
           font-weight: 600;
           color: #1F2937;
-          word-wrap: break-word;
+          word-wrap: break-word; /* Assicura che il testo vada a capo */
         }
 
         .result-status {
@@ -639,7 +629,7 @@ function App() {
         .result-reason {
           font-size: 0.875rem;
           color: #4B5563;
-          word-wrap: break-word;
+          word-wrap: break-word; /* Assicura che il testo vada a capo */
         }
 
         /* Stili della Modale */
@@ -660,13 +650,14 @@ function App() {
           position: relative;
           padding: 1.25rem;
           border: 1px solid #d1d5db;
-          width: 100%;
+          width: 100%; /* Responsività per la modale */
           max-width: 24rem;
+          /* Limite massimo per la modale */
           box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
           border-radius: 0.375rem;
           background-color: #ffffff;
           text-align: center;
-          box-sizing: border-box;
+          box-sizing: border-box; /* Cruciale per includere padding nel width */
         }
 
         .modal-title {
@@ -713,23 +704,25 @@ function App() {
         @media (max-width: 768px) {
           .main-card {
             padding: 1rem;
+            /* Riduci il padding su schermi piccoli */
           }
           .main-title {
             font-size: 1.75rem;
+            /* Riduci la dimensione del titolo su mobile */
           }
           .main-title-date {
             font-size: 1.125rem;
           }
           .union-logo {
-            width: 40px; /* Riduci dimensione logo su mobile */
-            height: 40px;
-            margin-right: 0.75rem;
+            width: 2.5rem;
+            height: 2.5rem;
           }
         }
 
         @media (max-width: 480px) {
           .main-card {
             padding: 0.75rem;
+            /* Ancora meno padding su schermi molto piccoli */
           }
           .main-title {
             font-size: 1.5rem;
@@ -738,21 +731,25 @@ function App() {
             font-size: 1rem;
           }
           .union-logo {
-            width: 32px; /* Riduci ancora su schermi molto piccoli */
-            height: 32px;
-            margin-right: 0.5rem;
+            width: 2rem;
+            height: 2rem;
           }
         }
         `}
       </style>
 
       <div className="main-card">
-        {/* Nuovo contenitore per logo e titolo */}
-        <div className="title-container">
-          {/* L'attributo src punta al file favicon.ico nella cartella public */}
-          <img src="/favicon.ico" alt="Logo Sindacato" className="union-logo" />
-          <h1 className="main-title">Verifica Eleggibilità Sciopero Aereo <span className="main-title-date">{strikeDurationText}</span></h1>
-        </div>
+        <h1 className="main-title">
+          {/* Nota: In un'applicazione reale, 'favicon.ico' verrebbe gestito dal sistema di build
+              o posizionato nella cartella 'public'. Qui usiamo un placeholder. */}
+          <img
+            src="https://placehold.co/128x128/4F46E5/ffffff?text=LOGO"
+            alt="Logo Sindacato"
+            className="union-logo"
+            onError={(e) => { e.target.onerror = null; e.target.src="https://placehold.co/128x128/cccccc/000000?text=Error"; }}
+          />
+          Verifica Eleggibilità Sciopero Aereo <span className="main-title-date">{strikeDurationText}</span>
+        </h1>
 
         {/* Form di input */}
         <div className="form-sections-container">
@@ -865,7 +862,7 @@ function App() {
                     {res.flight}
                   </p>
                   <p className={`result-status ${res.eligible ? 'eligible-text' : 'not-eligible-text'}`}>
-                    Stato: <span className="font-bold">{res.eligible ? 'ELIGIBILE' : 'NON ELIGIBILE'}</span>
+                    Stato: <span className="font-bold">{res.eligible ? 'SCIOPERABILE' : 'NON SCIOPERABILE'}</span>
                   </p>
                   <p className="result-reason">
                     Motivazione: <span dangerouslySetInnerHTML={{ __html: res.reason }} />
