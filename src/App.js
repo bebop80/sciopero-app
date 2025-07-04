@@ -315,7 +315,7 @@ function App() {
     let allDestinationsKnown = true;
     if (parsedNumSectors === 2) {
       if (!isKnownAirport(destinationInput)) {
-        setMessage(`Il codice di destinazione "${destinationInput}" non è riconosciuto. Per favore, inserisci un codice ICAO/IATA valido.`);
+        setMessage(`Il codice di destinazione "${destinationInput}" non è riconosciuto. Per favor, inserisci un codice ICAO/IATA valido.`);
         setIsModalOpen(true);
         allDestinationsKnown = false;
       }
@@ -346,12 +346,12 @@ function App() {
     }
 
     const newResults = [];
-    let flightCounter = 0;
-    // Elabora ogni segmento di volo generato con il suo orario schedulato specifico
+    // Array temporaneo per tenere traccia delle ragioni come array prima di unirle
+    const reasonsPerFlight = [];
+
     currentFlightSegments.forEach((segment, index) => {
-        flightCounter++;
         let eligible = false;
-        let reason = [];
+        let currentReasons = []; // Inizializza come array
         const flightDateTime = new Date(`${strikeRules.strikeDate}T${scheduledTimes[index]}`);
         const currentFlightDate = flightDateTime.toISOString().slice(0, 10);
         const flightTimeHours = flightDateTime.getHours();
@@ -363,17 +363,18 @@ function App() {
 
         // 1. Lo sciopero si applica solo ai voli in partenza da tutto il territorio nazionale
         if (!isItalianAirport(segment.origin)) {
-            reason.push(`L'aeroporto di partenza (${segment.origin}) non è italiano. Sciopero valido solo dal territorio nazionale.`);
+            currentReasons.push(`L'aeroporto di partenza (${segment.origin}) non è italiano. Sciopero valido solo dal territorio nazionale.`);
             eligible = false;
         } else if (currentFlightDate !== strikeRules.strikeDate) {
-            reason.push(`La data del volo (${currentFlightDate}) non rientra nel giorno di sciopero (${strikeRules.strikeDate}).`);
+            currentReasons.push(`La data del volo (${currentFlightDate}) non rientra nel giorno di sciopero (${strikeRules.strikeDate}).`);
             eligible = false;
         } else if (isOriginPMO || isDestinationPMO) {
-            reason.push('Volo non scioperabile: esclusi i voli in partenza e in arrivo all\'aeroporto di Palermo (PMO).');
+            currentReasons.push('Volo non scioperabile: esclusi i voli in partenza e in arrivo all\'aeroporto di Palermo (PMO).');
             eligible = false;
         } else {
             // 2. Verifica se l'orario del volo rientra in una fascia protetta
             let isInProtectedBand = false;
+            let protectedBandInfo = ''; // Per memorizzare la fascia oraria specifica
             strikeRules.guaranteedTimeBands.forEach(band => {
                 const [bandStartHour, bandStartMinute] = band.start.split(':').map(Number);
                 const [bandEndHour, bandEndMinute] = band.end.split(':').map(Number);
@@ -383,26 +384,65 @@ function App() {
 
                 if (flightTimeInMinutes >= bandStartTimeInMinutes && flightTimeInMinutes <= bandEndTimeInMinutes) {
                     isInProtectedBand = true;
+                    protectedBandInfo = `(${band.start}-${band.end})`; // Cattura la fascia
                 }
             });
 
             if (isInProtectedBand) {
-                reason.push(`Volo non scioperabile: l'orario di decollo schedulato (${scheduledTimes[index]}) rientra in una fascia oraria garantita.`);
+                currentReasons.push(`Volo non scioperabile: l'orario di decollo schedulato (${scheduledTimes[index]}) rientra in una fascia oraria garantita ${protectedBandInfo}.`);
                 eligible = false;
             } else {
                 eligible = true;
-                reason.push(`Volo scioperabile: l'orario di decollo schedulato (${scheduledTimes[index]}) è fuori dalle fasce orarie garantite.`);
+                const allGuaranteedBands = strikeRules.guaranteedTimeBands.map(band => `${band.start}-${band.end}`).join(' e ');
+                currentReasons.push(`Volo scioperabile: l'orario di decollo schedulato (${scheduledTimes[index]}) è fuori dalle fasce orarie garantite (${allGuaranteedBands}).`);
 
                 if (segment.origin.toUpperCase() !== baseIcao.toUpperCase()) {
-                  reason.push("(<strong>SCIOPERABILE FUORI BASE</strong>)");
+                  currentReasons.push("(<strong>SCIOPERABILE FUORI BASE</strong>)");
                 }
             }
         }
+        reasonsPerFlight.push({ eligible: eligible, reasons: currentReasons, isOutOfBase: (segment.origin.toUpperCase() !== baseIcao.toUpperCase()) });
+    });
 
+    // Postilla per "Scioperabile fuori base" nell'ultimo settore
+    if (reasonsPerFlight.length > 0) {
+        const lastSegmentIndex = reasonsPerFlight.length - 1;
+        const lastSegmentResult = reasonsPerFlight[lastSegmentIndex];
+
+        if (lastSegmentResult.eligible && lastSegmentResult.isOutOfBase) {
+            lastSegmentResult.reasons.push('<br/><span style="font-size: 0.75em; display: block; margin-top: 0.5em;">');
+            lastSegmentResult.reasons.push('<strong>ATTENZIONE:</strong> In caso di sciopero da fuori sede, si rimarrà a disposizione dell\'Azienda per gli eventuali rimanenti giorni previsti dall\'avvicendamento originario. In base della delibera Commissione di Garanzia 1694/16 del 12/01/17, riferirsi al capo scalo per coordinare l\'eventuale rientro presso la propria base di servizio per la pronta riattivazione dell\'attività successiva alla fine dello sciopero. In caso di cancellazione di ogni attività dei giorni successivi ci si riposizionerà nella base di servizio. Se l’azienda si rifiuta di riposizionare i lavoratori nella propria base di armamento e ciò dovesse comportare l’impossibilità di effettuare il turno del giorno dopo, il lavoratore non potrà subire alcuna azione disciplinare ma anzi l’azienda sarà passibile di sanzione.');
+            lastSegmentResult.reasons.push('</span>');
+        }
+    }
+
+    // Nuova postilla per 4 settori: primo scioperabile, secondo non scioperabile e fuori base
+    if (parsedNumSectors === 4 && reasonsPerFlight.length >= 2) {
+        const firstFlightResult = reasonsPerFlight[0];
+        const secondFlightResult = reasonsPerFlight[1];
+
+        // Condizioni:
+        // 1. Primo volo scioperabile (eligible è true)
+        // 2. Secondo volo non scioperabile (eligible è false)
+        // 3. Secondo volo è fuori base (isOutOfBase è true)
+        // 4. La ragione del secondo volo non scioperabile è per fascia garantita
+        const secondFlightReasonText = secondFlightResult.reasons.join(' ');
+        const isSecondFlightNonEligibleDueToBand = !secondFlightResult.eligible && secondFlightReasonText.includes('fascia oraria garantita');
+
+        // La postilla deve essere inserita sotto il SECONDO volo
+        if (firstFlightResult.eligible && isSecondFlightNonEligibleDueToBand && secondFlightResult.isOutOfBase) {
+            secondFlightResult.reasons.push('<br/><span style="font-size: 0.75em; display: block; margin-top: 0.5em;">');
+            secondFlightResult.reasons.push('<strong>ATTENZIONE:</strong> Per effettuare questo volo la compagnia deve farvi posizionare su un volo ferry operato non da voi ma da un equipaggio di riserva non scioperante.');
+            secondFlightResult.reasons.push('</span>');
+        }
+    }
+
+    // Popola i risultati finali unendo le ragioni in stringhe
+    reasonsPerFlight.forEach((item, index) => {
         newResults.push({
-            flight: `Volo ${flightCounter}: da ${segment.origin} a ${segment.destination} (${segment.type}) schedulato alle ${scheduledTimes[index]}`,
-            eligible: eligible,
-            reason: reason.join(' '),
+            flight: `Volo ${index + 1}: da ${currentFlightSegments[index].origin} a ${currentFlightSegments[index].destination} (${currentFlightSegments[index].type}) schedulato alle ${scheduledTimes[index]}`,
+            eligible: item.eligible,
+            reason: item.reasons.join(' '),
         });
     });
 
@@ -455,7 +495,8 @@ function App() {
           background-color: #ffffff;
           padding: 2rem;
           border-radius: 1rem;
-          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+          /* Ombreggiature migliorate */
+          box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
           width: 100%;
           /* Occupa tutta la larghezza disponibile */
           max-width: 48rem;
@@ -465,7 +506,7 @@ function App() {
 
         .main-title {
           font-size: 2.25rem;
-          font-weight: 800;
+          font-weight: 800; /* Più audace come nell'immagine */
           color: #111827;
           margin-bottom: 2rem;
           text-align: center;
@@ -498,6 +539,7 @@ function App() {
           font-size: 1.5rem;
           display: block;
           margin-top: 0.5rem;
+          font-weight: 600; /* Leggermente più spesso */
         }
 
         .form-sections-container > *:not(:last-child) {
@@ -564,7 +606,8 @@ function App() {
           font-weight: 700;
           padding: 0.75rem 1.5rem;
           border-radius: 0.5rem;
-          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+          /* Ombreggiature migliorate per i bottoni */
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
           transition: all 0.3s ease-in-out;
           transform: scale(1);
           letter-spacing: 0.025em;
@@ -575,6 +618,7 @@ function App() {
         .main-button:hover {
           background-color: #4338CA;
           transform: scale(1.02);
+          box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15), 0 3px 6px rgba(0, 0, 0, 0.12); /* Ombra più pronunciata al hover */
         }
 
         .main-button:focus {
@@ -745,157 +789,159 @@ function App() {
         `}
       </style>
 
-      <div className="main-card">
-        <h1 className="main-title">
-          {/* Il logo del sindacato, caricato dalla cartella public */}
-          <img
-            src="/favicon.ico" // Percorso corretto per il file nella cartella public
-            alt="Logo Sindacato"
-            className="union-logo"
-          />
-          <div className="main-title-text-container">
-            Verifica Eleggibilità Sciopero Aereo
-            <span className="main-title-date">{strikeDurationText}</span>
-          </div>
-        </h1>
-
-        {/* Form di input */}
-        <div className="form-sections-container">
-          <div className="input-group">
-            <label htmlFor="baseIcao" className="input-label">
-              Base di Appartenenza (Codice ICAO/IATA es. LIMC o MXP)
-            </label>
-            <input
-              type="text"
-              id="baseIcao"
-              className="input-field"
-              value={baseIcao}
-              onChange={(e) => setBaseIcao(e.target.value.toUpperCase())}
-              placeholder="Es. LIMC o MXP"
+      <div className="app-container">
+        <div className="main-card">
+          <h1 className="main-title">
+            {/* Il logo del sindacato, caricato dalla cartella public */}
+            <img
+              src="/favicon.ico" // Percorso corretto per il file nella cartella public
+              alt="Logo Sindacato"
+              className="union-logo"
             />
-          </div>
-
-          <div className="input-group">
-            <label htmlFor="numSectors" className="input-label">
-              Quanti settori prevede il tuo duty? (2 o 4)
-            </label>
-            <input
-              type="number"
-              id="numSectors"
-              className="input-field"
-              value={numSectors}
-              onChange={(e) => {
-                const value = e.target.value;
-                setNumSectors(value === '' ? '' : Math.max(0, parseInt(value)));
-              }}
-              min="0"
-              placeholder="Es. 2 o 4"
-            />
-          </div>
-
-          {/* Campo per le destinazioni */}
-          { (parseInt(numSectors) === 2 || parseInt(numSectors) === 4) && (
-            <div className="section-card">
-              <h3 className="section-title">Destinazione/i del Duty</h3>
-              <div className="section-content-space">
-                <div>
-                  <label htmlFor="destinationInput" className="input-label">
-                    {parseInt(numSectors) === 2 ?
-                      'Inserisci la sigla ICAO/IATA della destinazione (es. PMO):' :
-                      'Inserisci le sigle ICAO/IATA delle due destinazioni (es. PMO-BRI):'
-                    }
-                  </label>
-                  <input
-                    type="text"
-                    id="destinationInput"
-                    className="input-field"
-                    value={destinationInput}
-                    onChange={handleDestinationInputChange}
-                    placeholder={parseInt(numSectors) === 2 ? "Es. LICJ o PMO" : "Es. LICJ-LIBD o PMO-BRI"}
-                  />
-                </div>
-              </div>
+            <div className="main-title-text-container">
+              Verifica Eleggibilità Sciopero Aereo
+              <span className="main-title-date">{strikeDurationText}</span>
             </div>
-          )}
+          </h1>
 
-          {/* Campi dinamici per gli orari di decollo per ogni segmento di volo */}
-          { (parseInt(numSectors) === 2 || parseInt(numSectors) === 4) &&
-            destinationInput && baseIcao && generateFlightSegments(baseIcao, parseInt(numSectors), destinationInput).length > 0 && (
-            <div className="section-card">
-              <h3 className="section-title">Orari di Decollo Schedulati</h3>
-              <div className="section-content-space">
-                {generateFlightSegments(baseIcao, parseInt(numSectors), destinationInput).map((segment, index) => (
-                  <div key={index}>
-                    <label htmlFor={`scheduledTime-${index}`} className="input-label">
-                      Orario di decollo schedulato per {segment.origin}-{segment.destination} ({segment.type})
+          {/* Form di input */}
+          <div className="form-sections-container">
+            <div className="input-group">
+              <label htmlFor="baseIcao" className="input-label">
+                Base di Appartenenza (Codice ICAO/IATA es. LIMC o MXP)
+              </label>
+              <input
+                type="text"
+                id="baseIcao"
+                className="input-field"
+                value={baseIcao}
+                onChange={(e) => setBaseIcao(e.target.value.toUpperCase())}
+                placeholder="Es. LIMC o MXP"
+              />
+            </div>
+
+            <div className="input-group">
+              <label htmlFor="numSectors" className="input-label">
+                Quanti settori prevede il tuo duty? (2 o 4)
+              </label>
+              <input
+                type="number"
+                id="numSectors"
+                className="input-field"
+                value={numSectors}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setNumSectors(value === '' ? '' : Math.max(0, parseInt(value)));
+                }}
+                min="0"
+                placeholder="Es. 2 o 4"
+              />
+            </div>
+
+            {/* Campo per le destinazioni */}
+            { (parseInt(numSectors) === 2 || parseInt(numSectors) === 4) && (
+              <div className="section-card">
+                <h3 className="section-title">Destinazione/i del Duty</h3>
+                <div className="section-content-space">
+                  <div>
+                    <label htmlFor="destinationInput" className="input-label">
+                      {parseInt(numSectors) === 2 ?
+                        'Inserisci la sigla ICAO/IATA della destinazione (es. PMO):' :
+                        'Inserisci le sigle ICAO/IATA delle due destinazioni (es. PMO-BRI):'
+                      }
                     </label>
                     <input
-                      type="time"
-                      id={`scheduledTime-${index}`}
+                      type="text"
+                      id="destinationInput"
                       className="input-field"
-                      value={scheduledTimes[index] || ''}
-                      onChange={(e) => {
-                        const newTimes = [...scheduledTimes];
-                        newTimes[index] = e.target.value;
-                        setScheduledTimes(newTimes);
-                      }}
+                      value={destinationInput}
+                      onChange={handleDestinationInputChange}
+                      placeholder={parseInt(numSectors) === 2 ? "Es. LICJ o PMO" : "Es. LICJ-LIBD o PMO-BRI"}
                     />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Campi dinamici per gli orari di decollo per ogni segmento di volo */}
+            { (parseInt(numSectors) === 2 || parseInt(numSectors) === 4) &&
+              destinationInput && baseIcao && generateFlightSegments(baseIcao, parseInt(numSectors), destinationInput).length > 0 && (
+              <div className="section-card">
+                <h3 className="section-title">Orari di Decollo Schedulati</h3>
+                <div className="section-content-space">
+                  {generateFlightSegments(baseIcao, parseInt(numSectors), destinationInput).map((segment, index) => (
+                    <div key={index}>
+                      <label htmlFor={`scheduledTime-${index}`} className="input-label">
+                        Orario di decollo schedulato per {segment.origin}-{segment.destination} ({segment.type})
+                      </label>
+                      <input
+                        type="time"
+                        id={`scheduledTime-${index}`}
+                        className="input-field"
+                        value={scheduledTimes[index] || ''}
+                        onChange={(e) => {
+                          const newTimes = [...scheduledTimes];
+                          newTimes[index] = e.target.value;
+                          setScheduledTimes(newTimes);
+                        }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <button
+              onClick={calculateStrikeEligibility}
+              className="main-button"
+            >
+              Verifica Sciopero
+            </button>
+          </div>
+
+          {/* Risultati */}
+          {results.length > 0 && (
+            <div className="results-section">
+              <h2 className="results-title">Risultati Verifica</h2>
+              <div className="section-content-space">
+                {results.map((res, index) => (
+                  <div
+                    key={index}
+                    className={`result-item ${
+                      res.eligible ? 'eligible' : 'not-eligible'
+                    }`}
+                  >
+                    <p className="result-flight">
+                      {res.flight}
+                    </p>
+                    <p className={`result-status ${res.eligible ? 'eligible-text' : 'not-eligible-text'}`}>
+                      Stato: <span className="font-bold">{res.eligible ? 'SCIOPERABILE' : 'NON SCIOPERABILE'}</span>
+                    </p>
+                    <p className="result-reason">
+                      Motivazione: <span dangerouslySetInnerHTML={{ __html: res.reason }} />
+                    </p>
                   </div>
                 ))}
               </div>
             </div>
           )}
 
-          <button
-            onClick={calculateStrikeEligibility}
-            className="main-button"
-          >
-            Verifica Sciopero
-          </button>
-        </div>
-
-        {/* Risultati */}
-        {results.length > 0 && (
-          <div className="results-section">
-            <h2 className="results-title">Risultati Verifica</h2>
-            <div className="section-content-space">
-              {results.map((res, index) => (
-                <div
-                  key={index}
-                  className={`result-item ${
-                    res.eligible ? 'eligible' : 'not-eligible'
-                  }`}
+          {/* Modale per i messaggi */}
+          {isModalOpen && (
+            <div className="modal-overlay">
+              <div className="modal-content">
+                <h3 className="modal-title">Attenzione!</h3>
+                <p className="modal-message">{message}</p>
+                <button
+                  onClick={() => setIsModalOpen(false)}
+                  className="modal-button"
                 >
-                  <p className="result-flight">
-                    {res.flight}
-                  </p>
-                  <p className={`result-status ${res.eligible ? 'eligible-text' : 'not-eligible-text'}`}>
-                    Stato: <span className="font-bold">{res.eligible ? 'SCIOPERABILE' : 'NON SCIOPERABILE'}</span>
-                  </p>
-                  <p className="result-reason">
-                    Motivazione: <span dangerouslySetInnerHTML={{ __html: res.reason }} />
-                  </p>
-                </div>
-              ))}
+                  Chiudi
+                </button>
+              </div>
             </div>
-          </div>
-        )}
-
-        {/* Modale per i messaggi */}
-        {isModalOpen && (
-          <div className="modal-overlay">
-            <div className="modal-content">
-              <h3 className="modal-title">Attenzione!</h3>
-              <p className="modal-message">{message}</p>
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="modal-button"
-              >
-                Chiudi
-              </button>
-            </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );
