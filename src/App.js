@@ -349,6 +349,8 @@ function App() {
     // Array temporaneo per tenere traccia delle ragioni come array prima di unirle
     const reasonsPerFlight = [];
 
+    strikeRules.guaranteedTimeBands.map(band => `${band.start}-${band.end}`).join(' e ');
+
     currentFlightSegments.forEach((segment, index) => {
         let eligible = false;
         let currentReasons = []; // Inizializza come array
@@ -540,6 +542,14 @@ function App() {
           display: block;
           margin-top: 0.5rem;
           font-weight: 600; /* Leggermente più spesso */
+        }
+
+        .main-disclaimer {
+            font-size: 0.85em;
+            color: #4B5563;
+            display: block;
+            margin-top: 0.5rem;
+            text-align: center; /* Centra il testo */
         }
 
         .form-sections-container > *:not(:last-child) {
@@ -801,6 +811,7 @@ function App() {
             <div className="main-title-text-container">
               Verifica Eleggibilità Sciopero Aereo
               <span className="main-title-date">{strikeDurationText}</span>
+              <span className="main-disclaimer">esclusi dallo sciopero tutti i voli da / per PMO</span>
             </div>
           </h1>
 
