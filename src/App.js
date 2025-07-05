@@ -349,8 +349,6 @@ function App() {
     // Array temporaneo per tenere traccia delle ragioni come array prima di unirle
     const reasonsPerFlight = [];
 
-    strikeRules.guaranteedTimeBands.map(band => `${band.start}-${band.end}`).join(' e ');
-
     currentFlightSegments.forEach((segment, index) => {
         let eligible = false;
         let currentReasons = []; // Inizializza come array
@@ -413,7 +411,7 @@ function App() {
 
         if (lastSegmentResult.eligible && lastSegmentResult.isOutOfBase) {
             lastSegmentResult.reasons.push('<br/><span style="font-size: 0.75em; display: block; margin-top: 0.5em;">');
-            lastSegmentResult.reasons.push('<strong>ATTENZIONE:</strong> In caso di sciopero da fuori sede, si rimarrà a disposizione dell\'Azienda per gli eventuali rimanenti giorni previsti dall\'avvicendamento originario. In base della delibera Commissione di Garanzia 1694/16 del 12/01/17, riferirsi al capo scalo per coordinare l\'eventuale rientro presso la propria base di servizio per la pronta riattivazione dell\'attività successiva alla fine dello sciopero. In caso di cancellazione di ogni attività dei giorni successivi ci si riposizionerà nella base di servizio. Se l’azienda si rifiuta di riposizionare i lavoratori nella propria base di armamento e ciò dovesse comportare l’impossibilità di effettuare il turno del giorno dopo, il lavoratore non potrà subire alcuna azione disciplinare ma anzi l’azienda sarà passibile di sanzione.');
+            lastSegmentResult.reasons.push('<strong>ATTENZIONE:</strong> In caso di sciopero da fuori sede, si ritornerà a disposizione dell\'Azienda al termine dello sciopero. L’azienda dovrà provvedere al riposizionamento del lavoratore al termine dello sciopero. Se l’azienda si rifiutasse di riposizionare i lavoratori nella propria base di armamento e ciò dovesse comportare l’impossibilità di effettuare il turno del giorno dopo, il lavoratore non potrà subire alcuna azione disciplinare ma anzi l’azienda sarà passibile di sanzione.');
             lastSegmentResult.reasons.push('</span>');
         }
     }
