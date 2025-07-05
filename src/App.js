@@ -453,7 +453,7 @@ function App() {
   };
 
   const handleDestinationInputChange = (e) => {
-    setDestinationInput(e.target.value);
+    setDestinationInput(e.target.value.trim()); // Aggiunto .trim()
   };
 
   // Funzione per resettare gli stati quando si cambia tipo di duty
@@ -928,6 +928,15 @@ function App() {
             text-align: center;
             line-height: 1.5;
         }
+
+        .copyright-text {
+            margin-top: 1rem;
+            font-size: 0.75rem; /* Caratteri più piccoli */
+            color: #6B7280; /* Colore grigio chiaro */
+            text-align: center;
+            padding-top: 0.75rem;
+            border-top: 1px solid #e5e7eb; /* Linea sottile sopra il copyright */
+        }
         `}
       </style>
 
@@ -987,7 +996,7 @@ function App() {
                     id="baseIcao"
                     className="input-field"
                     value={baseIcao}
-                    onChange={(e) => setBaseIcao(e.target.value.toUpperCase())}
+                    onChange={(e) => setBaseIcao(e.target.value.trim().toUpperCase())} // Aggiunto .trim()
                     placeholder="Es. LIMC o MXP"
                   />
                 </div>
@@ -1027,7 +1036,7 @@ function App() {
                           id="destinationInput"
                           className="input-field"
                           value={destinationInput}
-                          onChange={handleDestinationInputChange}
+                          onChange={handleDestinationInputChange} // .trim() è gestito nella funzione
                           placeholder={parseInt(numSectors) === 2 ? "Es. LICJ o PMO" : "Es. LICJ-LIBD o PMO-BRI"}
                         />
                       </div>
@@ -1174,6 +1183,11 @@ function App() {
           {/* Nuova dicitura a fine pagina */}
           <div className="contact-disclaimer">
             In caso di dubbi, necessità o discordanza riscontrata con le modalità di sciopero comunicate, non esitate a contattare i rappresentanti USB.
+          </div>
+
+          {/* Protezione dei diritti d'autore */}
+          <div className="copyright-text">
+            © 2025 scioperousb.netlify.app – Tutti i diritti riservati. Il design, il codice e i contenuti di questa web app sono protetti da copyright. È vietata la riproduzione o diffusione non autorizzata, anche parziale, senza esplicita autorizzazione.
           </div>
         </div>
       </div>
