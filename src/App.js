@@ -1115,9 +1115,9 @@ function App() {
                     <h3>SCIOPERABILE</h3>
                     <p>PROCEDERE COME SEGUE:</p>
                     <ul>
-                      <li>- Chiamare Crewing prima dell'inizio dello Standby</li>
-                      <li>- Verificare dopo la telefonata la presenza del codice INDA per l'intero giorno</li>
-                      <li>- Non rispondere ad eventuali chiamate da parte di Crewing</li>
+                      <li>Chiamare Crewing prima dell'inizio dello Standby</li>
+                      <li>Verificare dopo la telefonata la presenza del codice INDA per l'intero giorno</li>
+                      <li>Non rispondere ad eventuali chiamate da parte di Crewing</li>
                     </ul>
                   </div>
                 )}
@@ -1127,8 +1127,8 @@ function App() {
                     <h3>NON SCIOPERABILE</h3>
                     <p>SEGUIRE LE SEGUENTI INDICAZIONI:</p>
                     <ul>
-                      <li>- accettare SOLO voli garantiti da Enac e nella fascia protetta 7:00 - 10:00 / 18:00 - 21:00</li>
-                      <li>- NON accettare attività differenti da quelle del punto sopra</li>
+                      <li>accettare SOLO voli garantiti da Enac e nella fascia protetta 7:00 - 10:00 / 18:00 - 21:00</li>
+                      <li>NON accettare attività differenti da quelle del punto sopra</li>
                     </ul>
                   </div>
                 )}
