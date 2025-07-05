@@ -418,27 +418,27 @@ function App() {
         }
     }
 
-    // Nuova postilla per 2 o 4 settori: primo scioperabile, secondo non scioperabile e fuori base
-    // Modificato per includere anche il caso di 2 settori
-    if ((parsedNumSectors === 2 || parsedNumSectors === 4) && reasonsPerFlight.length >= 2) {
-        const firstFlightResult = reasonsPerFlight[0];
-        const secondFlightResult = reasonsPerFlight[1];
+    // Nuova postilla per i voli che sono non scioperabili e fuori base,
+    // preceduti da un volo scioperabile.
+    // Questo copre sia il secondo settore di un duty da 2, sia il secondo e quarto di un duty da 4.
+    for (let i = 1; i < reasonsPerFlight.length; i++) {
+        const previousFlightResult = reasonsPerFlight[i - 1];
+        const currentFlightResult = reasonsPerFlight[i];
 
-        // Condizioni:
-        // 1. Primo volo scioperabile (eligible è true)
-        // 2. Secondo volo non scioperabile (eligible è false)
-        // 3. Secondo volo è fuori base (isOutOfBase è true)
-        // 4. La ragione del secondo volo non scioperabile è per fascia garantita
-        const secondFlightReasonText = secondFlightResult.reasons.join(' ');
-        const isSecondFlightNonEligibleDueToBand = !secondFlightResult.eligible && secondFlightReasonText.includes('fascia oraria garantita');
+        const currentFlightReasonText = currentFlightResult.reasons.join(' ');
+        
+        // Condizione ampliata: il volo corrente è non scioperabile a causa di fascia garantita O origine non italiana
+        const isCurrentFlightNonEligibleForFerryPostilla = 
+            (!currentFlightResult.eligible && currentFlightReasonText.includes('fascia oraria garantita')) ||
+            (!currentFlightResult.eligible && currentFlightReasonText.includes('non è italiano'));
 
-        // La postilla deve essere inserita sotto il SECONDO volo
-        if (firstFlightResult.eligible && isSecondFlightNonEligibleDueToBand && secondFlightResult.isOutOfBase) {
-            secondFlightResult.reasons.push('<br/><span style="font-size: 0.75em; display: block; margin-top: 0.5em;">');
-            secondFlightResult.reasons.push('<strong>ATTENZIONE:</strong> Per effettuare questo volo la compagnia deve farvi posizionare su un volo ferry operato non da voi ma da un equipaggio di riserva non scioperante.');
-            secondFlightResult.reasons.push('</span>');
+        if (previousFlightResult.eligible && isCurrentFlightNonEligibleForFerryPostilla && currentFlightResult.isOutOfBase) {
+            currentFlightResult.reasons.push('<br/><span style="font-size: 0.75em; display: block; margin-top: 0.5em;">');
+            currentFlightResult.reasons.push('<strong>ATTENZIONE:</strong> Per effettuare questo volo la compagnia deve farvi posizionare su un volo ferry operato non da voi ma da un equipaggio di riserva non scioperante.');
+            currentFlightResult.reasons.push('</span>');
         }
     }
+
 
     // Popola i risultati finali unendo le ragioni in stringhe
     reasonsPerFlight.forEach((item, index) => {
@@ -918,6 +918,16 @@ function App() {
             height: 2rem;
           }
         }
+
+        .contact-disclaimer {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e5e7eb;
+            font-size: 0.875rem;
+            color: #4B5563;
+            text-align: center;
+            line-height: 1.5;
+        }
         `}
       </style>
 
@@ -1096,9 +1106,9 @@ function App() {
                     <h3>SCIOPERABILE</h3>
                     <p>PROCEDERE COME SEGUE:</p>
                     <ul>
-                      <li>Chiamare Crewing prima dell'inizio dello Standby</li>
-                      <li>Verificare dopo la telefonata la presenza del codice INDA per l'intero giorno</li>
-                      <li>Non rispondere ad eventuali chiamate da parte di Crewing</li>
+                      <li>- Chiamare Crewing prima dell'inizio dello Standby</li>
+                      <li>- Verificare dopo la telefonata la presenza del codice INDA per l'intero giorno</li>
+                      <li>- Non rispondere ad eventuali chiamate da parte di Crewing</li>
                     </ul>
                   </div>
                 )}
@@ -1108,8 +1118,8 @@ function App() {
                     <h3>NON SCIOPERABILE</h3>
                     <p>SEGUIRE LE SEGUENTI INDICAZIONI:</p>
                     <ul>
-                      <li>accettare SOLO voli garantiti da Enac e nella fascia protetta 7:00 - 10:00 / 18:00 - 21:00</li>
-                      <li>NON accettare attività differenti da quelle del punto sopra</li>
+                      <li>- accettare SOLO voli garantiti da Enac e nella fascia protetta 7:00 - 10:00 / 18:00 - 21:00</li>
+                      <li>- NON accettare attività differenti da quelle del punto sopra</li>
                     </ul>
                   </div>
                 )}
@@ -1160,6 +1170,11 @@ function App() {
               </div>
             </div>
           )}
+
+          {/* Nuova dicitura a fine pagina */}
+          <div className="contact-disclaimer">
+            In caso di dubbi, necessità o discordanza riscontrata con le modalità di sciopero comunicate, non esitate a contattare i rappresentanti USB.
+          </div>
         </div>
       </div>
     </div>
