@@ -221,6 +221,7 @@ const strikeRules = {
 
 // Componente principale dell'applicazione
 function App() {
+  const [dutyType, setDutyType] = useState(null); // 'flight' or 'standby'
   const [baseIcao, setBaseIcao] = useState('');
   const [numSectors, setNumSectors] = useState('');
   const [destinationInput, setDestinationInput] = useState('');
@@ -228,6 +229,7 @@ function App() {
   const [results, setResults] = useState([]);
   const [message, setMessage] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [standbyOption, setStandbyOption] = useState(null); // 'notPrecettato' or 'precettato'
 
   // Funzione per generare i segmenti di volo in base a baseIcao, numSectors, destinationInput
   const generateFlightSegments = (base, num, destInput) => {
@@ -280,7 +282,7 @@ function App() {
     );
   };
 
-  // Funzione per calcolare l'eleggibilità allo sciopero
+  // Funzione per calcolare l'eleggibilità allo sciopero (per i voli)
   const calculateStrikeEligibility = () => {
     setResults([]);
     setMessage('');
@@ -340,7 +342,7 @@ function App() {
     // Controlla se tutti gli orari schedulati sono stati compilati
     const areAllTimesFilled = scheduledTimes.every(time => time !== '');
     if (!areAllTimesFilled) {
-        setMessage('Per favore, inserisci l\'orario di decollo per ogni volo schedulato.');
+        setMessage('Per favor, inserisci l\'orario di decollo per ogni volo schedulato.');
         setIsModalOpen(true);
         return;
     }
@@ -452,7 +454,20 @@ function App() {
   const handleDestinationInputChange = (e) => {
     setDestinationInput(e.target.value);
   };
+
+  // Funzione per resettare gli stati quando si cambia tipo di duty
+  const resetForm = () => {
+    setBaseIcao('');
+    setNumSectors('');
+    setDestinationInput('');
+    setScheduledTimes([]);
+    setResults([]);
+    setMessage('');
+    setStandbyOption(null);
+  };
+
   const strikeDurationText = `10 Luglio 2025 (24 ORE, fasce garantite 07:00-10:00 e 18:00-21:00)`;
+
   return (
     <div className="app-container">
       {/* Stili CSS integrati direttamente nel componente */}
@@ -759,6 +774,114 @@ function App() {
           box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5), 0 0 0 2px rgba(59, 130, 246, 0.5);
         }
 
+        /* Stili per i radio button personalizzati */
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            background-color: #f9fafb;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .radio-option:hover {
+            background-color: #edf2f7;
+            border-color: #a0aec0;
+        }
+
+        .radio-option.selected {
+            border-color: #4F46E5;
+            background-color: #EEF2FF;
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.3);
+        }
+
+        .radio-option input[type="radio"] {
+            margin-right: 0.75rem;
+            /* Nasconde il radio button nativo */
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            border: 2px solid #9ca3af;
+            border-radius: 50%;
+            width: 1.25rem;
+            height: 1.25rem;
+            outline: none;
+            cursor: pointer;
+            position: relative;
+            flex-shrink: 0; /* Impedisce al radio di restringersi */
+        }
+
+        .radio-option input[type="radio"]:checked {
+            border-color: #4F46E5;
+            background-color: #4F46E5;
+        }
+
+        .radio-option input[type="radio"]:checked::before {
+            content: '';
+            display: block;
+            width: 0.5rem;
+            height: 0.5rem;
+            background-color: #ffffff;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .radio-option-label {
+            font-size: 1rem;
+            color: #1F2937;
+            font-weight: 500;
+            flex-grow: 1; /* Permette al testo di occupare lo spazio rimanente */
+        }
+
+        /* Stili per i risultati Home Standby / Adty */
+        .standby-result-box {
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            margin-top: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+
+        .standby-result-box.green {
+            background-color: #D1FAE5; /* green-100 */
+            border: 2px solid #34D399; /* green-400 */
+            color: #065F46; /* green-800 */
+        }
+
+        .standby-result-box.red {
+            background-color: #FEE2E2; /* red-100 */
+            border: 2px solid #EF4444; /* red-400 */
+            color: #991B1B; /* red-800 */
+        }
+
+        .standby-result-box h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        .standby-result-box p {
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: 0.5rem;
+        }
+
+        .standby-result-box strong {
+            font-weight: 700;
+        }
+
         /* Media queries per la responsività */
         @media (max-width: 768px) {
           .main-card {
@@ -813,103 +936,189 @@ function App() {
             </div>
           </h1>
 
-          {/* Form di input */}
+          {/* Scelta iniziale: Volo o Home Standby / Adty */}
           <div className="form-sections-container">
             <div className="input-group">
-              <label htmlFor="baseIcao" className="input-label">
-                Base di Appartenenza (Codice ICAO/IATA es. LIMC o MXP)
-              </label>
-              <input
-                type="text"
-                id="baseIcao"
-                className="input-field"
-                value={baseIcao}
-                onChange={(e) => setBaseIcao(e.target.value.toUpperCase())}
-                placeholder="Es. LIMC o MXP"
-              />
+              <label className="input-label">Seleziona il tipo di attività:</label>
+              <div className="radio-group">
+                <label className={`radio-option ${dutyType === 'flight' ? 'selected' : ''}`}>
+                  <input
+                    type="radio"
+                    name="dutyType"
+                    value="flight"
+                    checked={dutyType === 'flight'}
+                    onChange={(e) => { setDutyType(e.target.value); resetForm(); }}
+                  />
+                  Volo
+                </label>
+                <label className={`radio-option ${dutyType === 'standby' ? 'selected' : ''}`}>
+                  <input
+                    type="radio"
+                    name="dutyType"
+                    value="standby"
+                    checked={dutyType === 'standby'}
+                    onChange={(e) => { setDutyType(e.target.value); resetForm(); }}
+                  />
+                  Home Standby / Adty
+                </label>
+              </div>
             </div>
 
-            <div className="input-group">
-              <label htmlFor="numSectors" className="input-label">
-                Quanti settori prevede il tuo duty? (2 o 4)
-              </label>
-              <input
-                type="number"
-                id="numSectors"
-                className="input-field"
-                value={numSectors}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setNumSectors(value === '' ? '' : Math.max(0, parseInt(value)));
-                }}
-                min="0"
-                placeholder="Es. 2 o 4"
-              />
-            </div>
+            {/* Sezione per i voli (visibile solo se dutyType è 'flight') */}
+            {dutyType === 'flight' && (
+              <>
+                <div className="input-group">
+                  <label htmlFor="baseIcao" className="input-label">
+                    Base di Appartenenza (Codice ICAO/IATA es. LIMC o MXP)
+                  </label>
+                  <input
+                    type="text"
+                    id="baseIcao"
+                    className="input-field"
+                    value={baseIcao}
+                    onChange={(e) => setBaseIcao(e.target.value.toUpperCase())}
+                    placeholder="Es. LIMC o MXP"
+                  />
+                </div>
 
-            {/* Campo per le destinazioni */}
-            { (parseInt(numSectors) === 2 || parseInt(numSectors) === 4) && (
-              <div className="section-card">
-                <h3 className="section-title">Destinazione/i del Duty</h3>
-                <div className="section-content-space">
-                  <div>
-                    <label htmlFor="destinationInput" className="input-label">
-                      {parseInt(numSectors) === 2 ?
-                        'Inserisci la sigla ICAO/IATA della destinazione (es. PMO):' :
-                        'Inserisci le sigle ICAO/IATA delle due destinazioni (es. PMO-BRI):'
-                      }
+                <div className="input-group">
+                  <label htmlFor="numSectors" className="input-label">
+                    Quanti settori prevede il tuo duty? (2 o 4)
+                  </label>
+                  <input
+                    type="number"
+                    id="numSectors"
+                    className="input-field"
+                    value={numSectors}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setNumSectors(value === '' ? '' : Math.max(0, parseInt(value)));
+                    }}
+                    min="0"
+                    placeholder="Es. 2 o 4"
+                  />
+                </div>
+
+                {/* Campo per le destinazioni */}
+                { (parseInt(numSectors) === 2 || parseInt(numSectors) === 4) && (
+                  <div className="section-card">
+                    <h3 className="section-title">Destinazione/i del Duty</h3>
+                    <div className="section-content-space">
+                      <div>
+                        <label htmlFor="destinationInput" className="input-label">
+                          {parseInt(numSectors) === 2 ?
+                            'Inserisci la sigla ICAO/IATA della destinazione (es. PMO):' :
+                            'Inserisci le sigle ICAO/IATA delle due destinazioni (es. PMO-BRI):'
+                          }
+                        </label>
+                        <input
+                          type="text"
+                          id="destinationInput"
+                          className="input-field"
+                          value={destinationInput}
+                          onChange={handleDestinationInputChange}
+                          placeholder={parseInt(numSectors) === 2 ? "Es. LICJ o PMO" : "Es. LICJ-LIBD o PMO-BRI"}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Campi dinamici per gli orari di decollo per ogni segmento di volo */}
+                { (parseInt(numSectors) === 2 || parseInt(numSectors) === 4) &&
+                  destinationInput && baseIcao && generateFlightSegments(baseIcao, parseInt(numSectors), destinationInput).length > 0 && (
+                  <div className="section-card">
+                    <h3 className="section-title">Orari di Decollo Schedulati</h3>
+                    <div className="section-content-space">
+                      {generateFlightSegments(baseIcao, parseInt(numSectors), destinationInput).map((segment, index) => (
+                        <div key={index}>
+                          <label htmlFor={`scheduledTime-${index}`} className="input-label">
+                            Orario di decollo schedulato per {segment.origin}-{segment.destination} ({segment.type})
+                          </label>
+                          <input
+                            type="time"
+                            id={`scheduledTime-${index}`}
+                            className="input-field"
+                            value={scheduledTimes[index] || ''}
+                            onChange={(e) => {
+                              const newTimes = [...scheduledTimes];
+                              newTimes[index] = e.target.value;
+                              setScheduledTimes(newTimes);
+                            }}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <button
+                  onClick={calculateStrikeEligibility}
+                  className="main-button"
+                >
+                  Verifica Sciopero
+                </button>
+              </>
+            )}
+
+            {/* Sezione per Home Standby / Adty (visibile solo se dutyType è 'standby') */}
+            {dutyType === 'standby' && (
+              <>
+                <div className="input-group">
+                  <label className="input-label">Seleziona la tua situazione:</label>
+                  <div className="radio-group">
+                    <label className={`radio-option ${standbyOption === 'notPrecettato' ? 'selected' : ''}`}>
+                      <input
+                        type="radio"
+                        name="standbyOption"
+                        value="notPrecettato"
+                        checked={standbyOption === 'notPrecettato'}
+                        onChange={(e) => setStandbyOption(e.target.value)}
+                      />
+                      Non hai ricevuto la riserva comandata / Non hai ricevuto mail di precettazione della riserva / il tuo ID number non è stato precettato
                     </label>
-                    <input
-                      type="text"
-                      id="destinationInput"
-                      className="input-field"
-                      value={destinationInput}
-                      onChange={handleDestinationInputChange}
-                      placeholder={parseInt(numSectors) === 2 ? "Es. LICJ o PMO" : "Es. LICJ-LIBD o PMO-BRI"}
-                    />
+                    <label className={`radio-option ${standbyOption === 'precettato' ? 'selected' : ''}`}>
+                      <input
+                        type="radio"
+                        name="standbyOption"
+                        value="precettato"
+                        checked={standbyOption === 'precettato'}
+                        onChange={(e) => setStandbyOption(e.target.value)}
+                      />
+                      Hai ricevuto la riserva comandata / Hai ricevuto mail di precettazione della riserva / il tuo ID number è stato precettato
+                    </label>
                   </div>
                 </div>
-              </div>
+
+                {standbyOption === 'notPrecettato' && (
+                  <div className="standby-result-box green">
+                    <h3>SCIOPERABILE</h3>
+                    <p>PROCEDERE COME SEGUE:</p>
+                    <ul>
+                      <li>- Chiamare Crewing prima dell'inizio dello Standby</li>
+                      <li>- Verificare dopo la telefonata la presenza del codice INDA per l'intero giorno</li>
+                      <li>- Non rispondere ad eventuali chiamate da parte di Crewing</li>
+                    </ul>
+                  </div>
+                )}
+
+                {standbyOption === 'precettato' && (
+                  <div className="standby-result-box red">
+                    <h3>NON SCIOPERABILE</h3>
+                    <p>SEGUIRE LE SEGUENTI INDICAZIONI:</p>
+                    <ul>
+                      <li>- accettare SOLO voli garantiti da Enac e nella fascia protetta 7:00 - 10:00 / 18:00 - 21:00</li>
+                      <li>- NON accettare attività differenti da quelle del punto sopra</li>
+                    </ul>
+                  </div>
+                )}
+              </>
             )}
 
-            {/* Campi dinamici per gli orari di decollo per ogni segmento di volo */}
-            { (parseInt(numSectors) === 2 || parseInt(numSectors) === 4) &&
-              destinationInput && baseIcao && generateFlightSegments(baseIcao, parseInt(numSectors), destinationInput).length > 0 && (
-              <div className="section-card">
-                <h3 className="section-title">Orari di Decollo Schedulati</h3>
-                <div className="section-content-space">
-                  {generateFlightSegments(baseIcao, parseInt(numSectors), destinationInput).map((segment, index) => (
-                    <div key={index}>
-                      <label htmlFor={`scheduledTime-${index}`} className="input-label">
-                        Orario di decollo schedulato per {segment.origin}-{segment.destination} ({segment.type})
-                      </label>
-                      <input
-                        type="time"
-                        id={`scheduledTime-${index}`}
-                        className="input-field"
-                        value={scheduledTimes[index] || ''}
-                        onChange={(e) => {
-                          const newTimes = [...scheduledTimes];
-                          newTimes[index] = e.target.value;
-                          setScheduledTimes(newTimes);
-                        }}
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            <button
-              onClick={calculateStrikeEligibility}
-              className="main-button"
-            >
-              Verifica Sciopero
-            </button>
           </div>
 
-          {/* Risultati */}
-          {results.length > 0 && (
+          {/* Risultati (solo per i voli) */}
+          {dutyType === 'flight' && results.length > 0 && (
             <div className="results-section">
               <h2 className="results-title">Risultati Verifica</h2>
               <div className="section-content-space">
