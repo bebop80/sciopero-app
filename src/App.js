@@ -166,11 +166,10 @@ const italianAirports = [
   { icao: 'LBBG', iata: 'BOJ', name: 'Burgas Airport', country: 'Bulgaria' },
   { icao: 'LBSF', iata: 'SOF', name: 'Sofia Airport', country: 'Bulgaria' },
   { icao: 'GVAC', iata: 'SID', name: 'Amílcar Cabral International Airport (Sal)', country: 'Cape Verde' },
-  { icao: 'LDDU', iata: 'DBV', name: 'Dubrovnik Airport', country: 'Croatia' }, // Added Dubrovnik
+  { icao: 'LDDU', iata: 'DBV', name: 'Dubrovnik Airport', country: 'Croatia' },
   { icao: 'LDPL', iata: 'PUY', name: 'Pula Airport', country: 'Croatia' },
   { icao: 'LDSP', iata: 'SPU', name: 'Split Airport', country: 'Croatia' },
   { icao: 'LDZA', iata: 'ZAD', name: 'Zadar Airport', country: 'Croatia' },
-  { icao: 'LEMH', iata: 'MAH', name: 'Menorca Airport', country: 'Spain' }, // Added Menorca Mahon
   { icao: 'HECA', iata: 'LXHR', name: 'Luxor International Airport', country: 'Egypt' },
   { icao: 'ETAR', iata: 'SPX', name: 'Sphinx International Airport (Giza)', country: 'Egypt' },
   { icao: 'EDDT', iata: 'FRA', name: 'Frankfurt Airport', country: 'Germany' },
@@ -219,7 +218,7 @@ const strikeRules = {
   // La gestione della "totale esclusione dei voli in partenza ed in arrivo all'aeroporto di Palermo"
   // è già coperta dall'aggiunta a guaranteedFlights.
   
-  // Voli protetti ENAC (precedentemente aggiunti)
+  // Nuovi voli protetti ENAC
   protectedFlights: [
     { origin: 'MXP', destination: 'CAG', time: '22:50' },
     { origin: 'MXP', destination: 'LMP', time: '13:10' },
@@ -228,12 +227,6 @@ const strikeRules = {
     { origin: 'MXP', destination: 'SPX', time: '17:00' },
   ],
 };
-
-// Inizializzazione Firebase e Firestore
-const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
 
 // Componente principale dell'applicazione
 function App() {
@@ -246,8 +239,6 @@ function App() {
   const [message, setMessage] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [standbyOption, setStandbyOption] = useState(null); // 'notPrecettato' or 'precettato'
-  const [visitCount, setVisitCount] = useState(0); // Stato per il contatore visite
-  const [isAuthReady, setIsAuthReady] = useState(false); // Stato per verificare l'autenticazione Firebase
 
   // Funzione per generare i segmenti di volo in base a baseIcao, numSectors, destinationInput
   const generateFlightSegments = (base, num, destInput) => {
@@ -365,6 +356,8 @@ function App() {
         return;
     }
 
+    const newResults = [];
+    // Array temporaneo per tenere traccia delle ragioni come array prima di unirle
     const reasonsPerFlight = [];
 
     currentFlightSegments.forEach((segment, index) => {
@@ -379,7 +372,7 @@ function App() {
         const isOriginPMO = segment.origin.toUpperCase() === 'PMO' || segment.origin.toUpperCase() === 'LICJ';
         const isDestinationPMO = segment.destination.toUpperCase() === 'PMO' || segment.destination.toUpperCase() === 'LICJ';
 
-        // Check if the current flight is a protected flight by ENAC (Highest priority)
+        // Check if the current flight is a protected flight by ENAC
         const isProtectedFlight = strikeRules.protectedFlights.some(
           (pf) =>
             (pf.origin.toUpperCase() === segment.origin.toUpperCase() || pf.origin.toUpperCase() === italianAirports.find(a => a.iata === pf.origin.toUpperCase())?.icao.toUpperCase()) &&
@@ -391,21 +384,18 @@ function App() {
           currentReasons.push('Volo protetto ENAC: deve essere operato.');
           eligible = false;
         } else if (!isItalianAirport(segment.origin)) {
-            // Check if origin is Italian (if not, not scioperabile)
             currentReasons.push(`L'aeroporto di partenza (${segment.origin}) non è italiano. Sciopero valido solo dal territorio nazionale.`);
             eligible = false;
         } else if (currentFlightDate !== strikeRules.strikeDate) {
-            // Check if flight is on the strike date
             currentReasons.push(`La data del volo (${currentFlightDate}) non rientra nel giorno di sciopero (${strikeRules.strikeDate}).`);
             eligible = false;
         } else if (isOriginPMO || isDestinationPMO) {
-            // Check if PMO flight
             currentReasons.push('Volo non scioperabile: esclusi i voli in partenza e in arrivo all\'aeroporto di Palermo (PMO).');
             eligible = false;
         } else {
-            // Normal time band check
+            // 2. Verifica se l'orario del volo rientra in una fascia protetta
             let isInProtectedBand = false;
-            let protectedBandInfo = '';
+            let protectedBandInfo = ''; // Per memorizzare la fascia oraria specifica
             strikeRules.guaranteedTimeBands.forEach(band => {
                 const [bandStartHour, bandStartMinute] = band.start.split(':').map(Number);
                 const [bandEndHour, bandEndMinute] = band.end.split(':').map(Number);
@@ -415,7 +405,7 @@ function App() {
 
                 if (flightTimeInMinutes >= bandStartTimeInMinutes && flightTimeInMinutes <= bandEndTimeInMinutes) {
                     isInProtectedBand = true;
-                    protectedBandInfo = `(${band.start}-${band.end})`;
+                    protectedBandInfo = `(${band.start}-${band.end})`; // Cattura la fascia
                 }
             });
 
@@ -435,27 +425,33 @@ function App() {
         reasonsPerFlight.push({ eligible: eligible, reasons: currentReasons, isOutOfBase: (segment.origin.toUpperCase() !== baseIcao.toUpperCase()) });
     });
 
-    // Postilla per "Scioperabile fuori base" (remains as is, applies after all eligibility is determined)
-    for (let i = 0; i < reasonsPerFlight.length; i++) {
-        const item = reasonsPerFlight[i];
-        if (item.eligible && item.isOutOfBase) {
-            item.reasons.push('<br/><span style="font-size: 0.75em; display: block; margin-top: 0.5em;">');
-            item.reasons.push('<strong>ATTENZIONE:</strong> In caso di sciopero da fuori sede, si ritornerà a disposizione dell\'Azienda al termine dello sciopero. L’azienda dovrà provvedere al riposizionamento del lavoratore al termine dello sciopero. Se l’azienda si rifiutasse di riposizionare i lavoratori nella propria base di armamento e ciò dovesse comportare l’impossibilità di effettuare il turno del giorno dopo, il lavoratore non potrà subire alcuna azione disciplinare ma anzi l’azienda sarà passibile di sanzione.');
-            item.reasons.push('</span>');
+    // Postilla per "Scioperabile fuori base" nell'ultimo settore
+    if (reasonsPerFlight.length > 0) {
+        const lastSegmentIndex = reasonsPerFlight.length - 1;
+        const lastSegmentResult = reasonsPerFlight[lastSegmentIndex];
+
+        if (lastSegmentResult.eligible && lastSegmentResult.isOutOfBase) {
+            lastSegmentResult.reasons.push('<br/><span style="font-size: 0.75em; display: block; margin-top: 0.5em;">');
+            lastSegmentResult.reasons.push('<strong>ATTENZIONE:</strong> In caso di sciopero da fuori sede, si ritornerà a disposizione dell\'Azienda al termine dello sciopero. L’azienda dovrà provvedere al riposizionamento del lavoratore al termine dello sciopero. Se l’azienda si rifiutasse di riposizionare i lavoratori nella propria base di armamento e ciò dovesse comportare l’impossibilità di effettuare il turno del giorno dopo, il lavoratore non potrà subire alcuna azione disciplinare ma anzi l’azienda sarà passibile di sanzione.');
+            lastSegmentResult.reasons.push('</span>');
         }
     }
 
-    // Nuova postilla for ferry flights (remains as is)
+    // Nuova postilla per i voli che sono non scioperabili e fuori base,
+    // preceduti da un volo scioperabile.
+    // Questo copre sia il secondo settore di un duty da 2, sia il secondo e quarto di un duty da 4.
     for (let i = 1; i < reasonsPerFlight.length; i++) {
         const previousFlightResult = reasonsPerFlight[i - 1];
         const currentFlightResult = reasonsPerFlight[i];
 
         const currentFlightReasonText = currentFlightResult.reasons.join(' ');
         
+        // Condizione ampliata: il volo corrente è non scioperabile a causa di fascia garantita O origine non italiana
+        // O perché è un volo protetto ENAC
         const isCurrentFlightNonEligibleForFerryPostilla = 
             (!currentFlightResult.eligible && currentFlightReasonText.includes('fascia oraria garantita')) ||
             (!currentFlightResult.eligible && currentFlightReasonText.includes('non è italiano')) ||
-            (!currentFlightResult.eligible && currentFlightReasonText.includes('Volo protetto ENAC')); // Only check for ENAC protected
+            (!currentFlightResult.eligible && currentFlightReasonText.includes('Volo protetto ENAC')); // Aggiunta la condizione per voli protetti
 
         if (previousFlightResult.eligible && isCurrentFlightNonEligibleForFerryPostilla && currentFlightResult.isOutOfBase) {
             currentFlightResult.reasons.push('<br/><span style="font-size: 0.75em; display: block; margin-top: 0.5em;">');
@@ -466,11 +462,13 @@ function App() {
 
 
     // Popola i risultati finali unendo le ragioni in stringhe
-    const newResults = reasonsPerFlight.map((item, index) => ({
-      flight: `Volo ${index + 1}: da ${currentFlightSegments[index].origin} a ${currentFlightSegments[index].destination} (${currentFlightSegments[index].type}) schedulato alle ${scheduledTimes[index]}`,
-      eligible: item.eligible,
-      reason: item.reasons.join(' '),
-    }));
+    reasonsPerFlight.forEach((item, index) => {
+        newResults.push({
+            flight: `Volo ${index + 1}: da ${currentFlightSegments[index].origin} a ${currentFlightSegments[index].destination} (${currentFlightSegments[index].type}) schedulato alle ${scheduledTimes[index]}`,
+            eligible: item.eligible,
+            reason: item.reasons.join(' '),
+        });
+    });
 
     setResults(newResults);
   };
@@ -491,74 +489,6 @@ function App() {
   };
 
   const strikeDurationText = `10 Luglio 2025 (24 ORE, fasce garantite 07:00-10:00 e 18:00-21:00)`;
-
-  // Firebase Auth and Firestore for visit counter
-  useEffect(() => {
-    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-    const visitDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'visitCounter', 'appVisits');
-
-    // Sign in anonymously or with custom token
-    const authenticate = async () => {
-      try {
-        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-          await signInWithCustomToken(auth, __initial_auth_token);
-        } else {
-          await signInAnonymously(auth);
-        }
-        setIsAuthReady(true);
-      } catch (error) {
-        console.error("Firebase authentication error:", error);
-        setIsAuthReady(true); // Still set to true to allow UI to render, but counter might not work
-      }
-    };
-
-    authenticate();
-
-    // Set up real-time listener for visit count
-    let unsubscribe;
-    if (isAuthReady) {
-      unsubscribe = onSnapshot(visitDocRef, async (docSnap) => {
-        if (docSnap.exists()) {
-          setVisitCount(docSnap.data().count);
-        } else {
-          // If document doesn't exist, create it with initial count 0
-          await setDoc(visitDocRef, { count: 0 });
-          setVisitCount(0);
-        }
-      }, (error) => {
-        console.error("Error listening to visit count:", error);
-      });
-    }
-
-    return () => {
-      if (unsubscribe) {
-        unsubscribe(); // Clean up listener on unmount
-      }
-    };
-  }, [isAuthReady]); // Re-run when auth is ready
-
-  // Increment visit count on initial load after auth is ready
-  useEffect(() => {
-    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-    const visitDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'visitCounter', 'appVisits');
-
-    if (isAuthReady) {
-      const incrementVisitCount = async () => {
-        try {
-          const docSnap = await getDoc(visitDocRef);
-          if (docSnap.exists()) {
-            await setDoc(visitDocRef, { count: docSnap.data().count + 1 });
-          } else {
-            await setDoc(visitDocRef, { count: 1 });
-          }
-        } catch (error) {
-          console.error("Error incrementing visit count:", error);
-        }
-      };
-      incrementVisitCount();
-    }
-  }, [isAuthReady]); // Only run once after auth is ready
-
 
   return (
     <div className="app-container">
@@ -1028,13 +958,6 @@ function App() {
             padding-top: 0.75rem;
             border-top: 1px solid #e5e7eb; /* Linea sottile sopra il copyright */
         }
-
-        .visit-counter {
-            font-size: 0.7rem; /* Ancora più piccolo */
-            color: #9CA3AF; /* Grigio ancora più chiaro */
-            text-align: center;
-            margin-top: 0.5rem;
-        }
         `}
       </style>
 
@@ -1094,7 +1017,7 @@ function App() {
                     id="baseIcao"
                     className="input-field"
                     value={baseIcao}
-                    onChange={(e) => setBaseIcao(e.target.value.trim().toUpperCase())}
+                    onChange={(e) => setBaseIcao(e.target.value.trim().toUpperCase())} // Aggiunto .trim()
                     placeholder="Es. LIMC o MXP"
                   />
                 </div>
@@ -1134,7 +1057,7 @@ function App() {
                           id="destinationInput"
                           className="input-field"
                           value={destinationInput}
-                          onChange={handleDestinationInputChange}
+                          onChange={handleDestinationInputChange} // .trim() è gestito nella funzione
                           placeholder={parseInt(numSectors) === 2 ? "Es. LICJ o PMO" : "Es. LICJ-LIBD o PMO-BRI"}
                         />
                       </div>
@@ -1286,11 +1209,6 @@ function App() {
           {/* Protezione dei diritti d'autore */}
           <div className="copyright-text">
             © 2025 scioperousb.netlify.app – Tutti i diritti riservati. Il design, il codice e i contenuti di questa web app sono protetti da copyright. È vietata la riproduzione o diffusione non autorizzata, anche parziale, senza esplicita autorizzazione.
-          </div>
-
-          {/* Contatore delle visite */}
-          <div className="visit-counter">
-            Visite totali: {visitCount}
           </div>
         </div>
       </div>
