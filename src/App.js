@@ -194,6 +194,17 @@ const italianAirports = [
   { icao: 'GMMN', iata: 'RBA', name: 'Rabat–Salé Airport', country: 'Morocco' },
   { icao: 'LBBG', iata: 'VAR', name: 'Varna Airport', country: 'Bulgaria' },
   { icao: 'EETN', iata: 'TLL', name: 'Tallinn Airport', country: 'Estonia' },
+    // Nuovi aeroporti aggiunti dalle liste fornite:
+  { icao: 'LECO', iata: 'LCG', name: 'A Coruña Airport', country: 'Spain' },
+  { icao: 'LEZL', iata: 'SVQ', name: 'Seville Airport', country: 'Spain' },
+  { icao: 'ENEV', iata: 'EVE', name: 'Harstad/Narvik Airport', country: 'Norway' },
+  { icao: 'ENTC', iata: 'TOS', name: 'Tromsø Airport', country: 'Norway' },
+  { icao: 'LGSM', iata: 'SMI', name: 'Samos International Airport', country: 'Greece' },
+  { icao: 'LGPA', iata: 'GPA', name: 'Araxos Airport', country: 'Greece' },
+  { icao: 'HELX', iata: 'LXR', name: 'Luxor International Airport', country: 'Egypt' },
+  { icao: 'LFBZ', iata: 'BIQ', name: 'Biarritz Pays Basque Airport', country: 'France' },
+  { icao: 'LFKF', iata: 'FSC', name: 'Figari Sud-Corse Airport', country: 'France' },
+  { icao: 'ELLX', iata: 'LUX', name: 'Luxembourg Airport', country: 'Luxembourg' },
 ];
 
 // Regole di sciopero aggiornate
