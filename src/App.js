@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 // Dati degli aeroporti serviti da EasyJet (incluse le destinazioni internazionali)
 const italianAirports = [
   // AEROPORTI ITALIANI
+  { icao: 'LEMH', iata: 'MAH', name: 'Menorca Airport', country: 'Spain' }, // Added Menorca Mahon
   { icao: 'LIMC', iata: 'MXP', name: 'Milano Malpensa', country: 'Italy' },
   { icao: 'LIRF', iata: 'FCO', name: 'Roma Fiumicino', country: 'Italy' },
   { icao: 'LICJ', iata: 'PMO', name: 'Palermo Falcone Borsellino', country: 'Italy' },
