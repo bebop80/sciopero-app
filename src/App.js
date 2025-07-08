@@ -37,7 +37,6 @@ const italianAirports = [
   { icao: 'LIPU', iata: 'TRS', name: 'Trieste Ronchi dei Legionari', country: 'Italy' },
 
   // AEROPORTI INTERNAZIONALI EasyJet
-  { icao: 'LEMH', iata: 'MAH', name: 'Menorca Airport', country: 'Spain' }, // Added Menorca Mahon
   { icao: 'EGLL', iata: 'LHR', name: 'London Heathrow', country: 'United Kingdom' },
   { icao: 'EGKK', iata: 'LGW', name: 'London Gatwick', country: 'United Kingdom' },
   { icao: 'EGGW', iata: 'LTN', name: 'London Luton', country: 'United Kingdom' },
@@ -171,6 +170,7 @@ const italianAirports = [
   { icao: 'LDPL', iata: 'PUY', name: 'Pula Airport', country: 'Croatia' },
   { icao: 'LDSP', iata: 'SPU', name: 'Split Airport', country: 'Croatia' },
   { icao: 'LDZA', iata: 'ZAD', name: 'Zadar Airport', country: 'Croatia' },
+  { icao: 'LEMH', iata: 'MAH', name: 'Menorca Airport', country: 'Spain' },
   { icao: 'HECA', iata: 'LXHR', name: 'Luxor International Airport', country: 'Egypt' },
   { icao: 'ETAR', iata: 'SPX', name: 'Sphinx International Airport (Giza)', country: 'Egypt' },
   { icao: 'EDDT', iata: 'FRA', name: 'Frankfurt Airport', country: 'Germany' },
@@ -194,7 +194,7 @@ const italianAirports = [
   { icao: 'GMMN', iata: 'RBA', name: 'Rabat–Salé Airport', country: 'Morocco' },
   { icao: 'LBBG', iata: 'VAR', name: 'Varna Airport', country: 'Bulgaria' },
   { icao: 'EETN', iata: 'TLL', name: 'Tallinn Airport', country: 'Estonia' },
-    // Nuovi aeroporti aggiunti dalle liste fornite:
+  // Nuovi aeroporti aggiunti dalle liste fornite:
   { icao: 'LECO', iata: 'LCG', name: 'A Coruña Airport', country: 'Spain' },
   { icao: 'LEZL', iata: 'SVQ', name: 'Seville Airport', country: 'Spain' },
   { icao: 'ENEV', iata: 'EVE', name: 'Harstad/Narvik Airport', country: 'Norway' },
@@ -230,7 +230,7 @@ const strikeRules = {
   // La gestione della "totale esclusione dei voli in partenza ed in arrivo all'aeroporto di Palermo"
   // è già coperta dall'aggiunta a guaranteedFlights.
   
-  // Nuovi voli protetti ENAC
+  // Voli protetti ENAC (precedentemente aggiunti)
   protectedFlights: [
     { origin: 'MXP', destination: 'CAG', time: '22:50' },
     { origin: 'MXP', destination: 'LMP', time: '13:10' },
@@ -368,8 +368,6 @@ function App() {
         return;
     }
 
-    const newResults = [];
-    // Array temporaneo per tenere traccia delle ragioni come array prima di unirle
     const reasonsPerFlight = [];
 
     currentFlightSegments.forEach((segment, index) => {
@@ -384,7 +382,7 @@ function App() {
         const isOriginPMO = segment.origin.toUpperCase() === 'PMO' || segment.origin.toUpperCase() === 'LICJ';
         const isDestinationPMO = segment.destination.toUpperCase() === 'PMO' || segment.destination.toUpperCase() === 'LICJ';
 
-        // Check if the current flight is a protected flight by ENAC
+        // Check if the current flight is a protected flight by ENAC (Highest priority)
         const isProtectedFlight = strikeRules.protectedFlights.some(
           (pf) =>
             (pf.origin.toUpperCase() === segment.origin.toUpperCase() || pf.origin.toUpperCase() === italianAirports.find(a => a.iata === pf.origin.toUpperCase())?.icao.toUpperCase()) &&
@@ -396,18 +394,21 @@ function App() {
           currentReasons.push('Volo protetto ENAC: deve essere operato.');
           eligible = false;
         } else if (!isItalianAirport(segment.origin)) {
+            // Check if origin is Italian (if not, not scioperabile)
             currentReasons.push(`L'aeroporto di partenza (${segment.origin}) non è italiano. Sciopero valido solo dal territorio nazionale.`);
             eligible = false;
         } else if (currentFlightDate !== strikeRules.strikeDate) {
+            // Check if flight is on the strike date
             currentReasons.push(`La data del volo (${currentFlightDate}) non rientra nel giorno di sciopero (${strikeRules.strikeDate}).`);
             eligible = false;
         } else if (isOriginPMO || isDestinationPMO) {
+            // Check if PMO flight
             currentReasons.push('Volo non scioperabile: esclusi i voli in partenza e in arrivo all\'aeroporto di Palermo (PMO).');
             eligible = false;
         } else {
-            // 2. Verifica se l'orario del volo rientra in una fascia protetta
+            // Normal time band check
             let isInProtectedBand = false;
-            let protectedBandInfo = ''; // Per memorizzare la fascia oraria specifica
+            let protectedBandInfo = '';
             strikeRules.guaranteedTimeBands.forEach(band => {
                 const [bandStartHour, bandStartMinute] = band.start.split(':').map(Number);
                 const [bandEndHour, bandEndMinute] = band.end.split(':').map(Number);
@@ -417,7 +418,7 @@ function App() {
 
                 if (flightTimeInMinutes >= bandStartTimeInMinutes && flightTimeInMinutes <= bandEndTimeInMinutes) {
                     isInProtectedBand = true;
-                    protectedBandInfo = `(${band.start}-${band.end})`; // Cattura la fascia
+                    protectedBandInfo = `(${band.start}-${band.end})`;
                 }
             });
 
@@ -429,58 +430,147 @@ function App() {
                 const allGuaranteedBands = strikeRules.guaranteedTimeBands.map(band => `${band.start}-${band.end}`).join(' e ');
                 currentReasons.push(`Volo scioperabile: l'orario di decollo schedulato (${scheduledTimes[index]}) è fuori dalle fasce orarie garantite (${allGuaranteedBands}).`);
 
-                if (segment.origin.toUpperCase() !== baseIcao.toUpperCase()) {
-                  currentReasons.push("(<strong>SCIOPERABILE FUORI BASE</strong>)");
-                }
+                // La postilla "SCIOPERABILE FUORI BASE" verrà aggiunta in un ciclo successivo se applicabile
+                // e non sovrascritta dalla nuova regola di ritorno internazionale.
             }
         }
         reasonsPerFlight.push({ eligible: eligible, reasons: currentReasons, isOutOfBase: (segment.origin.toUpperCase() !== baseIcao.toUpperCase()) });
     });
 
-    // Postilla per "Scioperabile fuori base" nell'ultimo settore
-    if (reasonsPerFlight.length > 0) {
-        const lastSegmentIndex = reasonsPerFlight.length - 1;
-        const lastSegmentResult = reasonsPerFlight[lastSegmentIndex];
+    // --- NUOVA REGOLA: Eleggibilità dei voli di ritorno da voli internazionali scioperabili ---
+    if (parsedNumSectors === 2) {
+        const outboundSegment = currentFlightSegments[0];
+        const returnSegment = currentFlightSegments[1];
+        const outboundResult = reasonsPerFlight[0];
+        const returnResult = reasonsPerFlight[1];
 
-        if (lastSegmentResult.eligible && lastSegmentResult.isOutOfBase) {
-            lastSegmentResult.reasons.push('<br/><span style="font-size: 0.75em; display: block; margin-top: 0.5em;">');
-            lastSegmentResult.reasons.push('<strong>ATTENZIONE:</strong> In caso di sciopero da fuori sede, si ritornerà a disposizione dell\'Azienda al termine dello sciopero. L’azienda dovrà provvedere al riposizionamento del lavoratore al termine dello sciopero. Se l’azienda si rifiutasse di riposizionare i lavoratori nella propria base di armamento e ciò dovesse comportare l’impossibilità di effettuare il turno del giorno dopo, il lavoratore non potrà subire alcuna azione disciplinare ma anzi l’azienda sarà passibile di sanzione.');
-            lastSegmentResult.reasons.push('</span>');
+        // Verifica se il volo di andata è scioperabile e la sua destinazione non è italiana (internazionale)
+        const isOutboundInternationalAndEligible =
+            outboundResult.eligible && !isItalianAirport(outboundSegment.destination);
+
+        // Verifica se il volo di ritorno NON è un volo protetto ENAC (la protezione ENAC ha priorità assoluta)
+        const isReturnFlightActuallyProtectedENAC = strikeRules.protectedFlights.some(
+            (pf) =>
+                (pf.origin.toUpperCase() === returnSegment.origin.toUpperCase() ||
+                 (italianAirports.find(a => a.iata === pf.origin.toUpperCase()) && italianAirports.find(a => a.iata === pf.origin.toUpperCase()).icao.toUpperCase() === returnSegment.origin.toUpperCase())) &&
+                (pf.destination.toUpperCase() === returnSegment.destination.toUpperCase() ||
+                 (italianAirports.find(a => a.iata === pf.destination.toUpperCase()) && italianAirports.find(a => a.iata === pf.destination.toUpperCase()).icao.toUpperCase() === returnSegment.destination.toUpperCase())) &&
+                pf.time === scheduledTimes[1]
+        );
+
+        if (isOutboundInternationalAndEligible && !isReturnFlightActuallyProtectedENAC) {
+            returnResult.eligible = true;
+            // Imposta le ragioni direttamente con la postilla del volo ferry
+            returnResult.reasons = [
+                'conseguentemente al volo scioperabile di andata.',
+                '<br/><span style="font-size: 0.75em; display: block; margin-top: 0.5em;">',
+                '<strong>ATTENZIONE:</strong> Per effettuare questo volo la compagnia deve farvi posizionare su un volo ferry operato non da voi ma da un equipaggio di riserva non scioperante.',
+                '</span>'
+            ];
+        }
+    } else if (parsedNumSectors === 4) {
+        // Prima coppia di segmenti (0 e 1)
+        const outboundSegment1 = currentFlightSegments[0];
+        const returnSegment1 = currentFlightSegments[1];
+        const outboundResult1 = reasonsPerFlight[0];
+        const returnResult1 = reasonsPerFlight[1];
+
+        const isOutbound1InternationalAndEligible =
+            outboundResult1.eligible && !isItalianAirport(outboundSegment1.destination);
+
+        const isReturn1FlightActuallyProtectedENAC = strikeRules.protectedFlights.some(
+            (pf) =>
+                (pf.origin.toUpperCase() === returnSegment1.origin.toUpperCase() ||
+                 (italianAirports.find(a => a.iata === pf.origin.toUpperCase()) && italianAirports.find(a => a.iata === pf.origin.toUpperCase()).icao.toUpperCase() === returnSegment1.origin.toUpperCase())) &&
+                (pf.destination.toUpperCase() === returnSegment1.destination.toUpperCase() ||
+                 (italianAirports.find(a => a.iata === pf.destination.toUpperCase()) && italianAirports.find(a => a.iata === pf.destination.toUpperCase()).icao.toUpperCase() === returnSegment1.destination.toUpperCase())) &&
+                pf.time === scheduledTimes[1]
+        );
+
+        if (isOutbound1InternationalAndEligible && !isReturn1FlightActuallyProtectedENAC) {
+            returnResult1.eligible = true;
+            returnResult1.reasons = [
+                'conseguentemente al volo scioperabile di andata.',
+                '<br/><span style="font-size: 0.75em; display: block; margin-top: 0.5em;">',
+                '<strong>ATTENZIONE:</strong> Per effettuare questo volo la compagnia deve farvi posizionare su un volo ferry operato non da voi ma da un equipaggio di riserva non scioperante.',
+                '</span>'
+            ];
+        }
+
+        // Seconda coppia di segmenti (2 e 3)
+        const outboundSegment2 = currentFlightSegments[2];
+        const returnSegment2 = currentFlightSegments[3];
+        const outboundResult2 = reasonsPerFlight[2];
+        const returnResult2 = reasonsPerFlight[3];
+
+        const isOutbound2InternationalAndEligible =
+            outboundResult2.eligible && !isItalianAirport(outboundSegment2.destination);
+
+        const isReturn2FlightActuallyProtectedENAC = strikeRules.protectedFlights.some(
+            (pf) =>
+                (pf.origin.toUpperCase() === returnSegment2.origin.toUpperCase() ||
+                 (italianAirports.find(a => a.iata === pf.origin.toUpperCase()) && italianAirports.find(a => a.iata === pf.origin.toUpperCase()).icao.toUpperCase() === returnSegment2.origin.toUpperCase())) &&
+                (pf.destination.toUpperCase() === returnSegment2.destination.toUpperCase() ||
+                 (italianAirports.find(a => a.iata === pf.destination.toUpperCase()) && italianAirports.find(a => a.iata === pf.destination.toUpperCase()).icao.toUpperCase() === returnSegment2.destination.toUpperCase())) &&
+                pf.time === scheduledTimes[3]
+        );
+
+        if (isOutbound2InternationalAndEligible && !isReturn2FlightActuallyProtectedENAC) {
+            returnResult2.eligible = true;
+            returnResult2.reasons = [
+                'conseguentemente al volo scioperabile di andata.',
+                '<br/><span style="font-size: 0.75em; display: block; margin-top: 0.5em;">',
+                '<strong>ATTENZIONE:</strong> Per effettuare questo volo la compagnia deve farvi posizionare su un volo ferry operato non da voi ma da un equipaggio di riserva non scioperante.',
+                '</span>'
+            ];
         }
     }
 
-    // Nuova postilla per i voli che sono non scioperabili e fuori base,
-    // preceduti da un volo scioperabile.
-    // Questo copre sia il secondo settore di un duty da 2, sia il secondo e quarto di un duty da 4.
+    // Postilla per "Scioperabile fuori base" (applicata dopo la nuova regola)
+    for (let i = 0; i < reasonsPerFlight.length; i++) {
+        const item = reasonsPerFlight[i];
+        // Verifica se la ragione contiene già la dicitura della regola speciale di ritorno internazionale
+        const isInternationalReturnOverride = item.reasons.some(reason => reason.includes('conseguentemente al volo scioperabile di andata.')); // Aggiornato testo da cercare
+
+        if (item.eligible && item.isOutOfBase && !isInternationalReturnOverride) { // Aggiunta la nuova condizione
+            item.reasons.push('<br/><span style="font-size: 0.75em; display: block; margin-top: 0.5em;">');
+            item.reasons.push('<strong>ATTENZIONE:</strong> In caso di sciopero da fuori sede, si ritornerà a disposizione dell\'Azienda al termine dello sciopero. L’azienda dovrà provvedere al riposizionamento del lavoratore al termine dello sciopero. Se l’azienda si rifiutasse di riposizionare i lavoratori nella propria base di armamento e ciò dovesse comportare l’impossibilità di effettuare il turno del giorno dopo, il lavoratore non potrà subire alcuna azione disciplinare ma anzi l’azienda sarà passibile di sanzione.');
+            item.reasons.push('</span>');
+        }
+    }
+
+    // Postilla per voli ferry
+    // Questa postilla si applica ai voli NON scioperabili che seguono un volo scioperabile e sono "fuori base"
+    // e la ragione della non scioperabilità è dovuta a fascia garantita, aeroporto non italiano o volo protetto ENAC.
+    // L'utente ha specificato di mantenerla sui "voli protetti" (ENAC), il che è già coperto da questa logica.
     for (let i = 1; i < reasonsPerFlight.length; i++) {
         const previousFlightResult = reasonsPerFlight[i - 1];
         const currentFlightResult = reasonsPerFlight[i];
 
         const currentFlightReasonText = currentFlightResult.reasons.join(' ');
         
-        // Condizione ampliata: il volo corrente è non scioperabile a causa di fascia garantita O origine non italiana
-        // O perché è un volo protetto ENAC
         const isCurrentFlightNonEligibleForFerryPostilla = 
             (!currentFlightResult.eligible && currentFlightReasonText.includes('fascia oraria garantita')) ||
             (!currentFlightResult.eligible && currentFlightReasonText.includes('non è italiano')) ||
-            (!currentFlightResult.eligible && currentFlightReasonText.includes('Volo protetto ENAC')); // Aggiunta la condizione per voli protetti
+            (!currentFlightResult.eligible && currentFlightReasonText.includes('Volo protetto ENAC')); 
 
-        if (previousFlightResult.eligible && isCurrentFlightNonEligibleForFerryPostilla && currentFlightResult.isOutOfBase) {
+        // Assicurati che questa postilla non venga aggiunta ai voli di ritorno internazionali che sono già stati gestiti
+        const isInternationalReturnOverride = currentFlightResult.reasons.some(reason => reason.includes('conseguentemente al volo scioperabile di andata.')); // Aggiornato testo da cercare
+
+        if (previousFlightResult.eligible && isCurrentFlightNonEligibleForFerryPostilla && currentFlightResult.isOutOfBase && !isInternationalReturnOverride) {
             currentFlightResult.reasons.push('<br/><span style="font-size: 0.75em; display: block; margin-top: 0.5em;">');
             currentFlightResult.reasons.push('<strong>ATTENZIONE:</strong> Per effettuare questo volo la compagnia deve farvi posizionare su un volo ferry operato non da voi ma da un equipaggio di riserva non scioperante.');
-            currentFlightResult.reasons.push('</span>');
+            currentFlightResult.reasons.push('</span>'); 
         }
     }
 
 
     // Popola i risultati finali unendo le ragioni in stringhe
-    reasonsPerFlight.forEach((item, index) => {
-        newResults.push({
-            flight: `Volo ${index + 1}: da ${currentFlightSegments[index].origin} a ${currentFlightSegments[index].destination} (${currentFlightSegments[index].type}) schedulato alle ${scheduledTimes[index]}`,
-            eligible: item.eligible,
-            reason: item.reasons.join(' '),
-        });
-    });
+    const newResults = reasonsPerFlight.map((item, index) => ({
+      flight: `Volo ${index + 1}: da ${currentFlightSegments[index].origin} a ${currentFlightSegments[index].destination} (${currentFlightSegments[index].type}) schedulato alle ${scheduledTimes[index]}`,
+      eligible: item.eligible,
+      reason: item.reasons.join(' '),
+    }));
 
     setResults(newResults);
   };
@@ -501,6 +591,7 @@ function App() {
   };
 
   const strikeDurationText = `10 Luglio 2025 (24 ORE, fasce garantite 07:00-10:00 e 18:00-21:00)`;
+
 
   return (
     <div className="app-container">
@@ -1029,7 +1120,7 @@ function App() {
                     id="baseIcao"
                     className="input-field"
                     value={baseIcao}
-                    onChange={(e) => setBaseIcao(e.target.value.trim().toUpperCase())} // Aggiunto .trim()
+                    onChange={(e) => setBaseIcao(e.target.value.trim().toUpperCase())}
                     placeholder="Es. LIMC o MXP"
                   />
                 </div>
@@ -1069,7 +1160,7 @@ function App() {
                           id="destinationInput"
                           className="input-field"
                           value={destinationInput}
-                          onChange={handleDestinationInputChange} // .trim() è gestito nella funzione
+                          onChange={handleDestinationInputChange}
                           placeholder={parseInt(numSectors) === 2 ? "Es. LICJ o PMO" : "Es. LICJ-LIBD o PMO-BRI"}
                         />
                       </div>
@@ -1148,9 +1239,9 @@ function App() {
                     <h3>SCIOPERABILE</h3>
                     <p>PROCEDERE COME SEGUE:</p>
                     <ul>
-                      <li>Chiamare Crewing prima dell'inizio dello Standby</li>
-                      <li>Verificare dopo la telefonata la presenza del codice INDA per l'intero giorno</li>
-                      <li>Non rispondere ad eventuali chiamate da parte di Crewing</li>
+                      <li>- Chiamare Crewing prima dell'inizio dello Standby</li>
+                      <li>- Verificare dopo la telefonata la presenza del codice INDA per l'intero giorno</li>
+                      <li>- Non rispondere ad eventuali chiamate da parte di Crewing</li>
                     </ul>
                   </div>
                 )}
@@ -1160,8 +1251,8 @@ function App() {
                     <h3>NON SCIOPERABILE</h3>
                     <p>SEGUIRE LE SEGUENTI INDICAZIONI:</p>
                     <ul>
-                      <li>accettare SOLO voli garantiti da Enac e nella fascia protetta 7:00 - 10:00 / 18:00 - 21:00</li>
-                      <li>NON accettare attività differenti da quelle del punto sopra</li>
+                      <li>- accettare SOLO voli garantiti da Enac e nella fascia protetta 7:00 - 10:00 / 18:00 - 21:00</li>
+                      <li>- NON accettare attività differenti da quelle del punto sopra</li>
                     </ul>
                   </div>
                 )}
