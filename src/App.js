@@ -155,7 +155,7 @@ const italianAirports = [
   { icao: 'DAAG', iata: 'ALG', name: 'Algiers Houari Boumediene Airport', country: 'Algeria' },
   { icao: 'DABM', iata: 'BJA', name: 'Bejaïa Abane Ramdane Airport', country: 'Algeria' },
   { icao: 'EGTE', iata: 'EXT', name: 'Exeter Airport', country: 'United Kingdom' },
-  { icao: 'LFLB', iata: 'CMF', name: 'Chambéry Airport', country: 'France' },
+  { icao: 'LFLB', iata: 'CMF', name: 'Chambéry Airport', 'country': 'France' },
   { icao: 'LSGS', iata: 'SIR', name: 'Sion Airport', country: 'Switzerland' },
   { icao: 'EBOS', iata: 'OST', name: 'Ostend–Bruges International Airport', country: 'Belgium' },
   { icao: 'LFSB', iata: 'MLH', name: 'Mulhouse', country: 'France' },
@@ -460,12 +460,9 @@ function App() {
 
         if (isOutboundInternationalAndEligible && !isReturnFlightActuallyProtectedENAC) {
             returnResult.eligible = true;
-            // Imposta le ragioni direttamente con la postilla del volo ferry
+            // Imposta le ragioni direttamente con la motivazione richiesta, senza postilla ferry qui
             returnResult.reasons = [
-                'conseguentemente al volo scioperabile di andata.',
-                '<br/><span style="font-size: 0.75em; display: block; margin-top: 0.5em;">',
-                '<strong>ATTENZIONE:</strong> Per effettuare questo volo la compagnia deve farvi posizionare su un volo ferry operato non da voi ma da un equipaggio di riserva non scioperante.',
-                '</span>'
+                'conseguentemente al volo scioperabile di andata.'
             ];
         }
     } else if (parsedNumSectors === 4) {
@@ -490,10 +487,7 @@ function App() {
         if (isOutbound1InternationalAndEligible && !isReturn1FlightActuallyProtectedENAC) {
             returnResult1.eligible = true;
             returnResult1.reasons = [
-                'conseguentemente al volo scioperabile di andata.',
-                '<br/><span style="font-size: 0.75em; display: block; margin-top: 0.5em;">',
-                '<strong>ATTENZIONE:</strong> Per effettuare questo volo la compagnia deve farvi posizionare su un volo ferry operato non da voi ma da un equipaggio di riserva non scioperante.',
-                '</span>'
+                'conseguentemente al volo scioperabile di andata.'
             ];
         }
 
@@ -518,10 +512,7 @@ function App() {
         if (isOutbound2InternationalAndEligible && !isReturn2FlightActuallyProtectedENAC) {
             returnResult2.eligible = true;
             returnResult2.reasons = [
-                'conseguentemente al volo scioperabile di andata.',
-                '<br/><span style="font-size: 0.75em; display: block; margin-top: 0.5em;">',
-                '<strong>ATTENZIONE:</strong> Per effettuare questo volo la compagnia deve farvi posizionare su un volo ferry operato non da voi ma da un equipaggio di riserva non scioperante.',
-                '</span>'
+                'conseguentemente al volo scioperabile di andata.'
             ];
         }
     }
@@ -529,20 +520,18 @@ function App() {
     // Postilla per "Scioperabile fuori base" (applicata dopo la nuova regola)
     for (let i = 0; i < reasonsPerFlight.length; i++) {
         const item = reasonsPerFlight[i];
-        // Verifica se la ragione contiene già la dicitura della regola speciale di ritorno internazionale
-        const isInternationalReturnOverride = item.reasons.some(reason => reason.includes('conseguentemente al volo scioperabile di andata.')); // Aggiornato testo da cercare
+        // Verifica se la ragione contiene la dicitura del volo di ritorno internazionale scioperabile
+        const isInternationalReturnOverride = item.reasons.some(reason => reason.includes('conseguentemente al volo scioperabile di andata.'));
 
-        if (item.eligible && item.isOutOfBase && !isInternationalReturnOverride) { // Aggiunta la nuova condizione
+        // Aggiungi la postilla "Scioperabile fuori base" SOLO se non è un volo di ritorno internazionale gestito dalla nuova regola
+        if (item.eligible && item.isOutOfBase && !isInternationalReturnOverride) {
             item.reasons.push('<br/><span style="font-size: 0.75em; display: block; margin-top: 0.5em;">');
             item.reasons.push('<strong>ATTENZIONE:</strong> In caso di sciopero da fuori sede, si ritornerà a disposizione dell\'Azienda al termine dello sciopero. L’azienda dovrà provvedere al riposizionamento del lavoratore al termine dello sciopero. Se l’azienda si rifiutasse di riposizionare i lavoratori nella propria base di armamento e ciò dovesse comportare l’impossibilità di effettuare il turno del giorno dopo, il lavoratore non potrà subire alcuna azione disciplinare ma anzi l’azienda sarà passibile di sanzione.');
             item.reasons.push('</span>');
         }
     }
 
-    // Postilla per voli ferry
-    // Questa postilla si applica ai voli NON scioperabili che seguono un volo scioperabile e sono "fuori base"
-    // e la ragione della non scioperabilità è dovuta a fascia garantita, aeroporto non italiano o volo protetto ENAC.
-    // L'utente ha specificato di mantenerla sui "voli protetti" (ENAC), il che è già coperto da questa logica.
+    // Postilla per voli ferry (generale, non per i casi di ritorno internazionale scioperabile)
     for (let i = 1; i < reasonsPerFlight.length; i++) {
         const previousFlightResult = reasonsPerFlight[i - 1];
         const currentFlightResult = reasonsPerFlight[i];
@@ -555,7 +544,7 @@ function App() {
             (!currentFlightResult.eligible && currentFlightReasonText.includes('Volo protetto ENAC')); 
 
         // Assicurati che questa postilla non venga aggiunta ai voli di ritorno internazionali che sono già stati gestiti
-        const isInternationalReturnOverride = currentFlightResult.reasons.some(reason => reason.includes('conseguentemente al volo scioperabile di andata.')); // Aggiornato testo da cercare
+        const isInternationalReturnOverride = currentFlightResult.reasons.some(reason => reason.includes('conseguentemente al volo scioperabile di andata.'));
 
         if (previousFlightResult.eligible && isCurrentFlightNonEligibleForFerryPostilla && currentFlightResult.isOutOfBase && !isInternationalReturnOverride) {
             currentFlightResult.reasons.push('<br/><span style="font-size: 0.75em; display: block; margin-top: 0.5em;">');
