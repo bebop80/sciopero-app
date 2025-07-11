@@ -209,7 +209,7 @@ const italianAirports = [
 
 // Regole di sciopero aggiornate
 const strikeRules = {
-  strikeDate: '2025-07-10', // Data di sciopero: 10 Luglio 2025
+  strikeDate: '2025-07-11', // Data di sciopero: 10 Luglio 2025
   guaranteedTimeBands: [
     { start: '07:00', end: '10:00' },
     { start: '18:00', end: '21:00' }
@@ -526,7 +526,7 @@ function App() {
     }
 
     // Postilla per "Scioperabile fuori base" (applicata dopo la nuova regola)
-    for (let i = 0; i = reasonsPerFlight.length; i++) {
+    for (let i = 0; i < reasonsPerFlight.length; i++) { // Corrected: changed '=' to '<'
         const item = reasonsPerFlight[i];
         // Verifica se la ragione contiene la dicitura del volo di ritorno internazionale scioperabile
         const isInternationalReturnOverride = item.reasons.some(reason => reason.includes('conseguentemente al volo scioperabile di andata.'));
