@@ -1255,6 +1255,23 @@ function App() {
                 )}
               </>
             )}
+{/* Sezione per Segnala Adesione Sciopero (visibile solo se dutyType è 'reportStrike' e isStrikeDay è true) */}
+            {dutyType === 'reportStrike' && isStrikeDay && (
+              <div className="section-card">
+                <h3 className="section-title">Segnala la tua adesione allo sciopero</h3>
+                <p className="text-center text-gray-700 mb-4">
+                  Clicca sul link qui sotto per segnalare la tua adesione allo sciopero.
+                </p>
+                <a
+                  href="https://tally.so/r/nGEgro"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="tally-link"
+                >
+                  Clicca qui per segnalare la tua adesione
+                </a>
+              </div>
+            )}
 
           </div>
 
