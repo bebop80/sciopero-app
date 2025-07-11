@@ -155,7 +155,7 @@ const italianAirports = [
   { icao: 'DAAG', iata: 'ALG', name: 'Algiers Houari Boumediene Airport', country: 'Algeria' },
   { icao: 'DABM', iata: 'BJA', name: 'Bejaïa Abane Ramdane Airport', country: 'Algeria' },
   { icao: 'EGTE', iata: 'EXT', name: 'Exeter Airport', country: 'United Kingdom' },
-  { icao: 'LFLB', iata: 'CMF', name: 'Chambéry Airport', 'country': 'France' },
+  { icao: 'LFLB', iata: 'CMF', name: 'Chambéry Airport', country: 'France' },
   { icao: 'LSGS', iata: 'SIR', name: 'Sion Airport', country: 'Switzerland' },
   { icao: 'EBOS', iata: 'OST', name: 'Ostend–Bruges International Airport', country: 'Belgium' },
   { icao: 'LFSB', iata: 'MLH', name: 'Mulhouse', country: 'France' },
@@ -251,7 +251,7 @@ function App() {
   const [message, setMessage] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [standbyOption, setStandbyOption] = useState(null); // 'notPrecettato' or 'precettato'
-  
+
   // Determina se la data odierna corrisponde alla data dello sciopero
   const today = new Date();
   const year = today.getFullYear();
@@ -587,7 +587,7 @@ function App() {
     setStandbyOption(null);
   };
 
-  const strikeDurationText = `11 Luglio 2025 (24 ORE, fasce garantite 07:00-10:00 e 18:00-21:00)`;
+  const strikeDurationText = `10 Luglio 2025 (24 ORE, fasce garantite 07:00-10:00 e 18:00-21:00)`;
 
 
   return (
@@ -763,7 +763,7 @@ function App() {
         .main-button:hover {
           background-color: #4338CA;
           transform: scale(1.02);
-          box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15), 0 3px 6px rgba(0, 0, 0, 0.12); /* Ombra più pronunciata al hover */
+          box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15), 0 3px rgba(0, 0, 0, 0.12); /* Ombra più pronunciata al hover */
         }
 
         .main-button:focus {
@@ -1058,6 +1058,36 @@ function App() {
             padding-top: 0.75rem;
             border-top: 1px solid #e5e7eb; /* Linea sottile sopra il copyright */
         }
+        .tally-link {
+            display: block;
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.875rem;
+            color: #2563eb; /* Un colore blu per il link */
+            text-decoration: none; /* Nessuna sottolineatura di default */
+            font-weight: 500;
+            transition: color 0.2s ease-in-out;
+        }
+
+        .tally-link:hover {
+            color: #1D4ED8; /* Un blu più scuro al passaggio del mouse */
+            text-decoration: underline; /* Sottolineatura al passaggio del mouse */
+        }
+
+        .disabled-option {
+          opacity: 0.6;
+          cursor: not-allowed;
+          background-color: #e9ecef; /* Sfondo più chiaro per disabilitato */
+        }
+
+        .disabled-option:hover {
+          background-color: #e9ecef; /* Previene l'effetto hover quando disabilitato */
+          border-color: #d1d5db; /* Mantiene il colore del bordo originale quando disabilitato */
+        }
+
+        .disabled-option input[type="radio"] {
+          cursor: not-allowed;
+        }
         `}
       </style>
 
@@ -1101,6 +1131,17 @@ function App() {
                     onChange={(e) => { setDutyType(e.target.value); resetForm(); }}
                   />
                   Home Standby / Adty
+                </label>
+                <label className={`radio-option ${dutyType === 'reportStrike' ? 'selected' : ''} ${!isStrikeDay ? 'disabled-option' : ''}`}>
+                  <input
+                    type="radio"
+                    name="dutyType"
+                    value="reportStrike"
+                    checked={dutyType === 'reportStrike'}
+                    onChange={(e) => { setDutyType(e.target.value); resetForm(); }}
+                    disabled={!isStrikeDay}
+                  />
+                  Segnala Adesione Sciopero
                 </label>
               </div>
             </div>
@@ -1236,9 +1277,9 @@ function App() {
                     <h3>SCIOPERABILE</h3>
                     <p>PROCEDERE COME SEGUE:</p>
                     <ul>
-                      <li>Chiamare Crewing prima dell'inizio dello Standby</li>
-                      <li>Verificare dopo la telefonata la presenza del codice INDA per l'intero giorno</li>
-                      <li>Non rispondere ad eventuali chiamate da parte di Crewing</li>
+                      <li>- Chiamare Crewing prima dell'inizio dello Standby</li>
+                      <li>- Verificare dopo la telefonata la presenza del codice INDA per l'intero giorno</li>
+                      <li>- Non rispondere ad eventuali chiamate da parte di Crewing</li>
                     </ul>
                   </div>
                 )}
@@ -1248,14 +1289,15 @@ function App() {
                     <h3>NON SCIOPERABILE</h3>
                     <p>SEGUIRE LE SEGUENTI INDICAZIONI:</p>
                     <ul>
-                      <li>accettare SOLO voli garantiti da Enac e nella fascia protetta 7:00 - 10:00 / 18:00 - 21:00</li>
-                      <li>NON accettare attività differenti da quelle del punto sopra</li>
+                      <li>- accettare SOLO voli garantiti da Enac e nella fascia protetta 7:00 - 10:00 / 18:00 - 21:00</li>
+                      <li>- NON accettare attività differenti da quelle del punto sopra</li>
                     </ul>
                   </div>
                 )}
               </>
             )}
-{/* Sezione per Segnala Adesione Sciopero (visibile solo se dutyType è 'reportStrike' e isStrikeDay è true) */}
+
+            {/* Sezione per Segnala Adesione Sciopero (visibile solo se dutyType è 'reportStrike' e isStrikeDay è true) */}
             {dutyType === 'reportStrike' && isStrikeDay && (
               <div className="section-card">
                 <h3 className="section-title">Segnala la tua adesione allo sciopero</h3>
