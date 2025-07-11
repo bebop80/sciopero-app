@@ -1292,6 +1292,15 @@ function App() {
               </div>
             </div>
           )}
+{/* Link per segnalare l'adesione allo sciopero */}
+          <a
+            href="https://tally.so/r/nGEgro"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="tally-link"
+          >
+            Segnala la tua adesione allo sciopero qui
+          </a>
 
           {/* Nuova dicitura a fine pagina */}
           <div className="contact-disclaimer">
