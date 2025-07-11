@@ -242,7 +242,7 @@ const strikeRules = {
 
 // Componente principale dell'applicazione
 function App() {
-  const [dutyType, setDutyType] = useState(null); // 'flight' or 'standby'
+  const [dutyType, setDutyType] = useState(null); // 'flight', 'standby' or 'reportStrike'
   const [baseIcao, setBaseIcao] = useState('');
   const [numSectors, setNumSectors] = useState('');
   const [destinationInput, setDestinationInput] = useState('');
@@ -251,6 +251,14 @@ function App() {
   const [message, setMessage] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [standbyOption, setStandbyOption] = useState(null); // 'notPrecettato' or 'precettato'
+  
+  // Determina se la data odierna corrisponde alla data dello sciopero
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0'); // I mesi sono 0-indexed
+  const day = String(today.getDate()).padStart(2, '0');
+  const currentFormattedDate = `${year}-${month}-${day}`;
+  const isStrikeDay = currentFormattedDate === strikeRules.strikeDate;
 
   // Funzione per generare i segmenti di volo in base a baseIcao, numSectors, destinationInput
   const generateFlightSegments = (base, num, destInput) => {
@@ -579,7 +587,7 @@ function App() {
     setStandbyOption(null);
   };
 
-  const strikeDurationText = `10 Luglio 2025 (24 ORE, fasce garantite 07:00-10:00 e 18:00-21:00)`;
+  const strikeDurationText = `11 Luglio 2025 (24 ORE, fasce garantite 07:00-10:00 e 18:00-21:00)`;
 
 
   return (
@@ -1292,15 +1300,6 @@ function App() {
               </div>
             </div>
           )}
-{/* Link per segnalare l'adesione allo sciopero */}
-          <a
-            href="https://tally.so/r/nGEgro"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="tally-link"
-          >
-            Segnala la tua adesione allo sciopero qui
-          </a>
 
           {/* Nuova dicitura a fine pagina */}
           <div className="contact-disclaimer">
