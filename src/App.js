@@ -264,6 +264,7 @@ function App() {
   sevenDaysAfterStrikeDateObj.setHours(23, 59, 59, 999); // Imposta alla fine del 7° giorno
 
   const isLinkActive = today >= strikeDateObj && today <= sevenDaysAfterStrikeDateObj;
+  const isFlightStandbyActive = today <= strikeDateObj; // Attivo solo fino al giorno dello sciopero incluso
 
 
   // Funzione per generare i segmenti di volo in base a baseIcao, numSectors, destinationInput
@@ -1118,23 +1119,25 @@ function App() {
             <div className="input-group">
               <label className="input-label">Seleziona il tipo di attività:</label>
               <div className="radio-group">
-                <label className={`radio-option ${dutyType === 'flight' ? 'selected' : ''}`}>
+                <label className={`radio-option ${dutyType === 'flight' ? 'selected' : ''} ${!isFlightStandbyActive ? 'disabled-option' : ''}`}>
                   <input
                     type="radio"
                     name="dutyType"
                     value="flight"
                     checked={dutyType === 'flight'}
                     onChange={(e) => { setDutyType(e.target.value); resetForm(); }}
+                    disabled={!isFlightStandbyActive}
                   />
                   Volo
                 </label>
-                <label className={`radio-option ${dutyType === 'standby' ? 'selected' : ''}`}>
+                <label className={`radio-option ${dutyType === 'standby' ? 'selected' : ''} ${!isFlightStandbyActive ? 'disabled-option' : ''}`}>
                   <input
                     type="radio"
                     name="dutyType"
                     value="standby"
                     checked={dutyType === 'standby'}
                     onChange={(e) => { setDutyType(e.target.value); resetForm(); }}
+                    disabled={!isFlightStandbyActive}
                   />
                   Home Standby / Adty
                 </label>
