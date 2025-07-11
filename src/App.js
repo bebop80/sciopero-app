@@ -252,13 +252,19 @@ function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [standbyOption, setStandbyOption] = useState(null); // 'notPrecettato' or 'precettato'
 
-  // Determina se la data odierna corrisponde alla data dello sciopero
+  // Determina se la data odierna rientra nel periodo di attivazione del link
   const today = new Date();
-  const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, '0'); // I mesi sono 0-indexed
-  const day = String(today.getDate()).padStart(2, '0');
-  const currentFormattedDate = `${year}-${month}-${day}`;
-  const isStrikeDay = currentFormattedDate === strikeRules.strikeDate;
+  today.setHours(0, 0, 0, 0); // Normalizza la data odierna a mezzanotte per il confronto
+
+  const strikeDateObj = new Date(strikeRules.strikeDate);
+  strikeDateObj.setHours(0, 0, 0, 0); // Normalizza la data di sciopero a mezzanotte
+
+  const sevenDaysAfterStrikeDateObj = new Date(strikeDateObj);
+  sevenDaysAfterStrikeDateObj.setDate(strikeDateObj.getDate() + 7);
+  sevenDaysAfterStrikeDateObj.setHours(23, 59, 59, 999); // Imposta alla fine del 7° giorno
+
+  const isLinkActive = today >= strikeDateObj && today <= sevenDaysAfterStrikeDateObj;
+
 
   // Funzione per generare i segmenti di volo in base a baseIcao, numSectors, destinationInput
   const generateFlightSegments = (base, num, destInput) => {
@@ -526,7 +532,7 @@ function App() {
     }
 
     // Postilla per "Scioperabile fuori base" (applicata dopo la nuova regola)
-    for (let i = 0; i < reasonsPerFlight.length; i++) { // Corrected: changed '=' to '<'
+    for (let i = 0; i < reasonsPerFlight.length; i++) { 
         const item = reasonsPerFlight[i];
         // Verifica se la ragione contiene la dicitura del volo di ritorno internazionale scioperabile
         const isInternationalReturnOverride = item.reasons.some(reason => reason.includes('conseguentemente al volo scioperabile di andata.'));
@@ -1132,14 +1138,14 @@ function App() {
                   />
                   Home Standby / Adty
                 </label>
-                <label className={`radio-option ${dutyType === 'reportStrike' ? 'selected' : ''} ${!isStrikeDay ? 'disabled-option' : ''}`}>
+                <label className={`radio-option ${dutyType === 'reportStrike' ? 'selected' : ''} ${!isLinkActive ? 'disabled-option' : ''}`}>
                   <input
                     type="radio"
                     name="dutyType"
                     value="reportStrike"
                     checked={dutyType === 'reportStrike'}
                     onChange={(e) => { setDutyType(e.target.value); resetForm(); }}
-                    disabled={!isStrikeDay}
+                    disabled={!isLinkActive}
                   />
                   Segnala Adesione Sciopero
                 </label>
@@ -1297,8 +1303,8 @@ function App() {
               </>
             )}
 
-            {/* Sezione per Segnala Adesione Sciopero (visibile solo se dutyType è 'reportStrike' e isStrikeDay è true) */}
-            {dutyType === 'reportStrike' && isStrikeDay && (
+            {/* Sezione per Segnala Adesione Sciopero (visibile solo se dutyType è 'reportStrike' e isLinkActive è true) */}
+            {dutyType === 'reportStrike' && isLinkActive && (
               <div className="section-card">
                 {/* Testo cliccabile diretto */}
                 <a
