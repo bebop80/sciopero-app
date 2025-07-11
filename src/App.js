@@ -155,7 +155,7 @@ const italianAirports = [
   { icao: 'DAAG', iata: 'ALG', name: 'Algiers Houari Boumediene Airport', country: 'Algeria' },
   { icao: 'DABM', iata: 'BJA', name: 'Bejaïa Abane Ramdane Airport', country: 'Algeria' },
   { icao: 'EGTE', iata: 'EXT', name: 'Exeter Airport', country: 'United Kingdom' },
-  { icao: 'LFLB', iata: 'CMF', name: 'Chambéry Airport', country: 'France' },
+  { icao: 'LFLB', iata: 'CMF', name: 'Chambéry Airport', 'country': 'France' },
   { icao: 'LSGS', iata: 'SIR', name: 'Sion Airport', country: 'Switzerland' },
   { icao: 'EBOS', iata: 'OST', name: 'Ostend–Bruges International Airport', country: 'Belgium' },
   { icao: 'LFSB', iata: 'MLH', name: 'Mulhouse', country: 'France' },
@@ -209,7 +209,7 @@ const italianAirports = [
 
 // Regole di sciopero aggiornate
 const strikeRules = {
-  strikeDate: '2025-07-11', // Data di sciopero: 10 Luglio 2025
+  strikeDate: '2025-07-10', // Data di sciopero: 10 Luglio 2025
   guaranteedTimeBands: [
     { start: '07:00', end: '10:00' },
     { start: '18:00', end: '21:00' }
@@ -1301,17 +1301,17 @@ function App() {
             {dutyType === 'reportStrike' && isStrikeDay && (
               <div className="section-card">
                 <h3 className="section-title">Segnala la tua adesione allo sciopero</h3>
+                {/* Modifica qui: una sola frase cliccabile */}
                 <p className="text-center text-gray-700 mb-4">
-                  Clicca sul link qui sotto per segnalare la tua adesione allo sciopero.
+                  <a
+                    href="https://tally.so/r/nGEgro"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="tally-link"
+                  >
+                    Clicca QUI per segnalare la tua adesione allo sciopero
+                  </a>
                 </p>
-                <a
-                  href="https://tally.so/r/nGEgro"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="tally-link"
-                >
-                  Clicca qui per segnalare la tua adesione
-                </a>
               </div>
             )}
 
