@@ -526,7 +526,7 @@ function App() {
     }
 
     // Postilla per "Scioperabile fuori base" (applicata dopo la nuova regola)
-    for (let i = 0; i < reasonsPerFlight.length; i++) {
+    for (let i = 0; i = reasonsPerFlight.length; i++) {
         const item = reasonsPerFlight[i];
         // Verifica se la ragione contiene la dicitura del volo di ritorno internazionale scioperabile
         const isInternationalReturnOverride = item.reasons.some(reason => reason.includes('conseguentemente al volo scioperabile di andata.'));
@@ -1300,18 +1300,15 @@ function App() {
             {/* Sezione per Segnala Adesione Sciopero (visibile solo se dutyType è 'reportStrike' e isStrikeDay è true) */}
             {dutyType === 'reportStrike' && isStrikeDay && (
               <div className="section-card">
-                <h3 className="section-title">Segnala la tua adesione allo sciopero</h3>
-                {/* Modifica qui: una sola frase cliccabile */}
-                <p className="text-center text-gray-700 mb-4">
-                  <a
-                    href="https://tally.so/r/nGEgro"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="tally-link"
-                  >
-                    Clicca QUI per segnalare la tua adesione allo sciopero
-                  </a>
-                </p>
+                {/* Testo cliccabile diretto */}
+                <a
+                  href="https://tally.so/r/nGEgro"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="tally-link"
+                >
+                  Clicca QUI per segnalare la tua adesione allo sciopero
+                </a>
               </div>
             )}
 
