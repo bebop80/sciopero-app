@@ -254,7 +254,7 @@ const italianAirports = [
 
 // Regole di sciopero aggiornate
 const strikeRules = {
-  strikeDate: '2025-07-26', // Data di sciopero: 6 Settembre 2025
+  strikeDate: '2025-07-26', // Data di sciopero: 10 Luglio 2025
   guaranteedTimeBands: [
     { start: '07:00', end: '10:00' },
     { start: '18:00', end: '21:00' }
@@ -310,6 +310,40 @@ function App() {
 
   const isLinkActive = today >= strikeDateObj && today <= sevenDaysAfterStrikeDateObj;
   const isFlightStandbyActive = today <= strikeDateObj; // Attivo solo fino al giorno dello sciopero incluso
+
+  // useEffect per gestire il caricamento dello script Tally.so
+  useEffect(() => {
+    // Funzione per caricare gli embed di Tally
+    const loadTallyEmbeds = () => {
+      if (typeof window.Tally !== 'undefined') {
+        window.Tally.loadEmbeds();
+      } else {
+        // Fallback: riprova dopo un breve ritardo se lo script non è ancora disponibile
+        setTimeout(() => {
+          if (typeof window.Tally !== 'undefined') {
+            window.Tally.loadEmbeds();
+          }
+        }, 100);
+      }
+    };
+
+    const scriptId = 'tally-embed-script';
+    // Controlla se lo script è già presente nel DOM
+    if (!document.getElementById(scriptId)) {
+      const script = document.createElement('script');
+      script.src = 'https://tally.so/widgets/embed.js';
+      script.id = scriptId;
+      script.async = true; // Carica in modo asincrono
+      script.onload = loadTallyEmbeds; // Chiama loadEmbeds una volta che lo script è caricato
+      script.onerror = () => console.error('Failed to load Tally.so embed script.');
+      document.body.appendChild(script);
+    } else {
+      // Se lo script è già presente (es. dopo un re-render), prova a caricare gli embed
+      loadTallyEmbeds();
+    }
+
+    // Dipendenza da dutyType per ricaricare gli embed se la sezione cambia
+  }, [dutyType]);
 
 
   // Funzione per generare i segmenti di volo in base a baseIcao, numSectors, destinationInput
@@ -1365,14 +1399,7 @@ function App() {
                   marginWidth="0"
                   title="Adesione Sciopero 6 Settembre 2025"
                 ></iframe>
-                {/* Script per caricare il widget Tally */}
-                <script
-                  dangerouslySetInnerHTML={{
-                    __html: `
-                      var d=document,w="https://tally.so/widgets/embed.js",v=function(){"undefined"!=typeof Tally?Tally.loadEmbeds():d.querySelectorAll("iframe[data-tally-src]:not([src])").forEach((function(e){e.src=e.dataset.tallySrc}))};if("undefined"!=typeof Tally)v();else if(d.querySelector('script[src="'+w+'"]')==null){var s=d.createElement("script");s.src=w,s.onload=v,s.onerror=v,d.body.appendChild(s);}
-                    `,
-                  }}
-                />
+                {/* Lo script per caricare il widget Tally.so è ora gestito tramite useEffect */}
               </div>
             )}
 
