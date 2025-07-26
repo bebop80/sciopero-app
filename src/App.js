@@ -673,7 +673,7 @@ function App() {
     setStandbyOption(null);
   };
 
-  const strikeDurationText = `10 Luglio 2025 (24 ORE, fasce garantite 07:00-10:00 e 18:00-21:00)`;
+  const strikeDurationText = `6 Settembre 2025 (24 ORE, fasce garantite 07:00-10:00 e 18:00-21:00)`;
 
 
   return (
