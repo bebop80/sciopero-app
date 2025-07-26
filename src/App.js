@@ -592,7 +592,7 @@ function App() {
     }
 
     // Postilla per voli ferry (generale, non per i casi di ritorno internazionale scioperabile)
-    for (let i = 1; i = 1; i++) {
+    for (let i = 1; i < reasonsPerFlight.length; i++) { // Corretto: da i = 1 a i < reasonsPerFlight.length
         const previousFlightResult = reasonsPerFlight[i - 1];
         const currentFlightResult = reasonsPerFlight[i];
 
