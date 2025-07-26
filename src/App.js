@@ -254,7 +254,7 @@ const italianAirports = [
 
 // Regole di sciopero aggiornate
 const strikeRules = {
-  strikeDate: '2025-09-06', // Data di sciopero: 6 Settembre 2025
+  strikeDate: '2025-07-10', // Data di sciopero: 10 Luglio 2025
   guaranteedTimeBands: [
     { start: '07:00', end: '10:00' },
     { start: '18:00', end: '21:00' }
@@ -592,7 +592,7 @@ function App() {
     }
 
     // Postilla per voli ferry (generale, non per i casi di ritorno internazionale scioperabile)
-    for (let i = 1; i < reasonsPerFlight.length; i++) {
+    for (let i = 1; i = 1; i++) {
         const previousFlightResult = reasonsPerFlight[i - 1];
         const currentFlightResult = reasonsPerFlight[i];
 
@@ -639,7 +639,7 @@ function App() {
     setStandbyOption(null);
   };
 
-  const strikeDurationText = `6 Settembre 2025 (24 ORE, fasce garantite 07:00-10:00 e 18:00-21:00)`;
+  const strikeDurationText = `10 Luglio 2025 (24 ORE, fasce garantite 07:00-10:00 e 18:00-21:00)`;
 
 
   return (
@@ -1354,15 +1354,25 @@ function App() {
             {/* Sezione per Segnala Adesione Sciopero (visibile solo se dutyType è 'reportStrike' e isLinkActive è true) */}
             {dutyType === 'reportStrike' && isLinkActive && (
               <div className="section-card">
-                {/* Testo cliccabile diretto */}
-                <a
-                  href="https://tally.so/r/wv5NVg"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="tally-link"
-                >
-                  Clicca QUI per segnalare la tua adesione allo sciopero
-                </a>
+                {/* Tally.so iframe embed */}
+                <iframe
+                  data-tally-src="https://tally.so/embed/wv5NVg?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1"
+                  loading="lazy"
+                  width="100%"
+                  height="357"
+                  frameBorder="0"
+                  marginHeight="0"
+                  marginWidth="0"
+                  title="Adesione Sciopero 6 Settembre 2025"
+                ></iframe>
+                {/* Script per caricare il widget Tally */}
+                <script
+                  dangerouslySetInnerHTML={{
+                    __html: `
+                      var d=document,w="https://tally.so/widgets/embed.js",v=function(){"undefined"!=typeof Tally?Tally.loadEmbeds():d.querySelectorAll("iframe[data-tally-src]:not([src])").forEach((function(e){e.src=e.dataset.tallySrc}))};if("undefined"!=typeof Tally)v();else if(d.querySelector('script[src="'+w+'"]')==null){var s=d.createElement("script");s.src=w,s.onload=v,s.onerror=v,d.body.appendChild(s);}
+                    `,
+                  }}
+                />
               </div>
             )}
 
