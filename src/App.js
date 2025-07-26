@@ -1356,7 +1356,7 @@ function App() {
               <div className="section-card">
                 {/* Testo cliccabile diretto */}
                 <a
-                  href="https://tally.so/r/nGEgro"
+                  href="https://tally.so/r/wv5NVg"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="tally-link"
