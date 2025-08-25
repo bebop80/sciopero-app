@@ -274,14 +274,6 @@ const USBLogo = () => (
   const USBLogo = () => (
   <img src="/favicon.ico" alt="Logo USB" className="union-logo h-12 w-12" />
 );
-    <rect width="100" height="100" rx="20" fill="#E41E26"/>
-    <path d="M22 25H38V45C38 55 32 60 22 60V25Z" fill="white"/>
-    <path d="M42 25H58V60C48 60 42 55 42 45V25Z" fill="white"/>
-    <path d="M62 25H78V35C78 45 70 50 62 50V25Z" fill="white"/>
-    <path d="M62 55H78V75H62V55Z" fill="white"/>
-  </svg>
-);
-
 
 // Componente principale dell'applicazione
 function App() {
