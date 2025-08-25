@@ -35,7 +35,6 @@ const italianAirports = [
   { icao: 'LIPU', iata: 'TRS', name: 'Trieste Ronchi dei Legionari', country: 'Italy' },
   { icao: 'LIPZ', iata: 'VCE', name: 'Venezia Marco Polo', country: 'Italy' },
   { icao: 'LIPY', iata: 'VRN', name: 'Verona Villafranca', country: 'Italy' },
-
   // AEROPORTI INTERNAZIONALI EasyJet (Ordinati per Paese e poi Nome)
   // Albania
   { icao: 'LATI', iata: 'TIA', name: 'Tirana', country: 'Albania' },
@@ -260,29 +259,16 @@ const strikeRules = {
     { start: '18:00', end: '21:00' }
   ],
   guaranteedFlights: [
-    // La nuova regola indica che i voli da/per PMO non sono scioperabili, quindi li aggiungiamo qui
-    // Nota: I codici ICAO e IATA sono trattati in modo interscambiabile nella funzione isKnownAirport
-    // e per confronto con la lista `italianAirports`. Qui usiamo 'PMO' come IATA per chiarezza.
-    { origin: 'LICJ', destination: 'ANY' }, // Voli in partenza da Palermo (ICAO: LICJ)
-    { origin: 'ANY', destination: 'LICJ' }, // Voli in arrivo a Palermo (ICAO: LICJ)
-    { origin: 'PMO', destination: 'ANY' }, // Voli in partenza da Palermo (IATA: PMO)
-    { origin: 'ANY', destination: 'PMO' }, // Voli in arrivo a Palermo (IATA: PMO)
-  ],
-  affectedAirports: [], // rimane vuoto, si applica a tutto il territorio nazionale
-  // Nuova regola per Palermo: "TUTTI i voli da/per PMO DEVONO essere operati da ogni base."
-  // Questo non si traduce direttamente in una regola di "non scioperabilità" generale
-  // ma piuttosto una condizione operativa che l'app, per ora, non valida.
-  // La gestione della "totale esclusione dei voli in partenza ed in arrivo all'aeroporto di Palermo"
-  // è già coperta dall'aggiunta a guaranteedFlights.
-  
-  // Voli protetti ENAC (precedentemente aggiunti)
-  protectedFlights: [
+    // Voli protetti ENAC
     { origin: 'MXP', destination: 'CAG', time: '22:50' },
     { origin: 'MXP', destination: 'LMP', time: '13:10' },
     { origin: 'LMP', destination: 'MXP', time: '16:00' },
     { origin: 'CAG', destination: 'NAP', time: '11:40' },
     { origin: 'MXP', destination: 'SPX', time: '17:00' },
   ],
+  affectedAirports: [], // rimane vuoto, si applica a tutto il territorio nazionale
+  // Nuova regola per Catania
+  cataniaRestrictedTimeBand: { start: '12:00', end: '16:00' },
 };
 
 // Componente principale dell'applicazione
@@ -296,21 +282,18 @@ function App() {
   const [message, setMessage] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [standbyOption, setStandbyOption] = useState(null); // 'notPrecettato' or 'precettato'
-
+  
   // Determina se la data odierna rientra nel periodo di attivazione del link
   const today = new Date();
   today.setHours(0, 0, 0, 0); // Normalizza la data odierna a mezzanotte per il confronto
-
   const strikeDateObj = new Date(strikeRules.strikeDate);
   strikeDateObj.setHours(0, 0, 0, 0); // Normalizza la data di sciopero a mezzanotte
-
   const sevenDaysAfterStrikeDateObj = new Date(strikeDateObj);
   sevenDaysAfterStrikeDateObj.setDate(strikeDateObj.getDate() + 7);
   sevenDaysAfterStrikeDateObj.setHours(23, 59, 59, 999); // Imposta alla fine del 7° giorno
-
   const isLinkActive = today >= strikeDateObj && today <= sevenDaysAfterStrikeDateObj;
   const isFlightStandbyActive = today <= strikeDateObj; // Attivo solo fino al giorno dello sciopero incluso
-
+  
   // useEffect per gestire il caricamento dello script Tally.so
   useEffect(() => {
     // Funzione per caricare gli embed di Tally
@@ -326,7 +309,7 @@ function App() {
         }, 100);
       }
     };
-
+    
     const scriptId = 'tally-embed-script';
     // Controlla se lo script è già presente nel DOM
     if (!document.getElementById(scriptId)) {
@@ -341,10 +324,8 @@ function App() {
       // Se lo script è già presente (es. dopo un re-render), prova a caricare gli embed
       loadTallyEmbeds();
     }
-
     // Dipendenza da dutyType per ricaricare gli embed se la sezione cambia
   }, [dutyType]);
-
 
   // Funzione per generare i segmenti di volo in base a baseIcao, numSectors, destinationInput
   const generateFlightSegments = (base, num, destInput) => {
@@ -352,6 +333,7 @@ function App() {
     const baseCode = base.toUpperCase();
     const destinations = destInput.toUpperCase().split('-').filter(d => d);
     let sectorNum = 1;
+    
     if (num === 2 && destinations.length === 1) {
       segments.push({ origin: baseCode, destination: destinations[0], type: `settore ${sectorNum++}` });
       segments.push({ origin: destinations[0], destination: baseCode, type: `settore ${sectorNum++}` });
@@ -369,7 +351,7 @@ function App() {
     const parsedNumSectors = parseInt(numSectors);
     const currentFlightSegments = generateFlightSegments(baseIcao, parsedNumSectors, destinationInput);
     const requiredTimesCount = currentFlightSegments.length;
-
+    
     setScheduledTimes(prevTimes => {
       if (prevTimes.length !== requiredTimesCount) {
         return Array(requiredTimesCount).fill('');
@@ -402,32 +384,33 @@ function App() {
     setResults([]);
     setMessage('');
     const parsedNumSectors = parseInt(numSectors);
-
+    
     if (!baseIcao || (parsedNumSectors !== 2 && parsedNumSectors !== 4)) {
       setMessage('Per favore, compila la base di appartenenza e inserisci 2 o 4 per il numero di settori.');
       setIsModalOpen(true);
       return;
     }
-
+    
     // Validazione iniziale della base di appartenenza
     if (!isKnownAirport(baseIcao)) {
       setMessage(`Il codice della base di appartenenza "${baseIcao}" non è riconosciuto. Per favore, inserisci un codice ICAO/IATA valido.`);
       setIsModalOpen(true);
       return;
     }
+    
     if (!isItalianAirport(baseIcao)) {
       setMessage('La base di appartenenza deve essere un aeroporto italiano per aderire allo sciopero.');
       setIsModalOpen(true);
       return;
     }
-
+    
     const currentFlightSegments = generateFlightSegments(baseIcao, parsedNumSectors, destinationInput);
     if (currentFlightSegments.length === 0) {
       setMessage('Impossibile generare i segmenti di volo. Controlla il numero di settori e il formato delle destinazioni.');
       setIsModalOpen(true);
       return;
     }
-
+    
     // Validazione dei codici di destinazione inseriti
     let allDestinationsKnown = true;
     if (parsedNumSectors === 2) {
@@ -450,10 +433,11 @@ function App() {
         }
       }
     }
+    
     if (!allDestinationsKnown) {
       return;
     }
-
+    
     // Controlla se tutti gli orari schedulati sono stati compilati
     const areAllTimesFilled = scheduledTimes.every(time => time !== '');
     if (!areAllTimesFilled) {
@@ -461,9 +445,8 @@ function App() {
         setIsModalOpen(true);
         return;
     }
-
+    
     const reasonsPerFlight = [];
-
     currentFlightSegments.forEach((segment, index) => {
         let eligible = false;
         let currentReasons = []; // Inizializza come array
@@ -472,10 +455,7 @@ function App() {
         const flightTimeHours = flightDateTime.getHours();
         const flightTimeMinutes = flightDateTime.getMinutes();
         const flightTimeInMinutes = flightTimeHours * 60 + flightTimeMinutes;
-
-        const isOriginPMO = segment.origin.toUpperCase() === 'PMO' || segment.origin.toUpperCase() === 'LICJ';
-        const isDestinationPMO = segment.destination.toUpperCase() === 'PMO' || segment.destination.toUpperCase() === 'LICJ';
-
+        
         // Check if the current flight is a protected flight by ENAC (Highest priority)
         const isProtectedFlight = strikeRules.protectedFlights.some(
           (pf) =>
@@ -483,7 +463,7 @@ function App() {
             (pf.destination.toUpperCase() === segment.destination.toUpperCase() || pf.destination.toUpperCase() === italianAirports.find(a => a.iata === pf.destination.toUpperCase())?.icao.toUpperCase()) &&
             pf.time === scheduledTimes[index]
         );
-
+        
         if (isProtectedFlight) {
           currentReasons.push('Volo protetto ENAC: deve essere operato.');
           eligible = false;
@@ -495,53 +475,64 @@ function App() {
             // Check if flight is on the strike date
             currentReasons.push(`La data del volo (${currentFlightDate}) non rientra nel giorno di sciopero (${strikeRules.strikeDate}).`);
             eligible = false;
-        } else if (isOriginPMO || isDestinationPMO) {
-            // Check if PMO flight
-            currentReasons.push('Volo non scioperabile: esclusi i voli in partenza e in arrivo all\'aeroporto di Palermo (PMO).');
-            eligible = false;
         } else {
-            // Normal time band check
-            let isInProtectedBand = false;
-            let protectedBandInfo = '';
-            strikeRules.guaranteedTimeBands.forEach(band => {
-                const [bandStartHour, bandStartMinute] = band.start.split(':').map(Number);
-                const [bandEndHour, bandEndMinute] = band.end.split(':').map(Number);
-
-                const bandStartTimeInMinutes = bandStartHour * 60 + bandStartMinute;
-                const bandEndTimeInMinutes = bandEndHour * 60 + bandEndMinute; 
-
-                if (flightTimeInMinutes >= bandStartTimeInMinutes && flightTimeInMinutes <= bandEndTimeInMinutes) {
-                    isInProtectedBand = true;
-                    protectedBandInfo = `(${band.start}-${band.end})`;
+            // Check for Catania flights in restricted time band
+            const isOriginCTA = segment.origin.toUpperCase() === 'CTA' || segment.origin.toUpperCase() === 'LICC';
+            const isDestinationCTA = segment.destination.toUpperCase() === 'CTA' || segment.destination.toUpperCase() === 'LICC';
+            
+            if (isOriginCTA || isDestinationCTA) {
+                const cataniaBand = strikeRules.cataniaRestrictedTimeBand;
+                const [cataniaStartHour, cataniaStartMinute] = cataniaBand.start.split(':').map(Number);
+                const [cataniaEndHour, cataniaEndMinute] = cataniaBand.end.split(':').map(Number);
+                const cataniaStartTimeInMinutes = cataniaStartHour * 60 + cataniaStartMinute;
+                const cataniaEndTimeInMinutes = cataniaEndHour * 60 + cataniaEndMinute;
+                
+                if (flightTimeInMinutes >= cataniaStartTimeInMinutes && flightTimeInMinutes <= cataniaEndTimeInMinutes) {
+                    currentReasons.push('Volo non scioperabile: esclusi i voli da/per Catania (CTA) tra le 12:00 e le 16:00.');
+                    eligible = false;
                 }
-            });
-
-            if (isInProtectedBand) {
-                currentReasons.push(`Volo non scioperabile: l'orario di decollo schedulato (${scheduledTimes[index]}) rientra in una fascia oraria garantita ${protectedBandInfo}.`);
-                eligible = false;
-            } else {
-                eligible = true;
-                const allGuaranteedBands = strikeRules.guaranteedTimeBands.map(band => `${band.start}-${band.end}`).join(' e ');
-                currentReasons.push(`Volo scioperabile: l'orario di decollo schedulato (${scheduledTimes[index]}) è fuori dalle fasce orarie garantite (${allGuaranteedBands}).`);
-
-                // La postilla "SCIOPERABILE FUORI BASE" verrà aggiunta in un ciclo successivo se applicabile
-                // e non sovrascritta dalla nuova regola di ritorno internazionale.
+            }
+            
+            // Normal time band check (applicable to all flights including Catania)
+            if (!eligible) { // Only check if not already excluded by Catania rule
+                let isInProtectedBand = false;
+                let protectedBandInfo = '';
+                strikeRules.guaranteedTimeBands.forEach(band => {
+                    const [bandStartHour, bandStartMinute] = band.start.split(':').map(Number);
+                    const [bandEndHour, bandEndMinute] = band.end.split(':').map(Number);
+                    const bandStartTimeInMinutes = bandStartHour * 60 + bandStartMinute;
+                    const bandEndTimeInMinutes = bandEndHour * 60 + bandEndMinute; 
+                    
+                    if (flightTimeInMinutes >= bandStartTimeInMinutes && flightTimeInMinutes <= bandEndTimeInMinutes) {
+                        isInProtectedBand = true;
+                        protectedBandInfo = `(${band.start}-${band.end})`;
+                    }
+                });
+                
+                if (isInProtectedBand) {
+                    currentReasons.push(`Volo non scioperabile: l'orario di decollo schedulato (${scheduledTimes[index]}) rientra in una fascia oraria garantita ${protectedBandInfo}.`);
+                    eligible = false;
+                } else {
+                    eligible = true;
+                    const allGuaranteedBands = strikeRules.guaranteedTimeBands.map(band => `${band.start}-${band.end}`).join(' e ');
+                    currentReasons.push(`Volo scioperabile: l'orario di decollo schedulato (${scheduledTimes[index]}) è fuori dalle fasce orarie garantite (${allGuaranteedBands}).`);
+                }
             }
         }
         reasonsPerFlight.push({ eligible: eligible, reasons: currentReasons, isOutOfBase: (segment.origin.toUpperCase() !== baseIcao.toUpperCase()) });
     });
-
+    
     // --- NUOVA REGOLA: Eleggibilità dei voli di ritorno da voli internazionali scioperabili ---
     if (parsedNumSectors === 2) {
         const outboundSegment = currentFlightSegments[0];
         const returnSegment = currentFlightSegments[1];
         const outboundResult = reasonsPerFlight[0];
         const returnResult = reasonsPerFlight[1];
-
+        
         // Verifica se il volo di andata è scioperabile e la sua destinazione non è italiana (internazionale)
         const isOutboundInternationalAndEligible =
             outboundResult.eligible && !isItalianAirport(outboundSegment.destination);
-
+        
         // Verifica se il volo di ritorno NON è un volo protetto ENAC (la protezione ENAC ha priorità assoluta)
         const isReturnFlightActuallyProtectedENAC = strikeRules.protectedFlights.some(
             (pf) =>
@@ -551,7 +542,7 @@ function App() {
                  (italianAirports.find(a => a.iata === pf.destination.toUpperCase()) && italianAirports.find(a => a.iata === pf.destination.toUpperCase()).icao.toUpperCase() === returnSegment.destination.toUpperCase())) &&
                 pf.time === scheduledTimes[1]
         );
-
+        
         if (isOutboundInternationalAndEligible && !isReturnFlightActuallyProtectedENAC) {
             returnResult.eligible = true;
             // Imposta le ragioni direttamente con la motivazione richiesta, senza postilla ferry qui
@@ -565,10 +556,10 @@ function App() {
         const returnSegment1 = currentFlightSegments[1];
         const outboundResult1 = reasonsPerFlight[0];
         const returnResult1 = reasonsPerFlight[1];
-
+        
         const isOutbound1InternationalAndEligible =
             outboundResult1.eligible && !isItalianAirport(outboundSegment1.destination);
-
+        
         const isReturn1FlightActuallyProtectedENAC = strikeRules.protectedFlights.some(
             (pf) =>
                 (pf.origin.toUpperCase() === returnSegment1.origin.toUpperCase() ||
@@ -577,23 +568,23 @@ function App() {
                  (italianAirports.find(a => a.iata === pf.destination.toUpperCase()) && italianAirports.find(a => a.iata === pf.destination.toUpperCase()).icao.toUpperCase() === returnSegment1.destination.toUpperCase())) &&
                 pf.time === scheduledTimes[1]
         );
-
+        
         if (isOutbound1InternationalAndEligible && !isReturn1FlightActuallyProtectedENAC) {
             returnResult1.eligible = true;
             returnResult1.reasons = [
                 'conseguentemente al volo scioperabile di andata.'
             ];
         }
-
+        
         // Seconda coppia di segmenti (2 e 3)
         const outboundSegment2 = currentFlightSegments[2];
         const returnSegment2 = currentFlightSegments[3];
         const outboundResult2 = reasonsPerFlight[2];
         const returnResult2 = reasonsPerFlight[3];
-
+        
         const isOutbound2InternationalAndEligible =
             outboundResult2.eligible && !isItalianAirport(outboundSegment2.destination);
-
+        
         const isReturn2FlightActuallyProtectedENAC = strikeRules.protectedFlights.some(
             (pf) =>
                 (pf.origin.toUpperCase() === returnSegment2.origin.toUpperCase() ||
@@ -602,7 +593,7 @@ function App() {
                  (italianAirports.find(a => a.iata === pf.destination.toUpperCase()) && italianAirports.find(a => a.iata === pf.destination.toUpperCase()).icao.toUpperCase() === returnSegment2.destination.toUpperCase())) &&
                 pf.time === scheduledTimes[3]
         );
-
+        
         if (isOutbound2InternationalAndEligible && !isReturn2FlightActuallyProtectedENAC) {
             returnResult2.eligible = true;
             returnResult2.reasons = [
@@ -610,13 +601,13 @@ function App() {
             ];
         }
     }
-
+    
     // Postilla per "Scioperabile fuori base" (applicata dopo la nuova regola)
     for (let i = 0; i < reasonsPerFlight.length; i++) { 
         const item = reasonsPerFlight[i];
         // Verifica se la ragione contiene la dicitura del volo di ritorno internazionale scioperabile
         const isInternationalReturnOverride = item.reasons.some(reason => reason.includes('conseguentemente al volo scioperabile di andata.'));
-
+        
         // Aggiungi la postilla "Scioperabile fuori base" SOLO se non è un volo di ritorno internazionale gestito dalla nuova regola
         if (item.eligible && item.isOutOfBase && !isInternationalReturnOverride) {
             item.reasons.push('<br/><span style="font-size: 0.75em; display: block; margin-top: 0.5em;">');
@@ -624,22 +615,21 @@ function App() {
             item.reasons.push('</span>');
         }
     }
-
+    
     // Postilla per voli ferry (generale, non per i casi di ritorno internazionale scioperabile)
-    for (let i = 1; i < reasonsPerFlight.length; i++) { // Corretto: da i = 1 a i < reasonsPerFlight.length
+    for (let i = 1; i < reasonsPerFlight.length; i++) { 
         const previousFlightResult = reasonsPerFlight[i - 1];
         const currentFlightResult = reasonsPerFlight[i];
-
         const currentFlightReasonText = currentFlightResult.reasons.join(' ');
         
         const isCurrentFlightNonEligibleForFerryPostilla = 
             (!currentFlightResult.eligible && currentFlightReasonText.includes('fascia oraria garantita')) ||
             (!currentFlightResult.eligible && currentFlightReasonText.includes('non è italiano')) ||
             (!currentFlightResult.eligible && currentFlightReasonText.includes('Volo protetto ENAC')); 
-
+        
         // Assicurati che questa postilla non venga aggiunta ai voli di ritorno internazionali che sono già stati gestiti
         const isInternationalReturnOverride = currentFlightResult.reasons.some(reason => reason.includes('conseguentemente al volo scioperabile di andata.'));
-
+        
         if (previousFlightResult.eligible && isCurrentFlightNonEligibleForFerryPostilla && currentFlightResult.isOutOfBase && !isInternationalReturnOverride) {
             currentFlightResult.reasons.push('<br/><span style="font-size: 0.75em; display: block; margin-top: 0.5em;">');
             currentFlightResult.reasons.push('<strong>ATTENZIONE:</strong> Per effettuare questo volo la compagnia deve farvi posizionare su un volo ferry operato non da voi ma da un equipaggio di riserva non scioperante.');
@@ -647,14 +637,13 @@ function App() {
         }
     }
 
-
     // Popola i risultati finali unendo le ragioni in stringhe
     const newResults = reasonsPerFlight.map((item, index) => ({
       flight: `Volo ${index + 1}: da ${currentFlightSegments[index].origin} a ${currentFlightSegments[index].destination} (${currentFlightSegments[index].type}) schedulato alle ${scheduledTimes[index]}`,
       eligible: item.eligible,
       reason: item.reasons.join(' '),
     }));
-
+    
     setResults(newResults);
   };
 
@@ -675,14 +664,12 @@ function App() {
 
   const strikeDurationText = `6 Settembre 2025 (24 ORE, fasce garantite 07:00-10:00 e 18:00-21:00)`;
 
-
   return (
     <div className="app-container">
       {/* Stili CSS integrati direttamente nel componente */}
       <style>
         {`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-
         /* Generale */
         html, body {
             margin: 0;
@@ -698,12 +685,10 @@ function App() {
         *, *::before, *::after {
             box-sizing: inherit;
         }
-
         code {
           font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
             monospace;
         }
-
         .app-container {
           min-height: 100vh;
           background: linear-gradient(to bottom right, #4F46E5, #93C5FD);
@@ -713,7 +698,6 @@ function App() {
           padding: 1rem;
           width: 100%; /* Assicura che occupi la larghezza completa */
         }
-
         .main-card {
           background-color: #ffffff;
           padding: 2rem;
@@ -726,7 +710,6 @@ function App() {
           /* Limite massimo per desktop */
           border: 1px solid #e5e7eb;
         }
-
         .main-title {
           font-size: 2.25rem;
           font-weight: 800; /* Più audace come nell'immagine */
@@ -742,7 +725,6 @@ function App() {
           gap: 0.75rem; /* Spazio tra logo e testo */
           flex-wrap: wrap; /* Permette al contenuto di andare a capo su schermi piccoli */
         }
-
         .union-logo {
             width: 3rem; /* Dimensione del logo */
             height: 3rem; /* Rende il logo quadrato */
@@ -750,13 +732,11 @@ function App() {
             object-fit: contain; /* Assicura che l'immagine sia contenuta senza distorsioni */
             margin-right: 0.5rem; /* Spazio a destra del logo */
         }
-
         .main-title-text-container {
           display: flex;
           flex-direction: column;
           align-items: center; /* Centra il testo all'interno del suo contenitore */
         }
-
         .main-title-date {
           color: #2563eb;
           font-size: 1.5rem;
@@ -764,7 +744,6 @@ function App() {
           margin-top: 0.5rem;
           font-weight: 600; /* Leggermente più spesso */
         }
-
         .main-disclaimer {
             font-size: 0.85em;
             color: #4B5563;
@@ -772,18 +751,15 @@ function App() {
             margin-top: 0.5rem;
             text-align: center; /* Centra il testo */
         }
-
         .form-sections-container > *:not(:last-child) {
             margin-bottom: 1.5rem;
         }
         .form-sections-container .main-button {
             margin-top: 1.5rem;
         }
-
         .input-group {
           /* Nessun margine qui, gestito dal contenitore genitore */
         }
-
         .input-label {
           display: block;
           font-size: 0.875rem;
@@ -791,7 +767,6 @@ function App() {
           color: #374151;
           margin-bottom: 0.25rem;
         }
-
         .input-field {
           display: block;
           width: 100%; /* Fondamentale per la responsività */
@@ -802,13 +777,11 @@ function App() {
           transition: all 0.2s ease-in-out;
           box-sizing: border-box; /* Cruciale per includere padding nel width */
         }
-
         .input-field:focus {
           outline: none;
           border-color: #3B82F6;
           box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
         }
-
         .section-card {
           border: 1px solid #e5e7eb;
           padding: 1.25rem;
@@ -817,7 +790,6 @@ function App() {
           box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
           /* Il margin-top è gestito da .form-sections-container */
         }
-
         .section-title {
           font-size: 1rem;
           font-weight: 600;
@@ -825,7 +797,6 @@ function App() {
           margin-bottom: 1rem;
           word-wrap: break-word; /* Assicura che il titolo vada a capo */
         }
-
         .section-content-space > div:not(:last-child) {
           margin-bottom: 0.75rem;
         }
@@ -845,24 +816,20 @@ function App() {
           border: none;
           cursor: pointer;
         }
-
         .main-button:hover {
           background-color: #4338CA;
           transform: scale(1.02);
           box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15), 0 3px rgba(0, 0, 0, 0.12); /* Ombra più pronunciata al hover */
         }
-
         .main-button:focus {
           outline: none;
           box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.5);
         }
-
         .results-section {
           margin-top: 2rem;
           padding-top: 1.5rem;
           border-top: 1px solid #e5e7eb;
         }
-
         .results-title {
           font-size: 1.5rem;
           font-weight: 700;
@@ -870,50 +837,41 @@ function App() {
           margin-bottom: 1rem;
           text-align: center;
         }
-
         .result-item {
           padding: 1rem;
           border-radius: 0.5rem;
           box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
           margin-bottom: 1rem;
         }
-
         .result-item.eligible {
           background-color: #F0FDF4;
           border: 1px solid #6EE7B7;
         }
-
         .result-item.not-eligible {
           background-color: #FEF2F2;
           border: 1px solid #FCA5A5;
         }
-
         .result-flight {
           font-size: 1.125rem;
           font-weight: 600;
           color: #1F2937;
           word-wrap: break-word; /* Assicura che il testo vada a capo */
         }
-
         .result-status {
           font-size: 1rem;
           font-weight: 700;
         }
-
         .result-status.eligible-text {
           color: #047857;
         }
-
         .result-status.not-eligible-text {
           color: #B91C1C;
         }
-
         .result-reason {
           font-size: 0.875rem;
           color: #4B5563;
           word-wrap: break-word; /* Assicura che il testo vada a capo */
         }
-
         /* Stili della Modale */
         .modal-overlay {
           position: fixed;
@@ -927,7 +885,6 @@ function App() {
           justify-content: center;
           z-index: 50;
         }
-
         .modal-content {
           position: relative;
           padding: 1.25rem;
@@ -941,7 +898,6 @@ function App() {
           text-align: center;
           box-sizing: border-box; /* Cruciale per includere padding nel width */
         }
-
         .modal-title {
           font-size: 1.125rem;
           line-height: 1.5rem;
@@ -949,13 +905,11 @@ function App() {
           color: #111827;
           margin-bottom: 1rem;
         }
-
         .modal-message {
           font-size: 0.875rem;
           color: #6B7280;
           margin-bottom: 1.5rem;
         }
-
         .modal-button {
           margin-top: 0.75rem;
           width: 100%;
@@ -972,16 +926,13 @@ function App() {
           transition: background-color 0.15s ease-in-out;
           cursor: pointer;
         }
-
         .modal-button:hover {
           background-color: #1D4ED8;
         }
-
         .modal-button:focus {
           outline: none;
           box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5), 0 0 0 2px rgba(59, 130, 246, 0.5);
         }
-
         /* Stili per i radio button personalizzati */
         .radio-group {
             display: flex;
@@ -989,7 +940,6 @@ function App() {
             gap: 0.75rem;
             margin-bottom: 1.5rem;
         }
-
         .radio-option {
             display: flex;
             align-items: center;
@@ -1000,18 +950,15 @@ function App() {
             cursor: pointer;
             transition: all 0.2s ease-in-out;
         }
-
         .radio-option:hover {
             background-color: #edf2f7;
             border-color: #a0aec0;
         }
-
         .radio-option.selected {
             border-color: #4F46E5;
             background-color: #EEF2FF;
             box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.3);
         }
-
         .radio-option input[type="radio"] {
             margin-right: 0.75rem;
             /* Nasconde il radio button nativo */
@@ -1027,12 +974,10 @@ function App() {
             position: relative;
             flex-shrink: 0; /* Impedisce al radio di restringersi */
         }
-
         .radio-option input[type="radio"]:checked {
             border-color: #4F46E5;
             background-color: #4F46E5;
         }
-
         .radio-option input[type="radio"]:checked::before {
             content: '';
             display: block;
@@ -1045,14 +990,12 @@ function App() {
             left: 50%;
             transform: translate(-50%, -50%);
         }
-
         .radio-option-label {
             font-size: 1rem;
             color: #1F2937;
             font-weight: 500;
             flex-grow: 1; /* Permette al testo di occupare lo spazio rimanente */
         }
-
         /* Stili per i risultati Home Standby / Adty */
         .standby-result-box {
             padding: 1.5rem;
@@ -1061,35 +1004,29 @@ function App() {
             text-align: center;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
         }
-
         .standby-result-box.green {
             background-color: #D1FAE5; /* green-100 */
             border: 2px solid #34D399; /* green-400 */
             color: #065F46; /* green-800 */
         }
-
         .standby-result-box.red {
             background-color: #FEE2E2; /* red-100 */
             border: 2px solid #EF4444; /* red-400 */
             color: #991B1B; /* red-800 */
         }
-
         .standby-result-box h3 {
             font-size: 1.5rem;
             font-weight: 700;
             margin-bottom: 0.75rem;
         }
-
         .standby-result-box p {
             font-size: 1rem;
             line-height: 1.5;
             margin-bottom: 0.5rem;
         }
-
         .standby-result-box strong {
             font-weight: 700;
         }
-
         /* Media queries per la responsività */
         @media (max-width: 768px) {
           .main-card {
@@ -1108,7 +1045,6 @@ function App() {
             height: 2.5rem;
           }
         }
-
         @media (max-width: 480px) {
           .main-card {
             padding: 0.75rem;
@@ -1125,7 +1061,6 @@ function App() {
             height: 2rem;
           }
         }
-
         .contact-disclaimer {
             margin-top: 2rem;
             padding-top: 1.5rem;
@@ -1135,7 +1070,6 @@ function App() {
             text-align: center;
             line-height: 1.5;
         }
-
         .copyright-text {
             margin-top: 1rem;
             font-size: 0.75rem; /* Caratteri più piccoli */
@@ -1154,29 +1088,24 @@ function App() {
             font-weight: 500;
             transition: color 0.2s ease-in-out;
         }
-
         .tally-link:hover {
             color: #1D4ED8; /* Un blu più scuro al passaggio del mouse */
             text-decoration: underline; /* Sottolineatura al passaggio del mouse */
         }
-
         .disabled-option {
           opacity: 0.6;
           cursor: not-allowed;
           background-color: #e9ecef; /* Sfondo più chiaro per disabilitato */
         }
-
         .disabled-option:hover {
           background-color: #e9ecef; /* Previene l'effetto hover quando disabilitato */
           border-color: #d1d5db; /* Mantiene il colore del bordo originale quando disabilitato */
         }
-
         .disabled-option input[type="radio"] {
           cursor: not-allowed;
         }
         `}
       </style>
-
       <div className="app-container">
         <div className="main-card">
           <h1 className="main-title">
@@ -1189,10 +1118,9 @@ function App() {
             <div className="main-title-text-container">
               Verifica Eleggibilità Sciopero Aereo
               <span className="main-title-date">{strikeDurationText}</span>
-              <span className="main-disclaimer">esclusi dallo sciopero tutti i voli da / per PMO</span>
+              <span className="main-disclaimer">esclusi dallo sciopero tutti i voli da / per CTA tra le 12:00 e le 16:00</span>
             </div>
           </h1>
-
           {/* Scelta iniziale: Volo o Home Standby / Adty */}
           <div className="form-sections-container">
             <div className="input-group">
@@ -1233,7 +1161,6 @@ function App() {
                 </label>
               </div>
             </div>
-
             {/* Sezione per i voli (visibile solo se dutyType è 'flight') */}
             {dutyType === 'flight' && (
               <>
@@ -1250,7 +1177,6 @@ function App() {
                     placeholder="Es. LIMC o MXP"
                   />
                 </div>
-
                 <div className="input-group">
                   <label htmlFor="numSectors" className="input-label">
                     Quanti settori prevede il tuo duty? (2 o 4)
@@ -1268,7 +1194,6 @@ function App() {
                     placeholder="Es. 2 o 4"
                   />
                 </div>
-
                 {/* Campo per le destinazioni */}
                 { (parseInt(numSectors) === 2 || parseInt(numSectors) === 4) && (
                   <div className="section-card">
@@ -1293,7 +1218,6 @@ function App() {
                     </div>
                   </div>
                 )}
-
                 {/* Campi dinamici per gli orari di decollo per ogni segmento di volo */}
                 { (parseInt(numSectors) === 2 || parseInt(numSectors) === 4) &&
                   destinationInput && baseIcao && generateFlightSegments(baseIcao, parseInt(numSectors), destinationInput).length > 0 && (
@@ -1321,7 +1245,6 @@ function App() {
                     </div>
                   </div>
                 )}
-
                 <button
                   onClick={calculateStrikeEligibility}
                   className="main-button"
@@ -1330,7 +1253,6 @@ function App() {
                 </button>
               </>
             )}
-
             {/* Sezione per Home Standby / Adty (visibile solo se dutyType è 'standby') */}
             {dutyType === 'standby' && (
               <>
@@ -1359,7 +1281,6 @@ function App() {
                     </label>
                   </div>
                 </div>
-
                 {standbyOption === 'notPrecettato' && (
                   <div className="standby-result-box green">
                     <h3>SCIOPERABILE</h3>
@@ -1371,7 +1292,6 @@ function App() {
                     </ul>
                   </div>
                 )}
-
                 {standbyOption === 'precettato' && (
                   <div className="standby-result-box red">
                     <h3>NON SCIOPERABILE</h3>
@@ -1384,7 +1304,6 @@ function App() {
                 )}
               </>
             )}
-
             {/* Sezione per Segnala Adesione Sciopero (visibile solo se dutyType è 'reportStrike' e isLinkActive è true) */}
             {dutyType === 'reportStrike' && isLinkActive && (
               <div className="section-card">
@@ -1402,9 +1321,7 @@ function App() {
                 {/* Lo script per caricare il widget Tally.so è ora gestito tramite useEffect */}
               </div>
             )}
-
           </div>
-
           {/* Risultati (solo per i voli) */}
           {dutyType === 'flight' && results.length > 0 && (
             <div className="results-section">
@@ -1431,7 +1348,6 @@ function App() {
               </div>
             </div>
           )}
-
           {/* Modale per i messaggi */}
           {isModalOpen && (
             <div className="modal-overlay">
@@ -1447,12 +1363,10 @@ function App() {
               </div>
             </div>
           )}
-
           {/* Nuova dicitura a fine pagina */}
           <div className="contact-disclaimer">
             In caso di dubbi, necessità o discordanza riscontrata con le modalità di sciopero comunicate, non esitate a contattare i rappresentanti USB.
           </div>
-
           {/* Protezione dei diritti d'autore */}
           <div className="copyright-text">
             © 2025 scioperousb.netlify.app – Tutti i diritti riservati. Il design, il codice e i contenuti di questa web app sono protetti da copyright. È vietata la riproduzione o diffusione non autorizzata, anche parziale, senza esplicita autorizzazione.
