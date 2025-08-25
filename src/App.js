@@ -3,258 +3,202 @@ import React, { useState, useEffect } from 'react';
 // Dati degli aeroporti serviti da EasyJet (incluse le destinazioni internazionali)
 const italianAirports = [
   // AEROPORTI ITALIANI
-  { icao: 'LIPA', iata: 'AOI', name: 'Ancona Falconara', country: 'Italy' },
-  { icao: 'LIPV', iata: 'AHO', name: 'Alghero Fertilia', country: 'Italy' },
-  { icao: 'LIBD', iata: 'BRI', name: 'Bari Karol Wojtyla', country: 'Italy' },
-  { icao: 'LIPE', iata: 'BLQ', name: 'Bologna Guglielmo Marconi', country: 'Italy' },
-  { icao: 'LIEC', iata: 'BDS', name: 'Brindisi Papola Casale', country: 'Italy' },
-  { icao: 'LIEE', iata: 'CAG', name: 'Cagliari Elmas', country: 'Italy' },
-  { icao: 'LICC', iata: 'CTA', name: 'Catania Fontanarossa', country: 'Italy' },
-  { icao: 'LIRA', iata: 'CIA', name: 'Roma Ciampino', country: 'Italy' },
-  { icao: 'LICG', iata: 'CIY', name: 'Comiso Vincenzo Magliocco', country: 'Italy' },
-  { icao: 'LIBG', iata: 'CCV', name: 'Crotone Sant\'Anna', country: 'Italy' },
-  { icao: 'LIPR', iata: 'CUF', name: 'Cuneo Levaldigi', country: 'Italy' },
-  { icao: 'LIRS', iata: 'FLR', name: 'Firenze Peretola', country: 'Italy' },
-  { icao: 'LIBN', iata: 'FOG', name: 'Foggia Gino Lisa', country: 'Italy' },
-  { icao: 'LIEO', iata: 'GOA', name: 'Genova Cristoforo Colombo', country: 'Italy' },
-  { icao: 'LICA', iata: 'SUF', name: 'Lamezia Terme', country: 'Italy' },
-  { icao: 'LICD', iata: 'LMP', name: 'Lampedusa', country: 'Italy' },
-  { icao: 'LIML', iata: 'LIN', name: 'Milano Linate', country: 'Italy' },
   { icao: 'LIMC', iata: 'MXP', name: 'Milano Malpensa', country: 'Italy' },
-  { icao: 'LIRN', iata: 'NAP', name: 'Napoli Capodichino', country: 'Italy' },
-  { icao: 'LIRJ', iata: 'OLB', name: 'Olbia Costa Smeralda', country: 'Italy' },
-  { icao: 'LICJ', iata: 'PMO', name: 'Palermo Falcone Borsellino', country: 'Italy' },
-  { icao: 'LIRP', iata: 'PSR', name: 'Pescara Abruzzo', country: 'Italy' },
-  { icao: 'LIRP', iata: 'PSA', name: 'Pisa Galileo Galilei', country: 'Italy' },
-  { icao: 'LIQJ', iata: 'QSR', name: 'Salerno Costa d\'Amalfi', country: 'Italy' },
-  { icao: 'LICB', iata: 'REG', name: 'Reggio Calabria Tito Minniti', country: 'Italy' },
-  { icao: 'LIPB', iata: 'RMI', name: 'Rimini Federico Fellini', country: 'Italy' },
   { icao: 'LIRF', iata: 'FCO', name: 'Roma Fiumicino', country: 'Italy' },
-  { icao: 'LILP', iata: 'TRN', name: 'Torino Caselle', country: 'Italy' },
-  { icao: 'LIPQ', iata: 'TSF', name: 'Treviso Antonio Canova', country: 'Italy' },
-  { icao: 'LIPU', iata: 'TRS', name: 'Trieste Ronchi dei Legionari', country: 'Italy' },
+  { icao: 'LICJ', iata: 'PMO', name: 'Palermo Falcone Borsellino', country: 'Italy' },
+  { icao: 'LIBD', iata: 'BRI', name: 'Bari Karol Wojtyla', country: 'Italy' },
+  { icao: 'LICC', iata: 'CTA', name: 'Catania Fontanarossa', country: 'Italy' },
+  { icao: 'LIPE', iata: 'BLQ', name: 'Bologna Guglielmo Marconi', country: 'Italy' },
+  { icao: 'LIRN', iata: 'NAP', name: 'Napoli Capodichino', country: 'Italy' },
   { icao: 'LIPZ', iata: 'VCE', name: 'Venezia Marco Polo', country: 'Italy' },
+  { icao: 'LIRA', iata: 'CIA', name: 'Roma Ciampino', country: 'Italy' },
+  { icao: 'LIML', iata: 'LIN', name: 'Milano Linate', country: 'Italy' },
+  { icao: 'LIRJ', iata: 'OLB', name: 'Olbia Costa Smeralda', country: 'Italy' },
+  { icao: 'LIEE', iata: 'CAG', name: 'Cagliari Elmas', country: 'Italy' },
+  { icao: 'LICD', iata: 'LMP', name: 'Lampedusa', country: 'Italy' },
+  { icao: 'LIRP', iata: 'PSA', name: 'Pisa Galileo Galilei', country: 'Italy' },
   { icao: 'LIPY', iata: 'VRN', name: 'Verona Villafranca', country: 'Italy' },
+  { icao: 'LIEC', iata: 'BDS', name: 'Brindisi Papola Casale', country: 'Italy' },
+  { icao: 'LICA', iata: 'SUF', name: 'Lamezia Terme', country: 'Italy' },
+  { icao: 'LIRP', iata: 'PSR', name: 'Pescara Abruzzo', country: 'Italy' },
+  { icao: 'LIPB', iata: 'RMI', name: 'Rimini Federico Fellini', country: 'Italy' },
+  { icao: 'LIRS', iata: 'FLR', name: 'Firenze Peretola', country: 'Italy' },
+  { icao: 'LILP', iata: 'TRN', name: 'Torino Caselle', country: 'Italy' },
+  { icao: 'LIBN', iata: 'FOG', name: 'Foggia Gino Lisa', country: 'Italy' },
+  { icao: 'LIBG', iata: 'CCV', name: 'Crotone Sant\'Anna', country: 'Italy' },
+  { icao: 'LICB', iata: 'REG', name: 'Reggio Calabria Tito Minniti', country: 'Italy' },
+  { icao: 'LIPQ', iata: 'TSF', name: 'Treviso Antonio Canova', country: 'Italy' },
+  { icao: 'LIPV', iata: 'AHO', name: 'Alghero Fertilia', country: 'Italy' },
+  { icao: 'LIPR', iata: 'CUF', name: 'Cuneo Levaldigi', country: 'Italy' },
+  { icao: 'LIQJ', iata: 'QSR', name: 'Salerno Costa d\'Amalfi', country: 'Italy' },
+  { icao: 'LICG', iata: 'CIY', name: 'Comiso Vincenzo Magliocco', country: 'Italy' },
+  { icao: 'LIEO', iata: 'GOA', name: 'Genova Cristoforo Colombo', country: 'Italy' },
+  { icao: 'LIPA', iata: 'AOI', name: 'Ancona Falconara', country: 'Italy' },
+  { icao: 'LIPU', iata: 'TRS', name: 'Trieste Ronchi dei Legionari', country: 'Italy' },
 
-  // AEROPORTI INTERNAZIONALI EasyJet (Ordinati per Paese e poi Nome)
-  // Albania
-  { icao: 'LATI', iata: 'TIA', name: 'Tirana', country: 'Albania' },
-  // Algeria
+  // AEROPORTI INTERNAZIONALI EasyJet
+  { icao: 'LEMH', iata: 'MAH', name: 'Menorca Airport', country: 'Spain' }, // Added Menorca Mahon
+  { icao: 'EGLL', iata: 'LHR', name: 'London Heathrow', country: 'United Kingdom' },
+  { icao: 'EGKK', iata: 'LGW', name: 'London Gatwick', country: 'United Kingdom' },
+  { icao: 'EGGW', iata: 'LTN', name: 'London Luton', country: 'United Kingdom' },
+  { icao: 'EGSS', iata: 'STN', name: 'London Stansted', country: 'United Kingdom' },
+  { icao: 'LFPG', iata: 'CDG', name: 'Paris Charles de Gaulle', country: 'France' },
+  { icao: 'LFPO', iata: 'ORY', name: 'Paris Orly', country: 'France' },
+  { icao: 'EHAM', iata: 'AMS', name: 'Amsterdam Schiphol', country: 'Netherlands' },
+  { icao: 'LSGG', iata: 'GVA', name: 'Geneva', country: 'Switzerland' },
+  { icao: 'LSZH', iata: 'ZRH', name: 'Zurich', country: 'Switzerland' },
+  { icao: 'EDDB', iata: 'BER', name: 'Berlin Brandenburg', country: 'Germany' },
+  { icao: 'EDDH', iata: 'HAM', name: 'Hamburg', country: 'Germany' },
+  { icao: 'EDDM', iata: 'MUC', name: 'Munich', country: 'Germany' },
+  { icao: 'EDDL', iata: 'DUS', name: 'Düsseldorf', country: 'Germany' },
+  { icao: 'LEBL', iata: 'BCN', name: 'Barcelona El Prat', country: 'Spain' },
+  { icao: 'LEMD', iata: 'MAD', name: 'Madrid Barajas', country: 'Spain' },
+  { icao: 'LEPA', iata: 'PMI', name: 'Palma de Mallorca', country: 'Spain' },
+  { icao: 'LEMG', iata: 'AGP', name: 'Malaga Costa del Sol', country: 'Spain' },
+  { icao: 'LEAL', iata: 'ALC', name: 'Alicante Elche', country: 'Spain' },
+  { icao: 'LPPT', iata: 'LIS', name: 'Lisbon Portela', country: 'Portugal' },
+  { icao: 'LPPR', iata: 'OPO', name: 'Porto', country: 'Portugal' },
+  { icao: 'LGAV', iata: 'ATH', name: 'Athens Eleftherios Venizelos', country: 'Greece' },
+  { icao: 'LGIR', iata: 'HER', name: 'Heraklion Nikos Kazantzakis', country: 'Greece' },
+  { icao: 'LGRP', iata: 'RHO', name: 'Rhodes International', country: 'Greece' },
+  { icao: 'LGMK', iata: 'JMK', name: 'Mykonos', country: 'Greece' },
+  { icao: 'LGSK', iata: 'SKG', name: 'Thessaloniki Macedonia', country: 'Greece' },
+  { icao: 'LCLK', iata: 'LCA', name: 'Larnaca', country: 'Cyprus' },
+  { icao: 'LCPH', iata: 'PFO', name: 'Paphos', country: 'Cyprus' },
+  { icao: 'LKPR', iata: 'PRG', name: 'Prague Václav Havel', country: 'Czech Republic' },
+  { icao: 'EKCH', iata: 'CPH', name: 'Copenhagen Kastrup', country: 'Denmark' },
+  { icao: 'EIDW', iata: 'DUB', name: 'Dublin', country: 'Ireland' },
+  { icao: 'LFLL', iata: 'LYS', name: 'Lyon Saint-Exupéry', country: 'France' },
+  { icao: 'LFBD', iata: 'BOD', name: 'Bordeaux-Mérignac', country: 'France' },
+  { icao: 'LFMN', iata: 'NCE', name: 'Nice Côte d\'Azur', country: 'France' },
+  { icao: 'LFPO', iata: 'ORY', name: 'Paris Orly', country: 'France' },
+  { icao: 'GMMN', iata: 'RAK', name: 'Marrakech Menara', country: 'Morocco' },
+  { icao: 'HECA', iata: 'CAI', name: 'Cairo International', country: 'Egypt' },
+  { icao: 'HESH', iata: 'SSH', name: 'Sharm el-Sheikh International', country: 'Egypt' },
+  { icao: 'HEGN', iata: 'HRG', name: 'Hurghada International', country: 'Egypt' },
+  { icao: 'HEBA', iata: 'RMF', name: 'Marsa Alam International', country: 'Egypt' },
+  { icao: 'BGSF', iata: 'SFJ', name: 'Kangerlussuaq', country: 'Greenland' },
+  { icao: 'BIKF', iata: 'KEF', name: 'Keflavik International', country: 'Iceland' },
+  { icao: 'LFSB', iata: 'BSL', name: 'EuroAirport Basel Mulhouse Freiburg', country: 'Switzerland' },
+  { icao: 'EDDT', iata: 'TXL', name: 'Berlin Tegel (old)', country: 'Germany' }, // Incluso per compatibilità con dati storici
+  { icao: 'LGRP', iata: 'PVK', name: 'Preveza-Lefkada Aktion', country: 'Greece' },
+  { icao: 'LGSM', iata: 'JSI', name: 'Skiathos Alexandros Papadiamantis', country: 'Greece' },
+  { icao: 'LGSZ', iata: 'ZTH', name: 'Zakynthos Dionysios Solomos', country: 'Greece' },
+  { icao: 'LYBE', iata: 'BEG', name: 'Belgrade Nikola Tesla', country: 'Serbia' },
+  { icao: 'LJLJ', iata: 'LJU', name: 'Ljubljana Jože Pučnik', country: 'Slovenia' },
+  { icao: 'LQSA', iata: 'SJJ', name: 'Sarajevo International', country: 'Bosnia and Herzegovina' },
+  { icao: 'LMML', iata: 'MLA', name: 'Malta International', country: 'Malta' },
+  { icao: 'EBLG', iata: 'LGG', name: 'Liege Airport', country: 'Belgium' },
+  { icao: 'EBBR', iata: 'BRU', name: 'Brussels Airport', country: 'Belgium' },
+  { icao: 'LGRP', iata: 'KGS', name: 'Kos International', country: 'Greece' },
+  { icao: 'LGMK', iata: 'AXM', name: 'Araxos Airport (Patras)', country: 'Greece' },
+  { icao: 'LGKF', iata: 'CFU', name: 'Corfu Ioannis Kapodistrias', country: 'Greece' },
+  { icao: 'LGSK', iata: 'SKG', name: 'Thessaloniki Macedonia', country: 'Greece' },
+  { icao: 'LGRP', iata: 'JTR', name: 'Santorini (Thira) International', country: 'Greece' },
+  { icao: 'LFRB', iata: 'RNS', name: 'Rennes–Saint-Jacques Airport', country: 'France' },
+  { icao: 'LFRS', iata: 'NTE', name: 'Nantes Atlantique Airport', country: 'France' },
+  { icao: 'LFSB', iata: 'SXB', name: 'Strasbourg Airport', country: 'France' },
+  { icao: 'LFBO', iata: 'TLS', name: 'Toulouse–Blagnac Airport', country: 'France' },
+  { icao: 'GMMN', iata: 'AGA', name: 'Agadir Al Massira Airport', country: 'Morocco' },
+  { icao: 'GMAD', iata: 'ESU', name: 'Essaouira-Mogador Airport', country: 'Morocco' },
+  { icao: 'GMTT', iata: 'TNG', name: 'Tangier Ibn Battouta Airport', country: 'Morocco' },
+  { icao: 'ESSA', iata: 'ARN', name: 'Stockholm Arlanda Airport', country: 'Sweden' },
+  { icao: 'ESGG', iata: 'GOT', name: 'Gothenburg Landvetter Airport', country: 'Sweden' },
+  { icao: 'ENZV', iata: 'TRF', name: 'Sandefjord Airport, Torp', country: 'Norway' },
+  { icao: 'ENVA', iata: 'TRD', name: 'Trondheim Airport', country: 'Norway' },
+  { icao: 'ENBR', iata: 'BGO', name: 'Bergen Airport', country: 'Norway' },
+  { icao: 'EFHK', iata: 'HEL', name: 'Helsinki Airport', country: 'Finland' },
+  { icao: 'EFKT', iata: 'KTT', name: 'Kittilä Airport', country: 'Finland' },
+  { icao: 'EFRO', iata: 'RVN', name: 'Rovaniemi Airport', country: 'Finland' },
+  { icao: 'LROP', iata: 'OTP', name: 'Henri Coandă International Airport', country: 'Romania' },
+  { icao: 'UGTB', iata: 'TBS', name: 'Tbilisi International Airport', country: 'Georgia' },
+  { icao: 'EYKA', iata: 'KUN', name: 'Kaunas Airport', country: 'Lithuania' },
+  { icao: 'EYVI', iata: 'VNO', name: 'Vilnius Airport', country: 'Lithuania' },
+  { icao: 'EPKK', iata: 'KRK', name: 'Kraków John Paul II International Airport', country: 'Poland' },
+  { icao: 'EPWA', iata: 'WAW', name: 'Warsaw Chopin Airport', country: 'Poland' },
+  { icao: 'LUKK', iata: 'KIV', name: 'Chișinău International Airport', country: 'Moldova' },
+  { icao: 'EBCI', iata: 'CRL', name: 'Brussels South Charleroi Airport', country: 'Belgium' },
+  { icao: 'EGNM', iata: 'LBA', name: 'Leeds Bradford Airport', country: 'United Kingdom' },
+  { icao: 'EGPF', iata: 'GLA', name: 'Glasgow Airport', country: 'United Kingdom' },
+  { icao: 'EGPH', iata: 'EDI', name: 'Edinburgh Airport', country: 'United Kingdom' },
+  { icao: 'EGAA', iata: 'BFS', name: 'Belfast International Airport', country: 'United Kingdom' },
+  { icao: 'EGBB', iata: 'BHX', name: 'Birmingham Airport', country: 'United Kingdom' },
+  { icao: 'EGNX', iata: 'EMA', name: 'East Midlands Airport', country: 'United Kingdom' },
+  { icao: 'EGCB', iata: 'MAN', name: 'Manchester Airport', country: 'United Kingdom' },
+  { icao: 'EGNJ', iata: 'NCL', name: 'Newcastle Airport', country: 'United Kingdom' },
+  { icao: 'EGPD', iata: 'ABZ', name: 'Aberdeen Airport', country: 'United Kingdom' },
+  { icao: 'EGSS', iata: 'SEN', name: 'London Southend Airport', country: 'United Kingdom' },
+  { icao: 'EGFE', iata: 'CWL', name: 'Cardiff Airport', country: 'United Kingdom' },
+  { icao: 'EGNT', iata: 'BOH', name: 'Bournemouth Airport', country: 'United Kingdom' },
+  { icao: 'EGPK', iata: 'INV', name: 'Inverness Airport', country: 'United Kingdom' },
+  { icao: 'EGPN', iata: 'NQY', name: 'Newquay Airport', country: 'United Kingdom' },
+  { icao: 'EGHI', iata: 'SOU', name: 'Southampton Airport', country: 'United Kingdom' },
+  { icao: 'EGNX', iata: 'BRS', name: 'Bristol Airport', country: 'United Kingdom' },
+  { icao: 'EGGD', iata: 'LPL', name: 'Liverpool John Lennon Airport', country: 'United Kingdom' },
+  { icao: 'EGNV', iata: 'LDY', name: 'City of Derry Airport', country: 'United Kingdom' },
+  { icao: 'EGHH', iata: 'JER', name: 'Jersey Airport', country: 'Jersey' },
+  { icao: 'EGNS', iata: 'IOM', name: 'Isle of Man Airport', country: 'Isle of Man' },
+  { icao: 'LPFR', iata: 'FAO', name: 'Faro Airport', country: 'Portugal' },
+  { icao: 'LPMA', iata: 'FNC', name: 'Madeira Airport', country: 'Portugal' },
+  { icao: 'GCFV', iata: 'FUE', name: 'Fuerteventura Airport', country: 'Spain' },
+  { icao: 'GCLP', iata: 'LPA', name: 'Gran Canaria Airport', country: 'Spain' },
+  { icao: 'GCRR', iata: 'ACE', name: 'Lanzarote Airport', country: 'Spain' },
+  { icao: 'GCXO', iata: 'TFS', name: 'Tenerife South Airport', country: 'Spain' },
+  { icao: 'LEIB', iata: 'IBZ', name: 'Ibiza Airport', country: 'Spain' },
+  { icao: 'LEST', iata: 'SCQ', name: 'Santiago de Compostela Airport', country: 'Spain' },
+  { icao: 'LERT', iata: 'RMU', name: 'Region of Murcia International Airport', country: 'Spain' },
+  { icao: 'LEVC', iata: 'VLC', name: 'Valencia Airport', country: 'Spain' },
+  { icao: 'LEJR', iata: 'XRY', name: 'Jerez Airport', country: 'Spain' },
+  { icao: 'GIBN', iata: 'GIB', name: 'Gibraltar International Airport', country: 'Gibraltar' },
+  { icao: 'DTTJ', iata: 'DJE', name: 'Djerba–Zarzis International Airport', country: 'Tunisia' },
+  { icao: 'DTNH', iata: 'NBE', name: 'Enfidha–Hammamet International Airport', country: 'Tunisia' },
+  { icao: 'HAAB', iata: 'ADD', name: 'Addis Ababa Bole International Airport', country: 'Ethiopia' },
   { icao: 'DAAG', iata: 'ALG', name: 'Algiers Houari Boumediene Airport', country: 'Algeria' },
   { icao: 'DABM', iata: 'BJA', name: 'Bejaïa Abane Ramdane Airport', country: 'Algeria' },
-  // Austria
+  { icao: 'EGTE', iata: 'EXT', name: 'Exeter Airport', country: 'United Kingdom' },
+  { icao: 'LFLB', iata: 'CMF', name: 'Chambéry Airport', country: 'France' },
+  { icao: 'LSGS', iata: 'SIR', name: 'Sion Airport', country: 'Switzerland' },
+  { icao: 'EBOS', iata: 'OST', name: 'Ostend–Bruges International Airport', country: 'Belgium' },
+  { icao: 'LFSB', iata: 'MLH', name: 'Mulhouse', country: 'France' },
+  { icao: 'LSZB', iata: 'BRN', name: 'Bern Airport', country: 'Switzerland' },
   { icao: 'LOWI', iata: 'INN', name: 'Innsbruck Airport', country: 'Austria' },
   { icao: 'LOWS', iata: 'SZG', name: 'Salzburg Airport', country: 'Austria' },
   { icao: 'LOWW', iata: 'VIE', name: 'Vienna International Airport', country: 'Austria' },
-  // Belgium
-  { icao: 'EBBR', iata: 'BRU', name: 'Brussels Airport', country: 'Belgium' },
-  { icao: 'EBCI', iata: 'CRL', name: 'Brussels South Charleroi Airport', country: 'Belgium' },
-  { icao: 'EBLG', iata: 'LGG', name: 'Liege Airport', country: 'Belgium' },
-  { icao: 'EBOS', iata: 'OST', name: 'Ostend–Bruges International Airport', country: 'Belgium' },
-  // Bosnia and Herzegovina
-  { icao: 'LQSA', iata: 'SJJ', name: 'Sarajevo International', country: 'Bosnia and Herzegovina' },
-  // Bulgaria
   { icao: 'LBBG', iata: 'BOJ', name: 'Burgas Airport', country: 'Bulgaria' },
   { icao: 'LBSF', iata: 'SOF', name: 'Sofia Airport', country: 'Bulgaria' },
-  { icao: 'LBBG', iata: 'VAR', name: 'Varna Airport', country: 'Bulgaria' },
-  // Cape Verde
   { icao: 'GVAC', iata: 'SID', name: 'Amílcar Cabral International Airport (Sal)', country: 'Cape Verde' },
-  // Croatia
   { icao: 'LDDU', iata: 'DBV', name: 'Dubrovnik Airport', country: 'Croatia' },
   { icao: 'LDPL', iata: 'PUY', name: 'Pula Airport', country: 'Croatia' },
   { icao: 'LDSP', iata: 'SPU', name: 'Split Airport', country: 'Croatia' },
   { icao: 'LDZA', iata: 'ZAD', name: 'Zadar Airport', country: 'Croatia' },
-  // Cyprus
-  { icao: 'LCLK', iata: 'LCA', name: 'Larnaca', country: 'Cyprus' },
-  { icao: 'LCPH', iata: 'PFO', name: 'Paphos', country: 'Cyprus' },
-  // Czech Republic
-  { icao: 'LKPR', iata: 'PRG', name: 'Prague Václav Havel', country: 'Czech Republic' },
-  // Denmark
-  { icao: 'EKCH', iata: 'CPH', name: 'Copenhagen Kastrup', country: 'Denmark' },
-  // Egypt
-  { icao: 'HECA', iata: 'CAI', name: 'Cairo International', country: 'Egypt' },
-  { icao: 'HEGN', iata: 'HRG', name: 'Hurghada International', country: 'Egypt' },
-  { icao: 'HELX', iata: 'LXR', name: 'Luxor International Airport', country: 'Egypt' },
-  { icao: 'HEBA', iata: 'RMF', name: 'Marsa Alam International', country: 'Egypt' },
-  { icao: 'HESH', iata: 'SSH', name: 'Sharm el-Sheikh International', country: 'Egypt' },
+  { icao: 'HECA', iata: 'LXHR', name: 'Luxor International Airport', country: 'Egypt' },
   { icao: 'ETAR', iata: 'SPX', name: 'Sphinx International Airport (Giza)', country: 'Egypt' },
-  // Estonia
-  { icao: 'EETN', iata: 'TLL', name: 'Tallinn Airport', country: 'Estonia' },
-  // Ethiopia
-  { icao: 'HAAB', iata: 'ADD', name: 'Addis Ababa Bole International Airport', country: 'Ethiopia' },
-  // Finland
-  { icao: 'EFHK', iata: 'HEL', name: 'Helsinki Airport', country: 'Finland' },
-  { icao: 'EFKT', iata: 'KTT', name: 'Kittilä Airport', country: 'Finland' },
-  { icao: 'EFRO', iata: 'RVN', name: 'Rovaniemi Airport', country: 'Finland' },
-  // France
-  { icao: 'LFBZ', iata: 'BIQ', name: 'Biarritz Pays Basque Airport', country: 'France' },
-  { icao: 'LFBD', iata: 'BOD', name: 'Bordeaux-Mérignac', country: 'France' },
-  { icao: 'LFLB', iata: 'CMF', name: 'Chambéry Airport', country: 'France' },
-  { icao: 'LFPG', iata: 'CDG', name: 'Paris Charles de Gaulle', country: 'France' },
-  { icao: 'LFKF', iata: 'FSC', name: 'Figari Sud-Corse Airport', country: 'France' },
-  { icao: 'LFLL', iata: 'LYS', name: 'Lyon Saint-Exupéry', country: 'France' },
-  { icao: 'LFRS', iata: 'NTE', name: 'Nantes Atlantique Airport', country: 'France' },
-  { icao: 'LFMN', iata: 'NCE', name: 'Nice Côte d\'Azur', country: 'France' },
-  { icao: 'LFPO', iata: 'ORY', name: 'Paris Orly', country: 'France' },
-  { icao: 'LFOB', iata: 'BVA', name: 'Paris Beauvais', country: 'France' },
-  { icao: 'LFRB', iata: 'RNS', name: 'Rennes–Saint-Jacques Airport', country: 'France' },
-  { icao: 'LFSB', iata: 'MLH', name: 'Mulhouse', country: 'France' }, // EuroAirport Basel Mulhouse Freiburg (French side)
-  { icao: 'LFSB', iata: 'SXB', name: 'Strasbourg Airport', country: 'France' },
-  { icao: 'LFBT', iata: 'LDE', name: 'Tarbes-Lourdes-Pyrenees', country: 'France' },
-  { icao: 'LFBO', iata: 'TLS', name: 'Toulouse–Blagnac Airport', country: 'France' },
-  // Georgia
-  { icao: 'UGTB', iata: 'TBS', name: 'Tbilisi International Airport', country: 'Georgia' },
-  // Germany
-  { icao: 'EDDB', iata: 'BER', name: 'Berlin Brandenburg', country: 'Germany' },
-  { icao: 'EDDT', iata: 'TXL', name: 'Berlin Tegel (old)', country: 'Germany' },
-  { icao: 'EDDL', iata: 'DUS', name: 'Düsseldorf', country: 'Germany' },
-  { icao: 'EDDT', iata: 'FDH', name: 'Friedrichshafen Airport', country: 'Germany' },
   { icao: 'EDDT', iata: 'FRA', name: 'Frankfurt Airport', country: 'Germany' },
-  { icao: 'EDDH', iata: 'HAM', name: 'Hamburg', country: 'Germany' },
-  { icao: 'EDDM', iata: 'MUC', name: 'Munich', country: 'Germany' },
+  { icao: 'EDDT', iata: 'FDH', name: 'Friedrichshafen Airport', country: 'Germany' },
   { icao: 'EDDT', iata: 'STR', name: 'Stuttgart Airport', country: 'Germany' },
-  // Gibraltar
-  { icao: 'GIBN', iata: 'GIB', name: 'Gibraltar International Airport', country: 'Gibraltar' },
-  // Greece
-  { icao: 'LGPA', iata: 'GPA', name: 'Araxos Airport (Patras)', country: 'Greece' },
-  { icao: 'LGAV', iata: 'ATH', name: 'Athens Eleftherios Venizelos', country: 'Greece' },
+  { icao: 'LGB', iata: 'LCY', name: 'London City Airport', country: 'United Kingdom' },
   { icao: 'LGRP', iata: 'CHQ', name: 'Chania International Airport', country: 'Greece' },
-  { icao: 'LGKF', iata: 'CFU', name: 'Corfu Ioannis Kapodistrias', country: 'Greece' },
-  { icao: 'LGIR', iata: 'HER', name: 'Heraklion Nikos Kazantzakis', country: 'Greece' },
-  { icao: 'LGLM', iata: 'EFL', name: 'Kefalonia International Airport', country: 'Greece' },
   { icao: 'LGIR', iata: 'KLX', name: 'Kalamata International Airport', country: 'Greece' },
-  { icao: 'LGRP', iata: 'KGS', name: 'Kos International', country: 'Greece' },
-  { icao: 'LGMK', iata: 'JMK', name: 'Mykonos', country: 'Greece' },
+  { icao: 'LGLM', iata: 'EFL', name: 'Kefalonia International Airport', country: 'Greece' },
   { icao: 'LGPZ', iata: 'PVK', name: 'Aktion National Airport (Preveza)', country: 'Greece' },
-  { icao: 'LGRP', iata: 'RHO', name: 'Rhodes International', country: 'Greece' },
-  { icao: 'LGRP', iata: 'JTR', name: 'Santorini (Thira) International', country: 'Greece' },
-  { icao: 'LGST', iata: 'JSH', name: 'Sitia', country: 'Greece' },
-  { icao: 'LGSA', iata: 'JSI', name: 'Skiathos Alexandros Papadiamantis', country: 'Greece' },
-  { icao: 'LGSM', iata: 'SMI', name: 'Samos International Airport', country: 'Greece' },
-  { icao: 'LGSK', iata: 'SKG', name: 'Thessaloniki Macedonia', country: 'Greece' },
-  { icao: 'LGSZ', iata: 'ZTH', name: 'Zakynthos Dionysios Solomos', country: 'Greece' },
-  // Greenland
-  { icao: 'BGSF', iata: 'SFJ', name: 'Kangerlussuaq', country: 'Greenland' },
-  // Hungary
+  { icao: 'LGSA', iata: 'JSI', name: 'Skiathos International Airport', country: 'Greece' },
+  { icao: 'LGSZ', iata: 'ZTH', name: 'Zakynthos International Airport', country: 'Greece' },
   { icao: 'LHBP', iata: 'BUD', name: 'Budapest Ferenc Liszt International Airport', country: 'Hungary' },
-  // Iceland
-  { icao: 'BIKF', iata: 'KEF', name: 'Keflavik International', country: 'Iceland' },
-  // Ireland
-  { icao: 'EIDW', iata: 'DUB', name: 'Dublin', country: 'Ireland' },
-  // Isle of Man
-  { icao: 'EGNS', iata: 'IOM', name: 'Isle of Man Airport', country: 'Isle of Man' },
-  // Israel
   { icao: 'LLBG', iata: 'TLV', name: 'Ben Gurion Airport (Tel Aviv)', country: 'Israel' },
-  // Jersey
-  { icao: 'EGHH', iata: 'JER', name: 'Jersey Airport', country: 'Jersey' },
-  // Jordan
-  { icao: 'OJAQ', iata: 'AQJ', name: 'Aqaba', country: 'Jordan' },
-  // Kosovo
-  { icao: 'BKPR', iata: 'PRN', name: 'Pristina', country: 'Kosovo' },
-  // Lithuania
-  { icao: 'EYKA', iata: 'KUN', name: 'Kaunas Airport', country: 'Lithuania' },
-  { icao: 'EYVI', iata: 'VNO', name: 'Vilnius Airport', country: 'Lithuania' },
-  // Luxembourg
-  { icao: 'ELLX', iata: 'LUX', name: 'Luxembourg Airport', country: 'Luxembourg' },
-  // Malta
-  { icao: 'LMML', iata: 'MLA', name: 'Malta International', country: 'Malta' },
-  // Moldova
-  { icao: 'LUKK', iata: 'KIV', name: 'Chișinău International Airport', country: 'Moldova' },
-  // Morocco
-  { icao: 'GMMN', iata: 'AGA', name: 'Agadir Al Massira Airport', country: 'Morocco' },
-  { icao: 'GMAD', iata: 'ESU', name: 'Essaouira-Mogador Airport', country: 'Morocco' },
-  { icao: 'GMMN', iata: 'RAK', name: 'Marrakech Menara', country: 'Morocco' },
-  { icao: 'GMMN', iata: 'RBA', name: 'Rabat–Salé Airport', country: 'Morocco' },
-  { icao: 'GMTT', iata: 'TNG', name: 'Tangier Ibn Battouta Airport', country: 'Morocco' },
-  // Netherlands
-  { icao: 'EHAM', iata: 'AMS', name: 'Amsterdam Schiphol', country: 'Netherlands' },
-  // Norway
-  { icao: 'ENBR', iata: 'BGO', name: 'Bergen Airport', country: 'Norway' },
-  { icao: 'ENEV', iata: 'EVE', name: 'Harstad/Narvik Airport', country: 'Norway' },
-  { icao: 'ENGM', iata: 'OSL', name: 'Oslo Gardermoen', country: 'Norway' },
-  { icao: 'ENZV', iata: 'TRF', name: 'Sandefjord Airport, Torp', country: 'Norway' },
-  { icao: 'ENTC', iata: 'TOS', name: 'Tromsø Airport', country: 'Norway' },
-  { icao: 'ENVA', iata: 'TRD', name: 'Trondheim Airport', country: 'Norway' },
-  // Poland
-  { icao: 'EPKK', iata: 'KRK', name: 'Kraków John Paul II International Airport', country: 'Poland' },
-  { icao: 'EPWA', iata: 'WAW', name: 'Warsaw Chopin Airport', country: 'Poland' },
-  // Portugal
-  { icao: 'LPFR', iata: 'FAO', name: 'Faro Airport', country: 'Portugal' },
-  { icao: 'LPPT', iata: 'LIS', name: 'Lisbon Portela', country: 'Portugal' },
-  { icao: 'LPMA', iata: 'FNC', name: 'Madeira Airport', country: 'Portugal' },
-  { icao: 'LPPR', iata: 'OPO', name: 'Porto', country: 'Portugal' },
   { icao: 'LPPM', iata: 'PDL', name: 'Ponta Delgada João Paulo II Airport', country: 'Portugal' },
   { icao: 'LPPS', iata: 'PXO', name: 'Porto Santo Airport', country: 'Portugal' },
-  // Romania
-  { icao: 'LROP', iata: 'OTP', name: 'Henri Coandă International Airport', country: 'Romania' },
-  // Serbia
-  { icao: 'LYBE', iata: 'BEG', name: 'Belgrade Nikola Tesla', country: 'Serbia' },
-  // Slovakia
-  { icao: 'LSZH', iata: 'ZQE', name: 'Zilina Airport', country: 'Slovakia' }, // Note: ZQE is actually a rail station code, Zilina Airport ICAO is LZZI. Keeping ZQE as per original list, but flagging.
-  // Slovenia
-  { icao: 'LJLJ', iata: 'LJU', name: 'Ljubljana Jože Pučnik', country: 'Slovenia' },
-  // Spain
-  { icao: 'LEAL', iata: 'ALC', name: 'Alicante Elche', country: 'Spain' },
+  { icao: 'LSZH', iata: 'ZQE', name: 'Zilina Airport', country: 'Slovakia' },
   { icao: 'LEAX', iata: 'LEI', name: 'Almería Airport', country: 'Spain' },
-  { icao: 'LEBL', iata: 'BCN', name: 'Barcelona El Prat', country: 'Spain' },
   { icao: 'LEGA', iata: 'BIO', name: 'Bilbao Airport', country: 'Spain' },
-  { icao: 'LECO', iata: 'LCG', name: 'A Coruña Airport', country: 'Spain' },
-  { icao: 'GCFV', iata: 'FUE', name: 'Fuerteventura Airport', country: 'Spain' },
-  { icao: 'GCLP', iata: 'LPA', name: 'Gran Canaria Airport', country: 'Spain' },
-  { icao: 'LEIB', iata: 'IBZ', name: 'Ibiza Airport', country: 'Spain' },
   { icao: 'LEJR', iata: 'XRY', name: 'Jerez Airport', country: 'Spain' },
-  { icao: 'GCRR', iata: 'ACE', name: 'Lanzarote Airport', country: 'Spain' },
-  { icao: 'LEMD', iata: 'MAD', name: 'Madrid Barajas', country: 'Spain' },
-  { icao: 'LEMG', iata: 'AGP', name: 'Malaga Costa del Sol', country: 'Spain' },
-  { icao: 'LEMH', iata: 'MAH', name: 'Menorca Airport', country: 'Spain' },
-  { icao: 'LEPA', iata: 'PMI', name: 'Palma de Mallorca', country: 'Spain' },
-  { icao: 'LERT', iata: 'RMU', name: 'Region of Murcia International Airport', country: 'Spain' },
-  { icao: 'LEST', iata: 'SCQ', name: 'Santiago de Compostela Airport', country: 'Spain' },
-  { icao: 'LEZL', iata: 'SVQ', name: 'Seville Airport', country: 'Spain' },
-  { icao: 'GCXO', iata: 'TFS', name: 'Tenerife South Airport', country: 'Spain' },
-  { icao: 'LEVC', iata: 'VLC', name: 'Valencia Airport', country: 'Spain' },
-  // Sweden
-  { icao: 'ESSA', iata: 'ARN', name: 'Stockholm Arlanda Airport', country: 'Sweden' },
-  { icao: 'ESGG', iata: 'GOT', name: 'Gothenburg Landvetter Airport', country: 'Sweden' },
-  // Switzerland
-  { icao: 'LFSB', iata: 'BSL', name: 'EuroAirport Basel Mulhouse Freiburg', country: 'Switzerland' }, // Swiss side
-  { icao: 'LSZB', iata: 'BRN', name: 'Bern Airport', country: 'Switzerland' },
-  { icao: 'LSGG', iata: 'GVA', name: 'Geneva', country: 'Switzerland' },
-  { icao: 'LSGS', iata: 'SIR', name: 'Sion Airport', country: 'Switzerland' },
-  { icao: 'LSZH', iata: 'ZRH', name: 'Zurich', country: 'Switzerland' },
-  // Tunisia
-  { icao: 'DTTJ', iata: 'DJE', name: 'Djerba–Zarzis International Airport', country: 'Tunisia' },
-  { icao: 'DTNH', iata: 'NBE', name: 'Enfidha–Hammamet International Airport', country: 'Tunisia' },
-  // United Kingdom
-  { icao: 'EGPD', iata: 'ABZ', name: 'Aberdeen Airport', country: 'United Kingdom' },
-  { icao: 'EGAA', iata: 'BFS', name: 'Belfast International Airport', country: 'United Kingdom' },
-  { icao: 'EGBB', iata: 'BHX', name: 'Birmingham Airport', country: 'United Kingdom' },
-  { icao: 'EGNT', iata: 'BOH', name: 'Bournemouth Airport', country: 'United Kingdom' },
-  { icao: 'EGNX', iata: 'BRS', name: 'Bristol Airport', country: 'United Kingdom' },
-  { icao: 'EGFE', iata: 'CWL', name: 'Cardiff Airport', country: 'United Kingdom' },
-  { icao: 'EGPH', iata: 'EDI', name: 'Edinburgh Airport', country: 'United Kingdom' },
-  { icao: 'EGTE', iata: 'EXT', name: 'Exeter Airport', country: 'United Kingdom' },
-  { icao: 'EGPF', iata: 'GLA', name: 'Glasgow Airport', country: 'United Kingdom' },
-  { icao: 'EGPK', iata: 'INV', name: 'Inverness Airport', country: 'United Kingdom' },
-  { icao: 'EGNV', iata: 'LDY', name: 'City of Derry Airport', country: 'United Kingdom' },
-  { icao: 'EGNM', iata: 'LBA', name: 'Leeds Bradford Airport', country: 'United Kingdom' },
-  { icao: 'LGB', iata: 'LCY', name: 'London City Airport', country: 'United Kingdom' },
-  { icao: 'EGKK', iata: 'LGW', name: 'London Gatwick', country: 'United Kingdom' },
-  { icao: 'EGLL', iata: 'LHR', name: 'London Heathrow', country: 'United Kingdom' },
-  { icao: 'EGGW', iata: 'LTN', name: 'London Luton', country: 'United Kingdom' },
-  { icao: 'EGSS', iata: 'SEN', name: 'London Southend Airport', country: 'United Kingdom' },
-  { icao: 'EGSS', iata: 'STN', name: 'London Stansted', country: 'United Kingdom' },
-  { icao: 'EGGD', iata: 'LPL', name: 'Liverpool John Lennon Airport', country: 'United Kingdom' },
-  { icao: 'EGCB', iata: 'MAN', name: 'Manchester Airport', country: 'United Kingdom' },
-  { icao: 'EGNX', iata: 'EMA', name: 'East Midlands Airport', country: 'United Kingdom' },
-  { icao: 'EGPN', iata: 'NQY', name: 'Newquay Airport', country: 'United Kingdom' },
-  { icao: 'EGNJ', iata: 'NCL', name: 'Newcastle Airport', country: 'United Kingdom' },
-  { icao: 'EGHI', iata: 'SOU', name: 'Southampton Airport', country: 'United Kingdom' },
+  { icao: 'GMMN', iata: 'RBA', name: 'Rabat–Salé Airport', country: 'Morocco' },
+  { icao: 'LBBG', iata: 'VAR', name: 'Varna Airport', country: 'Bulgaria' },
+  { icao: 'EETN', iata: 'TLL', name: 'Tallinn Airport', country: 'Estonia' },
 ];
 
 // Regole di sciopero aggiornate
 const strikeRules = {
-  strikeDate: '2025-09-6', // Data di sciopero: 6 Settembre 2025
+  strikeDate: '2025-07-10', // Data di sciopero: 10 Luglio 2025
   guaranteedTimeBands: [
     { start: '07:00', end: '10:00' },
     { start: '18:00', end: '21:00' }
@@ -275,7 +219,7 @@ const strikeRules = {
   // La gestione della "totale esclusione dei voli in partenza ed in arrivo all'aeroporto di Palermo"
   // è già coperta dall'aggiunta a guaranteedFlights.
   
-  // Voli protetti ENAC (precedentemente aggiunti)
+  // Nuovi voli protetti ENAC
   protectedFlights: [
     { origin: 'MXP', destination: 'CAG', time: '22:50' },
     { origin: 'MXP', destination: 'LMP', time: '13:10' },
@@ -287,7 +231,7 @@ const strikeRules = {
 
 // Componente principale dell'applicazione
 function App() {
-  const [dutyType, setDutyType] = useState(null); // 'flight', 'standby' or 'reportStrike'
+  const [dutyType, setDutyType] = useState(null); // 'flight' or 'standby'
   const [baseIcao, setBaseIcao] = useState('');
   const [numSectors, setNumSectors] = useState('');
   const [destinationInput, setDestinationInput] = useState('');
@@ -296,55 +240,6 @@ function App() {
   const [message, setMessage] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [standbyOption, setStandbyOption] = useState(null); // 'notPrecettato' or 'precettato'
-
-  // Determina se la data odierna rientra nel periodo di attivazione del link
-  const today = new Date();
-  today.setHours(0, 0, 0, 0); // Normalizza la data odierna a mezzanotte per il confronto
-
-  const strikeDateObj = new Date(strikeRules.strikeDate);
-  strikeDateObj.setHours(0, 0, 0, 0); // Normalizza la data di sciopero a mezzanotte
-
-  const sevenDaysAfterStrikeDateObj = new Date(strikeDateObj);
-  sevenDaysAfterStrikeDateObj.setDate(strikeDateObj.getDate() + 7);
-  sevenDaysAfterStrikeDateObj.setHours(23, 59, 59, 999); // Imposta alla fine del 7° giorno
-
-  const isLinkActive = today >= strikeDateObj && today <= sevenDaysAfterStrikeDateObj;
-  const isFlightStandbyActive = today <= strikeDateObj; // Attivo solo fino al giorno dello sciopero incluso
-
-  // useEffect per gestire il caricamento dello script Tally.so
-  useEffect(() => {
-    // Funzione per caricare gli embed di Tally
-    const loadTallyEmbeds = () => {
-      if (typeof window.Tally !== 'undefined') {
-        window.Tally.loadEmbeds();
-      } else {
-        // Fallback: riprova dopo un breve ritardo se lo script non è ancora disponibile
-        setTimeout(() => {
-          if (typeof window.Tally !== 'undefined') {
-            window.Tally.loadEmbeds();
-          }
-        }, 100);
-      }
-    };
-
-    const scriptId = 'tally-embed-script';
-    // Controlla se lo script è già presente nel DOM
-    if (!document.getElementById(scriptId)) {
-      const script = document.createElement('script');
-      script.src = 'https://tally.so/widgets/embed.js';
-      script.id = scriptId;
-      script.async = true; // Carica in modo asincrono
-      script.onload = loadTallyEmbeds; // Chiama loadEmbeds una volta che lo script è caricato
-      script.onerror = () => console.error('Failed to load Tally.so embed script.');
-      document.body.appendChild(script);
-    } else {
-      // Se lo script è già presente (es. dopo un re-render), prova a caricare gli embed
-      loadTallyEmbeds();
-    }
-
-    // Dipendenza da dutyType per ricaricare gli embed se la sezione cambia
-  }, [dutyType]);
-
 
   // Funzione per generare i segmenti di volo in base a baseIcao, numSectors, destinationInput
   const generateFlightSegments = (base, num, destInput) => {
@@ -462,6 +357,8 @@ function App() {
         return;
     }
 
+    const newResults = [];
+    // Array temporaneo per tenere traccia delle ragioni come array prima di unirle
     const reasonsPerFlight = [];
 
     currentFlightSegments.forEach((segment, index) => {
@@ -476,7 +373,7 @@ function App() {
         const isOriginPMO = segment.origin.toUpperCase() === 'PMO' || segment.origin.toUpperCase() === 'LICJ';
         const isDestinationPMO = segment.destination.toUpperCase() === 'PMO' || segment.destination.toUpperCase() === 'LICJ';
 
-        // Check if the current flight is a protected flight by ENAC (Highest priority)
+        // Check if the current flight is a protected flight by ENAC
         const isProtectedFlight = strikeRules.protectedFlights.some(
           (pf) =>
             (pf.origin.toUpperCase() === segment.origin.toUpperCase() || pf.origin.toUpperCase() === italianAirports.find(a => a.iata === pf.origin.toUpperCase())?.icao.toUpperCase()) &&
@@ -488,21 +385,18 @@ function App() {
           currentReasons.push('Volo protetto ENAC: deve essere operato.');
           eligible = false;
         } else if (!isItalianAirport(segment.origin)) {
-            // Check if origin is Italian (if not, not scioperabile)
             currentReasons.push(`L'aeroporto di partenza (${segment.origin}) non è italiano. Sciopero valido solo dal territorio nazionale.`);
             eligible = false;
         } else if (currentFlightDate !== strikeRules.strikeDate) {
-            // Check if flight is on the strike date
             currentReasons.push(`La data del volo (${currentFlightDate}) non rientra nel giorno di sciopero (${strikeRules.strikeDate}).`);
             eligible = false;
         } else if (isOriginPMO || isDestinationPMO) {
-            // Check if PMO flight
             currentReasons.push('Volo non scioperabile: esclusi i voli in partenza e in arrivo all\'aeroporto di Palermo (PMO).');
             eligible = false;
         } else {
-            // Normal time band check
+            // 2. Verifica se l'orario del volo rientra in una fascia protetta
             let isInProtectedBand = false;
-            let protectedBandInfo = '';
+            let protectedBandInfo = ''; // Per memorizzare la fascia oraria specifica
             strikeRules.guaranteedTimeBands.forEach(band => {
                 const [bandStartHour, bandStartMinute] = band.start.split(':').map(Number);
                 const [bandEndHour, bandEndMinute] = band.end.split(':').map(Number);
@@ -512,7 +406,7 @@ function App() {
 
                 if (flightTimeInMinutes >= bandStartTimeInMinutes && flightTimeInMinutes <= bandEndTimeInMinutes) {
                     isInProtectedBand = true;
-                    protectedBandInfo = `(${band.start}-${band.end})`;
+                    protectedBandInfo = `(${band.start}-${band.end})`; // Cattura la fascia
                 }
             });
 
@@ -524,136 +418,58 @@ function App() {
                 const allGuaranteedBands = strikeRules.guaranteedTimeBands.map(band => `${band.start}-${band.end}`).join(' e ');
                 currentReasons.push(`Volo scioperabile: l'orario di decollo schedulato (${scheduledTimes[index]}) è fuori dalle fasce orarie garantite (${allGuaranteedBands}).`);
 
-                // La postilla "SCIOPERABILE FUORI BASE" verrà aggiunta in un ciclo successivo se applicabile
-                // e non sovrascritta dalla nuova regola di ritorno internazionale.
+                if (segment.origin.toUpperCase() !== baseIcao.toUpperCase()) {
+                  currentReasons.push("(<strong>SCIOPERABILE FUORI BASE</strong>)");
+                }
             }
         }
         reasonsPerFlight.push({ eligible: eligible, reasons: currentReasons, isOutOfBase: (segment.origin.toUpperCase() !== baseIcao.toUpperCase()) });
     });
 
-    // --- NUOVA REGOLA: Eleggibilità dei voli di ritorno da voli internazionali scioperabili ---
-    if (parsedNumSectors === 2) {
-        const outboundSegment = currentFlightSegments[0];
-        const returnSegment = currentFlightSegments[1];
-        const outboundResult = reasonsPerFlight[0];
-        const returnResult = reasonsPerFlight[1];
+    // Postilla per "Scioperabile fuori base" nell'ultimo settore
+    if (reasonsPerFlight.length > 0) {
+        const lastSegmentIndex = reasonsPerFlight.length - 1;
+        const lastSegmentResult = reasonsPerFlight[lastSegmentIndex];
 
-        // Verifica se il volo di andata è scioperabile e la sua destinazione non è italiana (internazionale)
-        const isOutboundInternationalAndEligible =
-            outboundResult.eligible && !isItalianAirport(outboundSegment.destination);
-
-        // Verifica se il volo di ritorno NON è un volo protetto ENAC (la protezione ENAC ha priorità assoluta)
-        const isReturnFlightActuallyProtectedENAC = strikeRules.protectedFlights.some(
-            (pf) =>
-                (pf.origin.toUpperCase() === returnSegment.origin.toUpperCase() ||
-                 (italianAirports.find(a => a.iata === pf.origin.toUpperCase()) && italianAirports.find(a => a.iata === pf.origin.toUpperCase()).icao.toUpperCase() === returnSegment.origin.toUpperCase())) &&
-                (pf.destination.toUpperCase() === returnSegment.destination.toUpperCase() ||
-                 (italianAirports.find(a => a.iata === pf.destination.toUpperCase()) && italianAirports.find(a => a.iata === pf.destination.toUpperCase()).icao.toUpperCase() === returnSegment.destination.toUpperCase())) &&
-                pf.time === scheduledTimes[1]
-        );
-
-        if (isOutboundInternationalAndEligible && !isReturnFlightActuallyProtectedENAC) {
-            returnResult.eligible = true;
-            // Imposta le ragioni direttamente con la motivazione richiesta, senza postilla ferry qui
-            returnResult.reasons = [
-                'conseguentemente al volo scioperabile di andata.'
-            ];
-        }
-    } else if (parsedNumSectors === 4) {
-        // Prima coppia di segmenti (0 e 1)
-        const outboundSegment1 = currentFlightSegments[0];
-        const returnSegment1 = currentFlightSegments[1];
-        const outboundResult1 = reasonsPerFlight[0];
-        const returnResult1 = reasonsPerFlight[1];
-
-        const isOutbound1InternationalAndEligible =
-            outboundResult1.eligible && !isItalianAirport(outboundSegment1.destination);
-
-        const isReturn1FlightActuallyProtectedENAC = strikeRules.protectedFlights.some(
-            (pf) =>
-                (pf.origin.toUpperCase() === returnSegment1.origin.toUpperCase() ||
-                 (italianAirports.find(a => a.iata === pf.origin.toUpperCase()) && italianAirports.find(a => a.iata === pf.origin.toUpperCase()).icao.toUpperCase() === returnSegment1.origin.toUpperCase())) &&
-                (pf.destination.toUpperCase() === returnSegment1.destination.toUpperCase() ||
-                 (italianAirports.find(a => a.iata === pf.destination.toUpperCase()) && italianAirports.find(a => a.iata === pf.destination.toUpperCase()).icao.toUpperCase() === returnSegment1.destination.toUpperCase())) &&
-                pf.time === scheduledTimes[1]
-        );
-
-        if (isOutbound1InternationalAndEligible && !isReturn1FlightActuallyProtectedENAC) {
-            returnResult1.eligible = true;
-            returnResult1.reasons = [
-                'conseguentemente al volo scioperabile di andata.'
-            ];
-        }
-
-        // Seconda coppia di segmenti (2 e 3)
-        const outboundSegment2 = currentFlightSegments[2];
-        const returnSegment2 = currentFlightSegments[3];
-        const outboundResult2 = reasonsPerFlight[2];
-        const returnResult2 = reasonsPerFlight[3];
-
-        const isOutbound2InternationalAndEligible =
-            outboundResult2.eligible && !isItalianAirport(outboundSegment2.destination);
-
-        const isReturn2FlightActuallyProtectedENAC = strikeRules.protectedFlights.some(
-            (pf) =>
-                (pf.origin.toUpperCase() === returnSegment2.origin.toUpperCase() ||
-                 (italianAirports.find(a => a.iata === pf.origin.toUpperCase()) && italianAirports.find(a => a.iata === pf.origin.toUpperCase()).icao.toUpperCase() === returnSegment2.origin.toUpperCase())) &&
-                (pf.destination.toUpperCase() === returnSegment2.destination.toUpperCase() ||
-                 (italianAirports.find(a => a.iata === pf.destination.toUpperCase()) && italianAirports.find(a => a.iata === pf.destination.toUpperCase()).icao.toUpperCase() === returnSegment2.destination.toUpperCase())) &&
-                pf.time === scheduledTimes[3]
-        );
-
-        if (isOutbound2InternationalAndEligible && !isReturn2FlightActuallyProtectedENAC) {
-            returnResult2.eligible = true;
-            returnResult2.reasons = [
-                'conseguentemente al volo scioperabile di andata.'
-            ];
+        if (lastSegmentResult.eligible && lastSegmentResult.isOutOfBase) {
+            lastSegmentResult.reasons.push('<br/><span style="font-size: 0.75em; display: block; margin-top: 0.5em;">');
+            lastSegmentResult.reasons.push('<strong>ATTENZIONE:</strong> In caso di sciopero da fuori sede, si ritornerà a disposizione dell\'Azienda al termine dello sciopero. L’azienda dovrà provvedere al riposizionamento del lavoratore al termine dello sciopero. Se l’azienda si rifiutasse di riposizionare i lavoratori nella propria base di armamento e ciò dovesse comportare l’impossibilità di effettuare il turno del giorno dopo, il lavoratore non potrà subire alcuna azione disciplinare ma anzi l’azienda sarà passibile di sanzione.');
+            lastSegmentResult.reasons.push('</span>');
         }
     }
 
-    // Postilla per "Scioperabile fuori base" (applicata dopo la nuova regola)
-    for (let i = 0; i < reasonsPerFlight.length; i++) { 
-        const item = reasonsPerFlight[i];
-        // Verifica se la ragione contiene la dicitura del volo di ritorno internazionale scioperabile
-        const isInternationalReturnOverride = item.reasons.some(reason => reason.includes('conseguentemente al volo scioperabile di andata.'));
-
-        // Aggiungi la postilla "Scioperabile fuori base" SOLO se non è un volo di ritorno internazionale gestito dalla nuova regola
-        if (item.eligible && item.isOutOfBase && !isInternationalReturnOverride) {
-            item.reasons.push('<br/><span style="font-size: 0.75em; display: block; margin-top: 0.5em;">');
-            item.reasons.push('<strong>ATTENZIONE:</strong> In caso di sciopero da fuori sede, si ritornerà a disposizione dell\'Azienda al termine dello sciopero. L’azienda dovrà provvedere al riposizionamento del lavoratore al termine dello sciopero. Se l’azienda si rifiutasse di riposizionare i lavoratori nella propria base di armamento e ciò dovesse comportare l’impossibilità di effettuare il turno del giorno dopo, il lavoratore non potrà subire alcuna azione disciplinare ma anzi l’azienda sarà passibile di sanzione.');
-            item.reasons.push('</span>');
-        }
-    }
-
-    // Postilla per voli ferry (generale, non per i casi di ritorno internazionale scioperabile)
-    for (let i = 1; i < reasonsPerFlight.length; i++) { // Corretto: da i = 1 a i < reasonsPerFlight.length
+    // Nuova postilla per i voli che sono non scioperabili e fuori base,
+    // preceduti da un volo scioperabile.
+    // Questo copre sia il secondo settore di un duty da 2, sia il secondo e quarto di un duty da 4.
+    for (let i = 1; i < reasonsPerFlight.length; i++) {
         const previousFlightResult = reasonsPerFlight[i - 1];
         const currentFlightResult = reasonsPerFlight[i];
 
         const currentFlightReasonText = currentFlightResult.reasons.join(' ');
         
+        // Condizione ampliata: il volo corrente è non scioperabile a causa di fascia garantita O origine non italiana
+        // O perché è un volo protetto ENAC
         const isCurrentFlightNonEligibleForFerryPostilla = 
             (!currentFlightResult.eligible && currentFlightReasonText.includes('fascia oraria garantita')) ||
             (!currentFlightResult.eligible && currentFlightReasonText.includes('non è italiano')) ||
-            (!currentFlightResult.eligible && currentFlightReasonText.includes('Volo protetto ENAC')); 
+            (!currentFlightResult.eligible && currentFlightReasonText.includes('Volo protetto ENAC')); // Aggiunta la condizione per voli protetti
 
-        // Assicurati che questa postilla non venga aggiunta ai voli di ritorno internazionali che sono già stati gestiti
-        const isInternationalReturnOverride = currentFlightResult.reasons.some(reason => reason.includes('conseguentemente al volo scioperabile di andata.'));
-
-        if (previousFlightResult.eligible && isCurrentFlightNonEligibleForFerryPostilla && currentFlightResult.isOutOfBase && !isInternationalReturnOverride) {
+        if (previousFlightResult.eligible && isCurrentFlightNonEligibleForFerryPostilla && currentFlightResult.isOutOfBase) {
             currentFlightResult.reasons.push('<br/><span style="font-size: 0.75em; display: block; margin-top: 0.5em;">');
             currentFlightResult.reasons.push('<strong>ATTENZIONE:</strong> Per effettuare questo volo la compagnia deve farvi posizionare su un volo ferry operato non da voi ma da un equipaggio di riserva non scioperante.');
-            currentFlightResult.reasons.push('</span>'); 
+            currentFlightResult.reasons.push('</span>');
         }
     }
 
 
     // Popola i risultati finali unendo le ragioni in stringhe
-    const newResults = reasonsPerFlight.map((item, index) => ({
-      flight: `Volo ${index + 1}: da ${currentFlightSegments[index].origin} a ${currentFlightSegments[index].destination} (${currentFlightSegments[index].type}) schedulato alle ${scheduledTimes[index]}`,
-      eligible: item.eligible,
-      reason: item.reasons.join(' '),
-    }));
+    reasonsPerFlight.forEach((item, index) => {
+        newResults.push({
+            flight: `Volo ${index + 1}: da ${currentFlightSegments[index].origin} a ${currentFlightSegments[index].destination} (${currentFlightSegments[index].type}) schedulato alle ${scheduledTimes[index]}`,
+            eligible: item.eligible,
+            reason: item.reasons.join(' '),
+        });
+    });
 
     setResults(newResults);
   };
@@ -673,8 +489,7 @@ function App() {
     setStandbyOption(null);
   };
 
-  const strikeDurationText = `6 Settembre 2025 (24 ORE, fasce garantite 07:00-10:00 e 18:00-21:00)`;
-
+  const strikeDurationText = `10 Luglio 2025 (24 ORE, fasce garantite 07:00-10:00 e 18:00-21:00)`;
 
   return (
     <div className="app-container">
@@ -849,7 +664,7 @@ function App() {
         .main-button:hover {
           background-color: #4338CA;
           transform: scale(1.02);
-          box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15), 0 3px rgba(0, 0, 0, 0.12); /* Ombra più pronunciata al hover */
+          box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15), 0 3px 6px rgba(0, 0, 0, 0.12); /* Ombra più pronunciata al hover */
         }
 
         .main-button:focus {
@@ -1144,36 +959,6 @@ function App() {
             padding-top: 0.75rem;
             border-top: 1px solid #e5e7eb; /* Linea sottile sopra il copyright */
         }
-        .tally-link {
-            display: block;
-            text-align: center;
-            margin-top: 1.5rem;
-            font-size: 0.875rem;
-            color: #2563eb; /* Un colore blu per il link */
-            text-decoration: none; /* Nessuna sottolineatura di default */
-            font-weight: 500;
-            transition: color 0.2s ease-in-out;
-        }
-
-        .tally-link:hover {
-            color: #1D4ED8; /* Un blu più scuro al passaggio del mouse */
-            text-decoration: underline; /* Sottolineatura al passaggio del mouse */
-        }
-
-        .disabled-option {
-          opacity: 0.6;
-          cursor: not-allowed;
-          background-color: #e9ecef; /* Sfondo più chiaro per disabilitato */
-        }
-
-        .disabled-option:hover {
-          background-color: #e9ecef; /* Previene l'effetto hover quando disabilitato */
-          border-color: #d1d5db; /* Mantiene il colore del bordo originale quando disabilitato */
-        }
-
-        .disabled-option input[type="radio"] {
-          cursor: not-allowed;
-        }
         `}
       </style>
 
@@ -1198,38 +983,25 @@ function App() {
             <div className="input-group">
               <label className="input-label">Seleziona il tipo di attività:</label>
               <div className="radio-group">
-                <label className={`radio-option ${dutyType === 'flight' ? 'selected' : ''} ${!isFlightStandbyActive ? 'disabled-option' : ''}`}>
+                <label className={`radio-option ${dutyType === 'flight' ? 'selected' : ''}`}>
                   <input
                     type="radio"
                     name="dutyType"
                     value="flight"
                     checked={dutyType === 'flight'}
                     onChange={(e) => { setDutyType(e.target.value); resetForm(); }}
-                    disabled={!isFlightStandbyActive}
                   />
                   Volo
                 </label>
-                <label className={`radio-option ${dutyType === 'standby' ? 'selected' : ''} ${!isFlightStandbyActive ? 'disabled-option' : ''}`}>
+                <label className={`radio-option ${dutyType === 'standby' ? 'selected' : ''}`}>
                   <input
                     type="radio"
                     name="dutyType"
                     value="standby"
                     checked={dutyType === 'standby'}
                     onChange={(e) => { setDutyType(e.target.value); resetForm(); }}
-                    disabled={!isFlightStandbyActive}
                   />
                   Home Standby / Adty
-                </label>
-                <label className={`radio-option ${dutyType === 'reportStrike' ? 'selected' : ''} ${!isLinkActive ? 'disabled-option' : ''}`}>
-                  <input
-                    type="radio"
-                    name="dutyType"
-                    value="reportStrike"
-                    checked={dutyType === 'reportStrike'}
-                    onChange={(e) => { setDutyType(e.target.value); resetForm(); }}
-                    disabled={!isLinkActive}
-                  />
-                  Segnala Adesione Sciopero
                 </label>
               </div>
             </div>
@@ -1246,7 +1018,7 @@ function App() {
                     id="baseIcao"
                     className="input-field"
                     value={baseIcao}
-                    onChange={(e) => setBaseIcao(e.target.value.trim().toUpperCase())}
+                    onChange={(e) => setBaseIcao(e.target.value.trim().toUpperCase())} // Aggiunto .trim()
                     placeholder="Es. LIMC o MXP"
                   />
                 </div>
@@ -1286,7 +1058,7 @@ function App() {
                           id="destinationInput"
                           className="input-field"
                           value={destinationInput}
-                          onChange={handleDestinationInputChange}
+                          onChange={handleDestinationInputChange} // .trim() è gestito nella funzione
                           placeholder={parseInt(numSectors) === 2 ? "Es. LICJ o PMO" : "Es. LICJ-LIBD o PMO-BRI"}
                         />
                       </div>
@@ -1365,9 +1137,9 @@ function App() {
                     <h3>SCIOPERABILE</h3>
                     <p>PROCEDERE COME SEGUE:</p>
                     <ul>
-                      <li>- Chiamare Crewing prima dell'inizio dello Standby</li>
-                      <li>- Verificare dopo la telefonata la presenza del codice INDA per l'intero giorno</li>
-                      <li>- Non rispondere ad eventuali chiamate da parte di Crewing</li>
+                      <li>Chiamare Crewing prima dell'inizio dello Standby</li>
+                      <li>Verificare dopo la telefonata la presenza del codice INDA per l'intero giorno</li>
+                      <li>Non rispondere ad eventuali chiamate da parte di Crewing</li>
                     </ul>
                   </div>
                 )}
@@ -1377,30 +1149,12 @@ function App() {
                     <h3>NON SCIOPERABILE</h3>
                     <p>SEGUIRE LE SEGUENTI INDICAZIONI:</p>
                     <ul>
-                      <li>- accettare SOLO voli garantiti da Enac e nella fascia protetta 7:00 - 10:00 / 18:00 - 21:00</li>
-                      <li>- NON accettare attività differenti da quelle del punto sopra</li>
+                      <li>accettare SOLO voli garantiti da Enac e nella fascia protetta 7:00 - 10:00 / 18:00 - 21:00</li>
+                      <li>NON accettare attività differenti da quelle del punto sopra</li>
                     </ul>
                   </div>
                 )}
               </>
-            )}
-
-            {/* Sezione per Segnala Adesione Sciopero (visibile solo se dutyType è 'reportStrike' e isLinkActive è true) */}
-            {dutyType === 'reportStrike' && isLinkActive && (
-              <div className="section-card">
-                {/* Tally.so iframe embed */}
-                <iframe
-                  data-tally-src="https://tally.so/embed/wv5NVg?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1"
-                  loading="lazy"
-                  width="100%"
-                  height="357"
-                  frameBorder="0"
-                  marginHeight="0"
-                  marginWidth="0"
-                  title="Adesione Sciopero 6 Settembre 2025"
-                ></iframe>
-                {/* Lo script per caricare il widget Tally.so è ora gestito tramite useEffect */}
-              </div>
             )}
 
           </div>
