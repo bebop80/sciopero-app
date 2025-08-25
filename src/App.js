@@ -476,7 +476,7 @@ function App() {
             Verifica Eleggibilità Sciopero Aereo
           </h1>
           <p className="mt-2 text-lg md:text-xl font-semibold text-blue-600">
-            6 Settembre 2025 (24 ORE, fasce garantite 07:00-10:00 e 18:00-21:00)
+            6 Settembre 2025 (24 ORE, fasce garantite 07:00-10:00 e 18:00-21:00) Voli per/da CTA protetti dalle 12:00 alle 16:00
           </p>
         </header>
 
