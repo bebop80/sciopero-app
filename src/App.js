@@ -252,27 +252,28 @@ const italianAirports = [
   { icao: 'EGHI', iata: 'SOU', name: 'Southampton Airport', country: 'United Kingdom' },
 ];
 
-// Regole di sciopero basate sull'immagine e sui file
+// Regole di sciopero con la logica per CTA aggiornata
 const strikeRules = {
-  strikeDate: '2025-09-06', // Data di sciopero: 6 Settembre 2025 (dall'immagine)
+  strikeDate: '2025-09-06', // Data di sciopero: 6 Settembre 2025
   guaranteedTimeBands: [
     { start: '07:00', end: '10:00' },
     { start: '18:00', end: '21:00' }
   ],
-  // Nuova regola specifica per Catania (CTA)
-  ctaSpecificBand: {
+  // NUOVA REGOLA: Fascia in cui i voli CTA diventano SCIOPERABILI
+  ctaStrikeableBand: {
     start: '12:00',
     end: '16:00',
     airports: ['CTA', 'LICC']
   },
-  // Voli protetti ENAC temporaneamente disattivati come richiesto
+  // Voli protetti ENAC temporaneamente disattivati
   protectedFlights: [],
 };
 
 // Componente per l'icona/logo USB
 const USBLogo = () => (
-  <img src="/logo svg" alt="Logo USB" className="union-logo h-12 w-12" />
+  <img src="/logo.svg" alt="Logo USB" className="union-logo h-12 w-12" />
 );
+
 
 // Componente principale dell'applicazione
 function App() {
@@ -398,19 +399,29 @@ function App() {
 
       const isProtected = strikeRules.protectedFlights.some(pf => pf.origin === segment.origin && pf.destination === segment.destination && pf.time === flightTime);
       
-      const isCtaFlight = strikeRules.ctaSpecificBand.airports.includes(segment.origin) || strikeRules.ctaSpecificBand.airports.includes(segment.destination);
-      const [ctaStartH, ctaStartM] = strikeRules.ctaSpecificBand.start.split(':').map(Number);
-      const [ctaEndH, ctaEndM] = strikeRules.ctaSpecificBand.end.split(':').map(Number);
+      // Logica per la nuova regola di CTA
+      const isCtaFlight = strikeRules.ctaStrikeableBand.airports.includes(segment.origin) || strikeRules.ctaStrikeableBand.airports.includes(segment.destination);
+      const [ctaStartH, ctaStartM] = strikeRules.ctaStrikeableBand.start.split(':').map(Number);
+      const [ctaEndH, ctaEndM] = strikeRules.ctaStrikeableBand.end.split(':').map(Number);
       const ctaStartTotalM = ctaStartH * 60 + ctaStartM;
       const ctaEndTotalM = ctaEndH * 60 + ctaEndM;
-      const isInCtaBand = flightTimeInMinutes >= ctaStartTotalM && flightTimeInMinutes <= ctaEndTotalM;
+      const isInCtaStrikeableBand = flightTimeInMinutes >= ctaStartTotalM && flightTimeInMinutes <= ctaEndTotalM;
 
       if (isProtected) {
         currentReasons.push('Volo protetto ENAC: deve essere operato.');
       } else if (!isItalianAirport(segment.origin)) {
         currentReasons.push(`Partenza non da territorio nazionale (${segment.origin}).`);
-      } else if (isCtaFlight && isInCtaBand) {
-        currentReasons.push(`Volo da/per Catania (CTA) nella fascia non scioperabile (${strikeRules.ctaSpecificBand.start}-${strikeRules.ctaSpecificBand.end}).`);
+      } else if (isCtaFlight) {
+        if (isInCtaStrikeableBand) {
+          eligible = true;
+          currentReasons.push(`Volo da/per Catania (CTA) nella fascia scioperabile (${strikeRules.ctaStrikeableBand.start}-${strikeRules.ctaStrikeableBand.end}).`);
+           if (segment.origin !== baseIcao.toUpperCase()) {
+            currentReasons.push("<strong>(SCIOPERABILE FUORI BASE)</strong>");
+          }
+        } else {
+          eligible = false;
+          currentReasons.push(`Volo da/per Catania (CTA) protetto al di fuori della fascia scioperabile (${strikeRules.ctaStrikeableBand.start}-${strikeRules.ctaStrikeableBand.end}).`);
+        }
       } else {
         const isInGuaranteedBand = strikeRules.guaranteedTimeBands.some(band => {
           const [startH, startM] = band.start.split(':').map(Number);
@@ -473,10 +484,10 @@ function App() {
             <USBLogo />
           </div>
           <h1 className="text-3xl md:text-4xl font-extrabold text-gray-800">
-            Verifica Eleggibilità Sciopero
+            Verifica Eleggibilità Sciopero Aereo
           </h1>
           <p className="mt-2 text-lg md:text-xl font-semibold text-blue-600">
-            6 Settembre 2025 (24 ORE, fasce garantite 07:00-10:00 e 18:00-21:00) Voli per/da CTA protetti dalle 12:00 alle 16:00
+            6 Settembre 2025 (24 ORE, fasce garantite 07:00-10:00 e 18:00-21:00)
           </p>
         </header>
 
@@ -659,3 +670,4 @@ function App() {
 }
 
 export default App;
+
