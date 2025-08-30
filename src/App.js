@@ -271,7 +271,7 @@ const strikeRules = {
 
 // Componente per l'icona/logo USB
 const USBLogo = () => (
-  <img src="/logo.svg" alt="Logo USB" className="union-logo h-12 w-12" />
+  <img src="/logo.svg.png" alt="Logo USB" className="union-logo h-12 w-12" />
 );
 
 
