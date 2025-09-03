@@ -266,7 +266,11 @@ const strikeRules = {
     airports: ['CTA', 'LICC']
   },
   // Voli protetti ENAC temporaneamente disattivati
-  protectedFlights: [],
+  protectedFlights: [
+    { origin: 'NAP', destination: 'SSH', time: '13:50' },
+    { origin: 'MXP', destination: 'RAK', time: '06:00' },
+    { origin: 'MXP', destination: 'HRG', time: '14:45' },
+  ],
 };
 
 // Componente per l'icona/logo USB
