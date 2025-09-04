@@ -385,7 +385,7 @@ function App() {
       setIsModalOpen(true);
       return;
     }
-     if (scheduledTimes.some(time => !time)) {
+    if (scheduledTimes.some(time => !time)) {
       setMessage('Per favore, inserisci l\'orario di decollo per ogni volo.');
       setIsModalOpen(true);
       return;
@@ -419,7 +419,7 @@ function App() {
         if (isInCtaStrikeableBand) {
           eligible = true;
           currentReasons.push(`Volo da/per Catania (CTA) nella fascia scioperabile (${strikeRules.ctaStrikeableBand.start}-${strikeRules.ctaStrikeableBand.end}).`);
-           if (segment.origin !== baseIcao.toUpperCase()) {
+          if (segment.origin !== baseIcao.toUpperCase()) {
             currentReasons.push("<strong>(SCIOPERABILE FUORI BASE)</strong>");
           }
         } else {
@@ -449,7 +449,7 @@ function App() {
     });
     
     if (reasonsPerFlight.length > 1 && reasonsPerFlight[0].eligible && !reasonsPerFlight[1].eligible && reasonsPerFlight[1].isOutOfBase) {
-        reasonsPerFlight[1].reasons.push('<br/><span class="text-xs block mt-2"><strong>ATTENZIONE:</strong> Per effettuare questo volo la compagnia deve farvi posizionare su un volo ferry.</span>');
+      reasonsPerFlight[1].reasons.push('<br/><span class="text-xs block mt-2"><strong>ATTENZIONE:</strong> Per effettuare questo volo la compagnia deve farvi posizionare su un volo ferry.</span>');
     }
 
     reasonsPerFlight.forEach((item, index) => {
@@ -474,7 +474,7 @@ function App() {
           // Se le condizioni sono vere, modifica il volo di ritorno
           if (returnFlight) {
             returnFlight.eligible = true;
-            returnFlight.reason = 'collegato all\'andata scioperabile';
+            returnFlight.reason = 'poiche collegato all\'andata scioperabile';
           }
         }
       }
@@ -598,53 +598,53 @@ function App() {
         {/* Sezione STANDBY */}
         {dutyType === 'home' && (
           <div className="space-y-4 pt-4 border-t">
-             <label className="block text-base font-medium text-gray-700">Seleziona la tua situazione:</label>
-             <div className="space-y-3">
-                <label className={`flex items-start p-4 border rounded-lg cursor-pointer transition-all duration-200 ${standbyOption === 'notPrecettato' ? 'bg-green-50 border-green-500 ring-2 ring-green-300' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'}`}>
-                    <input type="radio" name="standbyOption" value="notPrecettato" checked={standbyOption === 'notPrecettato'} onChange={e => setStandbyOption(e.target.value)} className="h-5 w-5 mt-1 text-green-600 border-gray-300 focus:ring-green-500"/>
-                    <span className="ml-3 text-sm font-medium text-gray-800">Non hai ricevuto la riserva comandata / mail di precettazione.</span>
-                </label>
-                 <label className={`flex items-start p-4 border rounded-lg cursor-pointer transition-all duration-200 ${standbyOption === 'precettato' ? 'bg-red-50 border-red-500 ring-2 ring-red-300' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'}`}>
-                    <input type="radio" name="standbyOption" value="precettato" checked={standbyOption === 'precettato'} onChange={e => setStandbyOption(e.target.value)} className="h-5 w-5 mt-1 text-red-600 border-gray-300 focus:ring-red-500"/>
-                    <span className="ml-3 text-sm font-medium text-gray-800">Hai ricevuto la riserva comandata / mail di precettazione.</span>
-                </label>
-             </div>
-             {standbyOption === 'notPrecettato' && (
-                <div className="p-4 rounded-lg bg-green-100 text-green-800 border border-green-300">
-                    <h3 className="font-bold text-lg">SCIOPERABILE</h3>
-                    <ul className="list-disc list-inside mt-2 text-sm">
-                        <li>Chiamare Crewing prima dell'inizio dello Standby.</li>
-                        <li>Verificare la presenza del codice INDA.</li>
-                        <li>Non rispondere a eventuali chiamate.</li>
-                    </ul>
-                </div>
-             )}
-              {standbyOption === 'precettato' && (
-                <div className="p-4 rounded-lg bg-red-100 text-red-800 border border-red-300">
-                    <h3 className="font-bold text-lg">NON SCIOPERABILE</h3>
-                    <ul className="list-disc list-inside mt-2 text-sm">
-                        <li>Accettare SOLO voli garantiti da ENAC e nelle fasce protette.</li>
-                        <li>NON accettare attività differenti.</li>
-                    </ul>
-                </div>
-             )}
+            <label className="block text-base font-medium text-gray-700">Seleziona la tua situazione:</label>
+            <div className="space-y-3">
+              <label className={`flex items-start p-4 border rounded-lg cursor-pointer transition-all duration-200 ${standbyOption === 'notPrecettato' ? 'bg-green-50 border-green-500 ring-2 ring-green-300' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'}`}>
+                <input type="radio" name="standbyOption" value="notPrecettato" checked={standbyOption === 'notPrecettato'} onChange={e => setStandbyOption(e.target.value)} className="h-5 w-5 mt-1 text-green-600 border-gray-300 focus:ring-green-500"/>
+                <span className="ml-3 text-sm font-medium text-gray-800">Non hai ricevuto la riserva comandata / mail di precettazione.</span>
+              </label>
+              <label className={`flex items-start p-4 border rounded-lg cursor-pointer transition-all duration-200 ${standbyOption === 'precettato' ? 'bg-red-50 border-red-500 ring-2 ring-red-300' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'}`}>
+                <input type="radio" name="standbyOption" value="precettato" checked={standbyOption === 'precettato'} onChange={e => setStandbyOption(e.target.value)} className="h-5 w-5 mt-1 text-red-600 border-gray-300 focus:ring-red-500"/>
+                <span className="ml-3 text-sm font-medium text-gray-800">Hai ricevuto la riserva comandata / mail di precettazione.</span>
+              </label>
+            </div>
+            {standbyOption === 'notPrecettato' && (
+              <div className="p-4 rounded-lg bg-green-100 text-green-800 border border-green-300">
+                <h3 className="font-bold text-lg">SCIOPERABILE</h3>
+                <ul className="list-disc list-inside mt-2 text-sm">
+                  <li>Chiamare Crewing prima dell'inizio dello Standby.</li>
+                  <li>Verificare la presenza del codice INDA.</li>
+                  <li>Non rispondere a eventuali chiamate.</li>
+                </ul>
+              </div>
+            )}
+            {standbyOption === 'precettato' && (
+              <div className="p-4 rounded-lg bg-red-100 text-red-800 border border-red-300">
+                <h3 className="font-bold text-lg">NON SCIOPERABILE</h3>
+                <ul className="list-disc list-inside mt-2 text-sm">
+                  <li>Accettare SOLO voli garantiti da ENAC e nelle fasce protette.</li>
+                  <li>NON accettare attività differenti.</li>
+                </ul>
+              </div>
+            )}
           </div>
         )}
         
         {/* Sezione ADESIONE */}
         {dutyType === 'reportStrike' && isLinkActive && (
-            <div className="pt-4 border-t">
-                <iframe
-                  data-tally-src="https://tally.so/embed/wv5NVg?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1"
-                  loading="lazy"
-                  width="100%"
-                  height="357"
-                  frameBorder="0"
-                  marginHeight="0"
-                  marginWidth="0"
-                  title="Adesione Sciopero 6 Settembre 2025"
-                ></iframe>
-            </div>
+          <div className="pt-4 border-t">
+            <iframe
+              data-tally-src="https://tally.so/embed/wv5NVg?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1"
+              loading="lazy"
+              width="100%"
+              height="357"
+              frameBorder="0"
+              marginHeight="0"
+              marginWidth="0"
+              title="Adesione Sciopero 6 Settembre 2025"
+            ></iframe>
+          </div>
         )}
 
         {/* Risultati Volo */}
