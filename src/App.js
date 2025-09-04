@@ -459,7 +459,27 @@ function App() {
         reason: item.reasons.join(' '),
       });
     });
+    // ==================================================================
+    // ========= NUOVA REGOLA PER VOLI DI RITORNO INTERNAZIONALI ==========
+    // ==================================================================
+    for (let i = 0; i < newResults.length; i += 2) {
+      const outboundFlight = newResults[i];
+      const returnFlight = newResults[i + 1];
 
+      // Controlla se il volo di andata è scioperabile
+      if (outboundFlight && outboundFlight.eligible) {
+        const outboundSegment = currentFlightSegments[i];
+        // Controlla se la destinazione dell'andata non è italiana (volo internazionale)
+        if (outboundSegment && !isItalianAirport(outboundSegment.destination)) {
+          // Se le condizioni sono vere, modifica il volo di ritorno
+          if (returnFlight) {
+            returnFlight.eligible = true;
+            returnFlight.reason = 'poichè collegato all\'andata scioperabile';
+          }
+        }
+      }
+    }
+    
     setResults(newResults);
   };
   
