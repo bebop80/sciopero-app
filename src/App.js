@@ -468,7 +468,7 @@ function App() {
 
       // Controlla se il volo di andata è scioperabile
       if (outboundFlight && outboundFlight.eligible) {
-        const outboundSegment = currentFlightSegments[i];
+        const outboundSegment = segments[i];
         // Controlla se la destinazione dell'andata non è italiana (volo internazionale)
         if (outboundSegment && !isItalianAirport(outboundSegment.destination)) {
           // Se le condizioni sono vere, modifica il volo di ritorno
