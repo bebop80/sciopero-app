@@ -474,7 +474,7 @@ function App() {
           // Se le condizioni sono vere, modifica il volo di ritorno
           if (returnFlight) {
             returnFlight.eligible = true;
-            returnFlight.reason = 'poichè collegato all\'andata scioperabile';
+            returnFlight.reason = 'collegato all\'andata scioperabile';
           }
         }
       }
