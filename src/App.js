@@ -254,17 +254,11 @@ const italianAirports = [
 
 // Regole di sciopero con la logica per CTA aggiornata
 const strikeRules = {
-  strikeDate: '2025-09-06', // Data di sciopero: 6 Settembre 2025
+  strikeDate: '2025-09-22', // Data di sciopero: 6 Settembre 2025
   guaranteedTimeBands: [
     { start: '07:00', end: '10:00' },
     { start: '18:00', end: '21:00' }
   ],
-  // NUOVA REGOLA: Fascia in cui i voli CTA diventano SCIOPERABILI
-  ctaStrikeableBand: {
-    start: '12:00',
-    end: '16:00',
-    airports: ['CTA', 'LICC']
-  },
   // Voli protetti ENAC temporaneamente disattivati
   protectedFlights: [
     { origin: 'NAP', destination: 'SSH', time: '13:50' },
@@ -403,29 +397,10 @@ function App() {
 
       const isProtected = strikeRules.protectedFlights.some(pf => pf.origin === segment.origin && pf.destination === segment.destination && pf.time === flightTime);
       
-      // Logica per la nuova regola di CTA
-      const isCtaFlight = strikeRules.ctaStrikeableBand.airports.includes(segment.origin) || strikeRules.ctaStrikeableBand.airports.includes(segment.destination);
-      const [ctaStartH, ctaStartM] = strikeRules.ctaStrikeableBand.start.split(':').map(Number);
-      const [ctaEndH, ctaEndM] = strikeRules.ctaStrikeableBand.end.split(':').map(Number);
-      const ctaStartTotalM = ctaStartH * 60 + ctaStartM;
-      const ctaEndTotalM = ctaEndH * 60 + ctaEndM;
-      const isInCtaStrikeableBand = flightTimeInMinutes >= ctaStartTotalM && flightTimeInMinutes <= ctaEndTotalM;
-
       if (isProtected) {
         currentReasons.push('Volo protetto ENAC: deve essere operato.');
       } else if (!isItalianAirport(segment.origin)) {
         currentReasons.push(`Partenza non da territorio nazionale (${segment.origin}).`);
-      } else if (isCtaFlight) {
-        if (isInCtaStrikeableBand) {
-          eligible = true;
-          currentReasons.push(`Volo da/per Catania (CTA) nella fascia scioperabile (${strikeRules.ctaStrikeableBand.start}-${strikeRules.ctaStrikeableBand.end}).`);
-          if (segment.origin !== baseIcao.toUpperCase()) {
-            currentReasons.push("<strong>(SCIOPERABILE FUORI BASE)</strong>");
-          }
-        } else {
-          eligible = false;
-          currentReasons.push(`Volo da/per Catania (CTA) protetto al di fuori della fascia scioperabile (${strikeRules.ctaStrikeableBand.start}-${strikeRules.ctaStrikeableBand.end}).`);
-        }
       } else {
         const isInGuaranteedBand = strikeRules.guaranteedTimeBands.some(band => {
           const [startH, startM] = band.start.split(':').map(Number);
@@ -474,7 +449,7 @@ function App() {
           // Se le condizioni sono vere, modifica il volo di ritorno
           if (returnFlight) {
             returnFlight.eligible = true;
-            returnFlight.reason = 'poichè collegato all\'andata scioperabile';
+            returnFlight.reason = 'poiche collegato all\'andata scioperabile';
           }
         }
       }
@@ -511,7 +486,7 @@ function App() {
             Verifica Eleggibilità Sciopero Aereo
           </h1>
           <p className="mt-2 text-lg md:text-xl font-semibold text-blue-600">
-            6 Settembre 2025 (24 ORE, fasce garantite 07:00-10:00 e 18:00-21:00) !!ATTENZIONE!! CTA scioperabile solo in fascia 12:00 - 16:00
+            26 Settembre 2025 BLOCCHIAMO TUTTO (24 ORE, fasce garantite 07:00-10:00 e 18:00-21:00)
           </p>
         </header>
 
@@ -613,10 +588,9 @@ function App() {
               <div className="p-4 rounded-lg bg-green-100 text-green-800 border border-green-300">
                 <h3 className="font-bold text-lg">SCIOPERABILE</h3>
                 <ul className="list-disc list-inside mt-2 text-sm">
-                  <li>Chiamare Crewing prima dell'inizio dello Standby/Adty.</li>
-                  <li>Verificare la presenza del codice INDA sul roster.</li>
+                  <li>Chiamare Crewing prima dell'inizio dello Standby.</li>
+                  <li>Verificare la presenza del codice INDA.</li>
                   <li>Non rispondere a eventuali chiamate.</li>
-                  <li>Al termine dello Standby/Adty verificare se ci sono changes per il giorno successivo.</li>
                 </ul>
               </div>
             )}
