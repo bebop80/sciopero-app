@@ -636,7 +636,7 @@ function App() {
         {dutyType === 'reportStrike' && isLinkActive && (
           <div className="pt-4 border-t">
             <iframe
-              data-tally-src="https://tally.so/embed/wv5NVg?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1"
+              data-tally-src="https://tally.so/embed/mKboqA?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1"
               loading="lazy"
               width="100%"
               height="357"
