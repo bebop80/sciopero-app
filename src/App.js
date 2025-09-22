@@ -589,7 +589,7 @@ function App() {
                 <h3 className="font-bold text-lg">SCIOPERABILE</h3>
                 <ul className="list-disc list-inside mt-2 text-sm">
                   <li>Chiamare Crewing prima dell'inizio dello Standby.</li>
-                  <li>Verificare la presenza del codice INDA.</li>
+                  <li>Verificare la presenza del codice INDA - fare SCREENSHOT.</li>
                   <li>Non rispondere a eventuali chiamate.</li>
                 </ul>
               </div>
@@ -598,7 +598,7 @@ function App() {
               <div className="p-4 rounded-lg bg-red-100 text-red-800 border border-red-300">
                 <h3 className="font-bold text-lg">NON SCIOPERABILE</h3>
                 <ul className="list-disc list-inside mt-2 text-sm">
-                  <li>Accettare SOLO voli garantiti da ENAC e nelle fasce protette.</li>
+                  <li>Accettare SOLO voli garantiti da ENAC e/o quelli schedulati nelle fasce protette.</li>
                   <li>NON accettare attività differenti.</li>
                 </ul>
               </div>
@@ -617,7 +617,7 @@ function App() {
               frameBorder="0"
               marginHeight="0"
               marginWidth="0"
-              title="Adesione Sciopero 6 Settembre 2025"
+              title="Adesione Sciopero 26 Settembre 2025"
             ></iframe>
           </div>
         )}
