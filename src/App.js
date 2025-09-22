@@ -259,11 +259,11 @@ const strikeRules = {
     { start: '07:00', end: '10:00' },
     { start: '18:00', end: '21:00' }
   ],
-  // Voli protetti ENAC temporaneamente disattivati
+  // Voli protetti ENAC
   protectedFlights: [
-    { origin: 'NAP', destination: 'SSH', time: '13:50' },
-    { origin: 'MXP', destination: 'RAK', time: '06:00' },
-    { origin: 'MXP', destination: 'HRG', time: '14:45' },
+    //{ origin: 'NAP', destination: 'SSH', time: '13:50' },
+    //{ origin: 'MXP', destination: 'RAK', time: '06:00' },
+    //{ origin: 'MXP', destination: 'HRG', time: '14:45' },
   ],
 };
 
