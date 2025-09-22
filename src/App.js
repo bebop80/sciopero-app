@@ -588,7 +588,7 @@ function App() {
               <div className="p-4 rounded-lg bg-green-100 text-green-800 border border-green-300">
                 <h3 className="font-bold text-lg">SCIOPERABILE</h3>
                 <ul className="list-disc list-inside mt-2 text-sm">
-                  <li>Chiamare Crewing prima dell'inizio dello Standby.</li>
+                  <li>Chiamare Crewing prima dell'inizio dello Standby o dell'ADTY.</li>
                   <li>Verificare la presenza del codice INDA - fare SCREENSHOT.</li>
                   <li>Non rispondere a eventuali chiamate.</li>
                 </ul>
