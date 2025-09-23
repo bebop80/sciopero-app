@@ -261,9 +261,9 @@ const strikeRules = {
   ],
   // Voli protetti ENAC
   protectedFlights: [
-    //{ origin: 'NAP', destination: 'SSH', time: '13:50' },
-    //{ origin: 'MXP', destination: 'RAK', time: '06:00' },
-    //{ origin: 'MXP', destination: 'HRG', time: '14:45' },
+    { origin: 'NAP', destination: 'OLB', time: '11:55' },
+    { origin: 'OLB', destination: 'NAP', time: '13:40' },
+    { origin: 'MXP', destination: 'LMP', time: '16:20' },
   ],
 };
 
