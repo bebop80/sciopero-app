@@ -264,6 +264,7 @@ const strikeRules = {
     { origin: 'NAP', destination: 'OLB', time: '11:55' },
     { origin: 'OLB', destination: 'NAP', time: '13:40' },
     { origin: 'MXP', destination: 'LMP', time: '16:20' },
+    { origin: 'MXP', destination: 'SSH', time: '15:25' },
   ],
 };
 
