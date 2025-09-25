@@ -265,6 +265,11 @@ const strikeRules = {
     { origin: 'OLB', destination: 'NAP', time: '13:40' },
     { origin: 'MXP', destination: 'LMP', time: '16:20' },
     { origin: 'MXP', destination: 'SSH', time: '15:25' },
+    { origin: 'LIN', destination: 'OSL', time: '11:20' },
+    { origin: 'LIN', destination: 'LIS', time: '11:35' },
+    { origin: 'LIN', destination: 'BCN', time: '16:55' },
+    { origin: 'BCN', destination: 'LIN', time: '20:15' },
+    { origin: 'OSL', destination: 'LIN', time: '14:40' },
   ],
 };
 
