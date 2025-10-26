@@ -225,6 +225,8 @@ const italianAirports = [
   // Tunisia
   { icao: 'DTTJ', iata: 'DJE', name: 'Djerba–Zarzis International Airport', country: 'Tunisia' },
   { icao: 'DTNH', iata: 'NBE', name: 'Enfidha–Hammamet International Airport', country: 'Tunisia' },
+  //Cabo Verde
+  { icao: 'GVAC', iata: 'SID', name: 'Amílcar Cabral', country: 'Cabo Verde' },
   // United Kingdom
   { icao: 'EGPD', iata: 'ABZ', name: 'Aberdeen Airport', country: 'United Kingdom' },
   { icao: 'EGAA', iata: 'BFS', name: 'Belfast International Airport', country: 'United Kingdom' },
