@@ -254,9 +254,8 @@ const italianAirports = [
   { icao: 'EGHI', iata: 'SOU', name: 'Southampton Airport', country: 'United Kingdom' },
 ];
 
-// Regole di sciopero con la logica per CTA aggiornata
 const strikeRules = {
-  strikeDate: '2025-10-31', // Data di sciopero: 6 Settembre 2025
+  strikeDate: '2025-11-14', // Data di sciopero: 14 Novembre 2025
   guaranteedTimeBands: [
     { start: '13:00', end: '17:00' }
      ],
@@ -492,7 +491,7 @@ function App() {
             Verifica Eleggibilità Sciopero Aereo
           </h1>
           <p className="mt-2 text-lg md:text-xl font-semibold text-blue-600">
-            26 Settembre 2025 (24 ORE, fasce garantite 07:00-10:00 e 18:00-21:00)
+            14 Novembre 2025 (24 ORE, fasce garantite 13:00 - 17:00)
           </p>
         </header>
 
