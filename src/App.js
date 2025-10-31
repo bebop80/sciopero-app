@@ -258,7 +258,7 @@ const italianAirports = [
 const strikeRules = {
   strikeDate: '2025-10-31', // Data di sciopero: 6 Settembre 2025
   guaranteedTimeBands: [
-    { start: '13:00, end: '17:00' }
+    { start: '13:00' end: '17:00' }
      ],
   //guaranteedTimeBands: [
     //{ start: '07:00', end: '10:00' },
