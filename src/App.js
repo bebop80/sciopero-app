@@ -260,7 +260,6 @@ const strikeRules = {
   guaranteedTimeBands: [
     { start: '13:00, end: '17:00' }
      ],
-  };
   //guaranteedTimeBands: [
     //{ start: '07:00', end: '10:00' },
     //{ start: '18:00', end: '21:00' }
@@ -272,7 +271,7 @@ const strikeRules = {
    // { origin: 'MXP', destination: 'LMP', time: '16:20' },
     //{ origin: 'MXP', destination: 'SSH', time: '15:25' },
    // ],
-//};
+};
 
 // Componente per l'icona/logo USB
 const USBLogo = () => (
