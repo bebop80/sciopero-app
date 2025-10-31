@@ -271,7 +271,7 @@ const strikeRules = {
    // { origin: 'MXP', destination: 'LMP', time: '16:20' },
     //{ origin: 'MXP', destination: 'SSH', time: '15:25' },
    // ],
-};
+//};
 
 // Componente per l'icona/logo USB
 const USBLogo = () => (
