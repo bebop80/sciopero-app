@@ -492,7 +492,7 @@ function App() {
             Verifica Eleggibilità Sciopero Aereo
           </h1>
           <p className="mt-2 text-lg md:text-xl font-semibold text-blue-600">
-            14 Novembre 2025 (4 ORE, fasce garantite 13:00 - 17:00)
+            14 Novembre 2025 (4 ORE, fascia sciopero 13:00 - 17:00)
           </p>
         </header>
 
