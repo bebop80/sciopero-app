@@ -264,7 +264,7 @@ const strikeRules = {
     //{ start: '18:00', end: '21:00' }
  //],
   // Voli protetti ENAC
-  //protectedFlights: [
+  protectedFlights: [],
     //{ origin: 'NAP', destination: 'OLB', time: '11:55' },
    // { origin: 'OLB', destination: 'NAP', time: '13:40' },
    // { origin: 'MXP', destination: 'LMP', time: '16:20' },
@@ -491,7 +491,7 @@ function App() {
             Verifica Eleggibilità Sciopero Aereo
           </h1>
           <p className="mt-2 text-lg md:text-xl font-semibold text-blue-600">
-            14 Novembre 2025 (24 ORE, fasce garantite 13:00 - 17:00)
+            14 Novembre 2025 (4 ORE, fasce garantite 13:00 - 17:00)
           </p>
         </header>
 
