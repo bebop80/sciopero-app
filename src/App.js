@@ -596,7 +596,7 @@ function App() {
                 <ul className="list-disc list-inside mt-2 text-sm">
                   <li>Chiamare Crewing prima dell'inizio dello Standby o dell'ADTY.</li>
                   <li>Verificare la presenza del codice INDA - fare SCREENSHOT.</li>
-                  <li>Non rispondere a eventuali chiamate.</li>
+                  <li>Non rispondere a eventuali chiamate successive.</li>
                 </ul>
               </div>
             )}
@@ -605,7 +605,8 @@ function App() {
                 <h3 className="font-bold text-lg">NON SCIOPERABILE</h3>
                 <ul className="list-disc list-inside mt-2 text-sm">
                   <li>Accettare SOLO voli garantiti da ENAC e/o quelli schedulati nelle fasce protette.</li>
-                  <li>NON accettare attività differenti.</li>
+                  <li>NON accettare attività differenti / cambio turno (esempio: da sby non accettare adty).
+              lo sby può effettuare SOLO voli garantiti o protetti</li>
                 </ul>
               </div>
             )}
