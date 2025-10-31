@@ -616,14 +616,14 @@ function App() {
         {dutyType === 'reportStrike' && isLinkActive && (
           <div className="pt-4 border-t">
             <iframe
-              data-tally-src="https://tally.so/embed/mKboqA?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1"
+              data-tally-src="https://tally.so/r/w4WbQk?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1"
               loading="lazy"
               width="100%"
               height="357"
               frameBorder="0"
               marginHeight="0"
               marginWidth="0"
-              title="Adesione Sciopero 26 Settembre 2025"
+              title="Adesione Sciopero 14 Novembre 2025"
             ></iframe>
           </div>
         )}
