@@ -258,7 +258,7 @@ const strikeRules = {
   strikeDate: '2025-11-14', // Data di sciopero: 14 Novembre 2025
   guaranteedTimeBands: [
     { start: '00:01', end: '12:59' }
-    { start: '17:00', end: '00:59' }
+    { start: '17:00', end: '23:59' }
      ],
   //guaranteedTimeBands: [
     //{ start: '07:00', end: '10:00' },
