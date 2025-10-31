@@ -256,18 +256,21 @@ const italianAirports = [
 
 // Regole di sciopero con la logica per CTA aggiornata
 const strikeRules = {
-  strikeDate: '2025-09-26', // Data di sciopero: 6 Settembre 2025
+  strikeDate: '2025-10-31', // Data di sciopero: 6 Settembre 2025
   guaranteedTimeBands: [
-    { start: '07:00', end: '10:00' },
-    { start: '18:00', end: '21:00' }
+    { start: '13:00, end: '17:00' }
   ],
+  //guaranteedTimeBands: [
+    //{ start: '07:00', end: '10:00' },
+    //{ start: '18:00', end: '21:00' }
+ //],
   // Voli protetti ENAC
-  protectedFlights: [
-    { origin: 'NAP', destination: 'OLB', time: '11:55' },
-    { origin: 'OLB', destination: 'NAP', time: '13:40' },
-    { origin: 'MXP', destination: 'LMP', time: '16:20' },
-    { origin: 'MXP', destination: 'SSH', time: '15:25' },
-    ],
+  //protectedFlights: [
+    //{ origin: 'NAP', destination: 'OLB', time: '11:55' },
+   // { origin: 'OLB', destination: 'NAP', time: '13:40' },
+   // { origin: 'MXP', destination: 'LMP', time: '16:20' },
+    //{ origin: 'MXP', destination: 'SSH', time: '15:25' },
+   // ],
 };
 
 // Componente per l'icona/logo USB
