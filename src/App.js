@@ -488,7 +488,7 @@ function App() {
             Verifica Eleggibilità Sciopero Aereo
           </h1>
           <p className="mt-2 text-lg md:text-xl font-semibold text-blue-600">
-            28 Novembre 2025 24 ore (fascie protette 7:00 - 10:00 e 18:00 - 21:00)
+            28 Novembre 2025 24 ore (fasce protette 7:00 - 10:00 e 18:00 - 21:00)
           </p>
         </header>
 
