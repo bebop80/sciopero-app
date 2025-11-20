@@ -255,15 +255,11 @@ const italianAirports = [
 ];
 
 const strikeRules = {
-  strikeDate: '2025-11-14', // Data di sciopero: 14 Novembre 2025
-  guaranteedTimeBands: [
-    { start: '00:01', end: '12:59' },
-    { start: '17:00', end: '23:59' }
-     ],
-  //guaranteedTimeBands: [
-    //{ start: '07:00', end: '10:00' },
-    //{ start: '18:00', end: '21:00' }
- //],
+  strikeDate: '2025-11-28', // Data di sciopero: 28 Novembre 2025
+    guaranteedTimeBands: [
+    { start: '07:00', end: '10:00' },
+    { start: '18:00', end: '21:00' }
+ ],
   // Voli protetti ENAC
   protectedFlights: [],
     //{ origin: 'NAP', destination: 'OLB', time: '11:55' },
