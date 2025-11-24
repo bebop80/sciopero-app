@@ -581,13 +581,13 @@ function App() {
                 <input type="radio" name="standbyOption" value="notPrecettato" checked={standbyOption === 'notPrecettato'} onChange={e => setStandbyOption(e.target.value)} className="h-5 w-5 mt-1 text-green-600 border-gray-300 focus:ring-green-500"/>
                 <span className="ml-3 text-sm font-medium text-gray-800">Non hai ricevuto la riserva comandata / mail di precettazione.</span>
               </label>
-              <label className={`flex items-start p-4 border rounded-lg cursor-pointer transition-all duration-200 ${standbyOption === 'precettato' ? 'bg-red-50 border-red-500 ring-2 ring-red-300' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'}`}>
-                <input type="radio" name="standbyOption" value="precettato" checked={standbyOption === 'precettato'} onChange={e => setStandbyOption(e.target.value)} className="h-5 w-5 mt-1 text-red-600 border-gray-300 focus:ring-red-500"/>
+              <label className={`flex items-start p-4 border rounded-lg cursor-pointer transition-all duration-200 ${standbyOption === 'precettato' ? 'bg-red-50 border-orange-500 ring-2 ring-red-300' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'}`}>
+                <input type="radio" name="standbyOption" value="precettato" checked={standbyOption === 'precettato'} onChange={e => setStandbyOption(e.target.value)} className="h-5 w-5 mt-1 text-orange-600 border-gray-300 focus:ring-red-500"/>
                 <span className="ml-3 text-sm font-medium text-gray-800">Hai ricevuto la riserva comandata / mail di precettazione.</span>
               </label>
             </div>
             {standbyOption === 'notPrecettato' && (
-              <div className="p-4 rounded-lg bg-green-100 text-green-800 border border-green-300">
+              <div className="bg-green-100 text-green-800 border border-green-300">
                 <h3 className="font-bold text-lg">SCIOPERABILE</h3>
                 <ul className="list-disc list-inside mt-2 text-sm">
                   <li>NON CI SONO FASCE DA RISPETTARE IN QUESTI CASI.</li>
@@ -598,7 +598,7 @@ function App() {
               </div>
             )}
             {standbyOption === 'precettato' && (
-              <div className="p-4 rounded-lg bg-red-100 text-red-800 border border-red-300">
+              <div className="bg-orange-100 text-orange-800 border border-orange-300">
                 <h3 className="font-bold text-lg">NON SCIOPERABILE</h3>
                 <ul className="list-disc list-inside mt-2 text-sm">
                   <li>Accettare SOLO voli garantiti da ENAC e/o quelli schedulati nelle fasce protette.</li>
@@ -631,9 +631,9 @@ function App() {
           <div className="space-y-3 pt-4 border-t">
             <h3 className="text-xl font-bold text-center">Risultati Verifica Volo</h3>
             {results.map((res, index) => (
-              <div key={index} className={`p-4 rounded-lg border ${res.eligible ? 'bg-green-50 border-green-300' : 'bg-red-50 border-red-300'}`}>
+              <div key={index} className={`bg-orange-100-lg border ${res.eligible ? 'bg-green-50 border-green-300' : 'bg-red-50 border-orange-300'}`}>
                 <p className="font-bold text-gray-800">{res.flight}</p>
-                <p className={`font-semibold ${res.eligible ? 'text-green-700' : 'text-red-700'}`}>
+                <p className={`font-semibold ${res.eligible ? 'text-green-700' : 'text-orange-700'}`}>
                   Stato: {res.eligible ? 'SCIOPERABILE' : 'NON SCIOPERABILE'}
                 </p>
                 <p className="text-sm text-gray-600 mt-1">
