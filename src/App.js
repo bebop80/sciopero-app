@@ -599,7 +599,7 @@ function App() {
             )}
             {standbyOption === 'precettato' && (
               <div className="bg-orange-100 text-orange-800 border border-orange-300">
-                <h3 className="font-bold text-lg">NON SCIOPERABILE</h3>
+                <h3 className="font-bold text-lg text-orange-800">ATTENZIONE SCIOPERABILE</h3>
                 <ul className="list-disc list-inside mt-2 text-sm">
                   <li>Accettare SOLO voli garantiti da ENAC e/o quelli schedulati nelle fasce protette.</li>
                   <li>NON accettare attività differenti / cambio turno (esempio: da sby non accettare adty).
@@ -634,7 +634,7 @@ function App() {
               <div key={index} className={`bg-orange-100-lg border ${res.eligible ? 'bg-green-50 border-green-300' : 'bg-red-50 border-orange-300'}`}>
                 <p className="font-bold text-gray-800">{res.flight}</p>
                 <p className={`font-semibold ${res.eligible ? 'text-green-700' : 'text-orange-700'}`}>
-                  Stato: {res.eligible ? 'SCIOPERABILE' : 'NON SCIOPERABILE'}
+                  Stato: {res.eligible ? 'SCIOPERABILE' : 'ATTENZIONE SCIOPERABILE'}
                 </p>
                 <p className="text-sm text-gray-600 mt-1">
                   Motivazione: <span dangerouslySetInnerHTML={{ __html: res.reason }} />
