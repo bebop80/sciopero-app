@@ -256,7 +256,7 @@ const italianAirports = [
 
 // Regole di sciopero con la logica per CTA aggiornata
 const strikeRules = {
-  strikeDate: '2025-09-06', // Data di sciopero: 6 Settembre 2025
+  strikeDate: '2025-11-28', // Data di sciopero: 28 Novembre 2025
   guaranteedTimeBands: [
     { start: '07:00', end: '10:00' },
     { start: '18:00', end: '21:00' }
