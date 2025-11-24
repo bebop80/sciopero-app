@@ -254,19 +254,14 @@ const italianAirports = [
   { icao: 'EGHI', iata: 'SOU', name: 'Southampton Airport', country: 'United Kingdom' },
 ];
 
-const strikeRules = {
-  strikeDate: '2025-11-28', // Data di sciopero: 28 Novembre 2025
-    guaranteedTimeBands: [
-    { start: '07:00', end: '10:00' },
-    { start: '18:00', end: '21:00' }
- ],
-  // Voli protetti ENAC
-  protectedFlights: [],
-    //{ origin: 'NAP', destination: 'OLB', time: '11:55' },
-   // { origin: 'OLB', destination: 'NAP', time: '13:40' },
-   // { origin: 'MXP', destination: 'LMP', time: '16:20' },
-    //{ origin: 'MXP', destination: 'SSH', time: '15:25' },
-   // ],
+
+
+  // Voli protetti ENAC temporaneamente disattivati
+  protectedFlights: []
+   \\ { origin: 'NAP', destination: 'SSH', time: '13:50' },
+  \\  { origin: 'MXP', destination: 'RAK', time: '06:00' },
+   \\ { origin: 'MXP', destination: 'HRG', time: '14:45' },
+  \\],
 };
 
 // Componente per l'icona/logo USB
@@ -399,10 +394,29 @@ function App() {
 
       const isProtected = strikeRules.protectedFlights.some(pf => pf.origin === segment.origin && pf.destination === segment.destination && pf.time === flightTime);
       
+      // Logica per la nuova regola di CTA
+      const isCtaFlight = strikeRules.ctaStrikeableBand.airports.includes(segment.origin) || strikeRules.ctaStrikeableBand.airports.includes(segment.destination);
+      const [ctaStartH, ctaStartM] = strikeRules.ctaStrikeableBand.start.split(':').map(Number);
+      const [ctaEndH, ctaEndM] = strikeRules.ctaStrikeableBand.end.split(':').map(Number);
+      const ctaStartTotalM = ctaStartH * 60 + ctaStartM;
+      const ctaEndTotalM = ctaEndH * 60 + ctaEndM;
+      const isInCtaStrikeableBand = flightTimeInMinutes >= ctaStartTotalM && flightTimeInMinutes <= ctaEndTotalM;
+
       if (isProtected) {
         currentReasons.push('Volo protetto ENAC: deve essere operato.');
       } else if (!isItalianAirport(segment.origin)) {
         currentReasons.push(`Partenza non da territorio nazionale (${segment.origin}).`);
+      } else if (isCtaFlight) {
+        if (isInCtaStrikeableBand) {
+          eligible = true;
+          currentReasons.push(`Volo da/per Catania (CTA) nella fascia scioperabile (${strikeRules.ctaStrikeableBand.start}-${strikeRules.ctaStrikeableBand.end}).`);
+          if (segment.origin !== baseIcao.toUpperCase()) {
+            currentReasons.push("<strong>(SCIOPERABILE FUORI BASE)</strong>");
+          }
+        } else {
+          eligible = false;
+          currentReasons.push(`Volo da/per Catania (CTA) protetto al di fuori della fascia scioperabile (${strikeRules.ctaStrikeableBand.start}-${strikeRules.ctaStrikeableBand.end}).`);
+        }
       } else {
         const isInGuaranteedBand = strikeRules.guaranteedTimeBands.some(band => {
           const [startH, startM] = band.start.split(':').map(Number);
@@ -451,7 +465,7 @@ function App() {
           // Se le condizioni sono vere, modifica il volo di ritorno
           if (returnFlight) {
             returnFlight.eligible = true;
-            returnFlight.reason = 'poiché collegato all\'andata scioperabile';
+            returnFlight.reason = 'poichè collegato all\'andata scioperabile';
           }
         }
       }
@@ -488,7 +502,7 @@ function App() {
             Verifica Eleggibilità Sciopero Aereo
           </h1>
           <p className="mt-2 text-lg md:text-xl font-semibold text-blue-600">
-            28 Novembre 2025 (24 ORE fasce protette 7:00 - 10:00 e 18:00 - 21:00)
+            6 Settembre 2025 (24 ORE, fasce garantite 07:00-10:00 e 18:00-21:00) !!ATTENZIONE!! CTA scioperabile solo in fascia 12:00 - 16:00
           </p>
         </header>
 
@@ -581,29 +595,27 @@ function App() {
                 <input type="radio" name="standbyOption" value="notPrecettato" checked={standbyOption === 'notPrecettato'} onChange={e => setStandbyOption(e.target.value)} className="h-5 w-5 mt-1 text-green-600 border-gray-300 focus:ring-green-500"/>
                 <span className="ml-3 text-sm font-medium text-gray-800">Non hai ricevuto la riserva comandata / mail di precettazione.</span>
               </label>
-              <label className={`flex items-start p-4 border rounded-lg cursor-pointer transition-all duration-200 ${standbyOption === 'precettato' ? 'bg-red-50 border-orange-500 ring-2 ring-red-300' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'}`}>
-                <input type="radio" name="standbyOption" value="precettato" checked={standbyOption === 'precettato'} onChange={e => setStandbyOption(e.target.value)} className="h-5 w-5 mt-1 text-orange-600 border-gray-300 focus:ring-red-500"/>
+              <label className={`flex items-start p-4 border rounded-lg cursor-pointer transition-all duration-200 ${standbyOption === 'precettato' ? 'bg-red-50 border-red-500 ring-2 ring-red-300' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'}`}>
+                <input type="radio" name="standbyOption" value="precettato" checked={standbyOption === 'precettato'} onChange={e => setStandbyOption(e.target.value)} className="h-5 w-5 mt-1 text-red-600 border-gray-300 focus:ring-red-500"/>
                 <span className="ml-3 text-sm font-medium text-gray-800">Hai ricevuto la riserva comandata / mail di precettazione.</span>
               </label>
             </div>
             {standbyOption === 'notPrecettato' && (
-              <div className="bg-green-100 text-green-800 border border-green-300">
+              <div className="p-4 rounded-lg bg-green-100 text-green-800 border border-green-300">
                 <h3 className="font-bold text-lg">SCIOPERABILE</h3>
                 <ul className="list-disc list-inside mt-2 text-sm">
-                  <li>NON CI SONO FASCE DA RISPETTARE IN QUESTI CASI.</li>
-                  <li>Chiamare Crewing prima dell'inizio dello Standby o dell'ADTY.</li>
-                  <li>Verificare la presenza del codice INDA - fare SCREENSHOT.</li>
-                  <li>Non rispondere a eventuali chiamate successive.</li>
+                  <li>Chiamare Crewing prima dell'inizio dello Standby.</li>
+                  <li>Verificare la presenza del codice INDA.</li>
+                  <li>Non rispondere a eventuali chiamate.</li>
                 </ul>
               </div>
             )}
             {standbyOption === 'precettato' && (
-              <div className="bg-red-100 text-red-800 border border-red-300">
-                <h3 className="font-bold text-lg text-red-800">NON SCIOPERABILE</h3>
+              <div className="p-4 rounded-lg bg-red-100 text-red-800 border border-red-300">
+                <h3 className="font-bold text-lg">NON SCIOPERABILE</h3>
                 <ul className="list-disc list-inside mt-2 text-sm">
-                  <li>Accettare SOLO voli garantiti da ENAC e/o quelli schedulati nelle fasce protette.</li>
-                  <li>NON accettare attività differenti / cambio turno (esempio: da sby non accettare adty).
-              lo sby può effettuare SOLO voli garantiti o protetti</li>
+                  <li>Accettare SOLO voli garantiti da ENAC e nelle fasce protette.</li>
+                  <li>NON accettare attività differenti.</li>
                 </ul>
               </div>
             )}
@@ -614,14 +626,14 @@ function App() {
         {dutyType === 'reportStrike' && isLinkActive && (
           <div className="pt-4 border-t">
             <iframe
-              data-tally-src="https://tally.so/r/w4WbQk?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1"
+              data-tally-src="https://tally.so/embed/wv5NVg?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1"
               loading="lazy"
               width="100%"
               height="357"
               frameBorder="0"
               marginHeight="0"
               marginWidth="0"
-              title="Adesione Sciopero 14 Novembre 2025"
+              title="Adesione Sciopero 6 Settembre 2025"
             ></iframe>
           </div>
         )}
@@ -631,9 +643,9 @@ function App() {
           <div className="space-y-3 pt-4 border-t">
             <h3 className="text-xl font-bold text-center">Risultati Verifica Volo</h3>
             {results.map((res, index) => (
-              <div key={index} className={`bg-red-100 rounded-lg border ${res.eligible ? 'bg-green-50 border-green-300' : 'bg-red-100 border-red-300'}`}>
+              <div key={index} className={`p-4 rounded-lg border ${res.eligible ? 'bg-green-50 border-green-300' : 'bg-red-50 border-red-300'}`}>
                 <p className="font-bold text-gray-800">{res.flight}</p>
-                <p className={`font-semibold ${res.eligible ? 'text-green-700' : 'text-orange-700'}`}>
+                <p className={`font-semibold ${res.eligible ? 'text-green-700' : 'text-red-700'}`}>
                   Stato: {res.eligible ? 'SCIOPERABILE' : 'NON SCIOPERABILE'}
                 </p>
                 <p className="text-sm text-gray-600 mt-1">
@@ -673,4 +685,3 @@ function App() {
 }
 
 export default App;
-
