@@ -254,14 +254,25 @@ const italianAirports = [
   { icao: 'EGHI', iata: 'SOU', name: 'Southampton Airport', country: 'United Kingdom' },
 ];
 
-
-
+// Regole di sciopero con la logica per CTA aggiornata
+const strikeRules = {
+  strikeDate: '2025-09-06', // Data di sciopero: 6 Settembre 2025
+  guaranteedTimeBands: [
+    { start: '07:00', end: '10:00' },
+    { start: '18:00', end: '21:00' }
+  ],
+  // NUOVA REGOLA: Fascia in cui i voli CTA diventano SCIOPERABILI
+  ctaStrikeableBand: {
+    start: '12:00',
+    end: '16:00',
+    airports: ['CTA', 'LICC']
+  },
   // Voli protetti ENAC temporaneamente disattivati
-  protectedFlights: []
-   \\ { origin: 'NAP', destination: 'SSH', time: '13:50' },
-  \\  { origin: 'MXP', destination: 'RAK', time: '06:00' },
-   \\ { origin: 'MXP', destination: 'HRG', time: '14:45' },
-  \\],
+  protectedFlights: [
+    { origin: 'NAP', destination: 'SSH', time: '13:50' },
+    { origin: 'MXP', destination: 'RAK', time: '06:00' },
+    { origin: 'MXP', destination: 'HRG', time: '14:45' },
+  ],
 };
 
 // Componente per l'icona/logo USB
