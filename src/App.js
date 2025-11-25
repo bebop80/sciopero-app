@@ -717,7 +717,7 @@ function App() {
             © 2025 scioperousb.netlify.app – Tutti i diritti riservati. Il design, il codice e i contenuti di questa web app sono protetti da copyright. È vietata la riproduzione o diffusione non autorizzata.
           </p>
           </footer>
-   
+   </div>
       {/* Modale per i messaggi */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -731,7 +731,6 @@ function App() {
         </div>
       )}
     </div>
-  </div>
   );
 }
 
