@@ -421,9 +421,9 @@ function App() {
         //if (isInCtaStrikeableBand) {
           //eligible = true;
           //currentReasons.push(`Volo da/per Catania (CTA) nella fascia scioperabile (${strikeRules.ctaStrikeableBand.start}-${strikeRules.ctaStrikeableBand.end}).`);
-          if (segment.origin !== baseIcao.toUpperCase()) {
-            currentReasons.push("<strong>(SCIOPERABILE FUORI BASE)</strong>");
-          }
+          //if (segment.origin !== baseIcao.toUpperCase()) {
+           // currentReasons.push("<strong>(SCIOPERABILE FUORI BASE)</strong>");
+         // }
         //}// else {
           //eligible = false;
           //currentReasons.push(`Volo da/per Catania (CTA) protetto al di fuori della fascia scioperabile (${strikeRules.ctaStrikeableBand.start}-${strikeRules.ctaStrikeableBand.end}).`);
