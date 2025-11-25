@@ -480,7 +480,16 @@ function App() {
           }
         }
       }
-    }
+      // Se le condizioni sono vere, modifica il volo di ritorno
+          if (returnFlight) {
+            returnFlight.eligible = true;
+returnFlight.reason = 'poichè collegato all\'andata scioperabile';
+            // AGGIUNGI QUESTA RIGA PER EVITARE CHE L'AVVERTIMENTO FERRY VENGA CANCELLATO:
+            if (returnFlight.isFerryWarning) {
+              returnFlight.reason += '<br/><span class="text-xs block mt-2"><strong>ATTENZIONE:</strong> Per effettuare questo volo la compagnia deve farvi posizionare su un volo ferry.</span>';
+            }
+          }
+        }
     
     setResults(newResults);
   };
@@ -686,6 +695,7 @@ function App() {
               );
             })}
           </div>
+        )}
         //{results.length > 0 && (
           //<div className="space-y-3 pt-4 border-t">
             //<h3 className="text-xl font-bold text-center">Risultati Verifica Volo</h3>
