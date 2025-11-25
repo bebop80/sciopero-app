@@ -686,7 +686,6 @@ function App() {
               );
             })}
           </div>
-        )}
         //{results.length > 0 && (
           //<div className="space-y-3 pt-4 border-t">
             //<h3 className="text-xl font-bold text-center">Risultati Verifica Volo</h3>
