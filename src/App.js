@@ -254,7 +254,6 @@ const italianAirports = [
   { icao: 'EGHI', iata: 'SOU', name: 'Southampton Airport', country: 'United Kingdom' },
 ];
 
-// Regole di sciopero con la logica per CTA aggiornata
 const strikeRules = {
   strikeDate: '2025-11-28', // Data di sciopero: 28 Novembre 2025
   guaranteedTimeBands: [
@@ -262,16 +261,17 @@ const strikeRules = {
     { start: '18:00', end: '21:00' }
   ],
   // NUOVA REGOLA: Fascia in cui i voli CTA diventano SCIOPERABILI
-  ctaStrikeableBand: {
-    start: '12:00',
-    end: '16:00',
-    airports: ['CTA', 'LICC']
-  },
+  //ctaStrikeableBand: {
+   // start: '12:00',
+   // end: '16:00',
+    //airports: ['CTA', 'LICC']
+  //},
   // Voli protetti ENAC temporaneamente disattivati
   protectedFlights: [
-    { origin: 'NAP', destination: 'SSH', time: '13:50' },
-    { origin: 'MXP', destination: 'RAK', time: '06:00' },
-    { origin: 'MXP', destination: 'HRG', time: '14:45' },
+    { origin: 'NAP', destination: 'SSH', time: '14:35' },
+    { origin: 'MXP', destination: 'OLB', time: '11:00' },
+    { origin: 'OLB', destination: 'MXP', time: '12:55' },
+    { origin: 'MXP', destination: 'RAK', time: '06:40' },
   ],
 };
 
@@ -406,28 +406,28 @@ function App() {
       const isProtected = strikeRules.protectedFlights.some(pf => pf.origin === segment.origin && pf.destination === segment.destination && pf.time === flightTime);
       
       // Logica per la nuova regola di CTA
-      const isCtaFlight = strikeRules.ctaStrikeableBand.airports.includes(segment.origin) || strikeRules.ctaStrikeableBand.airports.includes(segment.destination);
-      const [ctaStartH, ctaStartM] = strikeRules.ctaStrikeableBand.start.split(':').map(Number);
-      const [ctaEndH, ctaEndM] = strikeRules.ctaStrikeableBand.end.split(':').map(Number);
-      const ctaStartTotalM = ctaStartH * 60 + ctaStartM;
-      const ctaEndTotalM = ctaEndH * 60 + ctaEndM;
-      const isInCtaStrikeableBand = flightTimeInMinutes >= ctaStartTotalM && flightTimeInMinutes <= ctaEndTotalM;
+      //const isCtaFlight = strikeRules.ctaStrikeableBand.airports.includes(segment.origin) || strikeRules.ctaStrikeableBand.airports.includes(segment.destination);
+      //const [ctaStartH, ctaStartM] = strikeRules.ctaStrikeableBand.start.split(':').map(Number);
+      //const [ctaEndH, ctaEndM] = strikeRules.ctaStrikeableBand.end.split(':').map(Number);
+      //const ctaStartTotalM = ctaStartH * 60 + ctaStartM;
+      //const ctaEndTotalM = ctaEndH * 60 + ctaEndM;
+      //const isInCtaStrikeableBand = flightTimeInMinutes >= ctaStartTotalM && flightTimeInMinutes <= ctaEndTotalM;
 
       if (isProtected) {
         currentReasons.push('Volo protetto ENAC: deve essere operato.');
       } else if (!isItalianAirport(segment.origin)) {
         currentReasons.push(`Partenza non da territorio nazionale (${segment.origin}).`);
-      } else if (isCtaFlight) {
-        if (isInCtaStrikeableBand) {
-          eligible = true;
-          currentReasons.push(`Volo da/per Catania (CTA) nella fascia scioperabile (${strikeRules.ctaStrikeableBand.start}-${strikeRules.ctaStrikeableBand.end}).`);
+      } //else if (isCtaFlight) {
+        //if (isInCtaStrikeableBand) {
+          //eligible = true;
+          //currentReasons.push(`Volo da/per Catania (CTA) nella fascia scioperabile (${strikeRules.ctaStrikeableBand.start}-${strikeRules.ctaStrikeableBand.end}).`);
           if (segment.origin !== baseIcao.toUpperCase()) {
             currentReasons.push("<strong>(SCIOPERABILE FUORI BASE)</strong>");
           }
-        } else {
-          eligible = false;
-          currentReasons.push(`Volo da/per Catania (CTA) protetto al di fuori della fascia scioperabile (${strikeRules.ctaStrikeableBand.start}-${strikeRules.ctaStrikeableBand.end}).`);
-        }
+        //}// else {
+          //eligible = false;
+          //currentReasons.push(`Volo da/per Catania (CTA) protetto al di fuori della fascia scioperabile (${strikeRules.ctaStrikeableBand.start}-${strikeRules.ctaStrikeableBand.end}).`);
+        //}
       } else {
         const isInGuaranteedBand = strikeRules.guaranteedTimeBands.some(band => {
           const [startH, startM] = band.start.split(':').map(Number);
@@ -512,8 +512,8 @@ function App() {
           <h1 className="text-3xl md:text-4xl font-extrabold text-gray-800">
             Verifica Eleggibilità Sciopero Aereo
           </h1>
-          <p className="mt-2 text-lg md:text-xl font-semibold text-blue-600">
-            6 Settembre 2025 (24 ORE, fasce garantite 07:00-10:00 e 18:00-21:00) !!ATTENZIONE!! CTA scioperabile solo in fascia 12:00 - 16:00
+         <p className="mt-2 text-lg md:text-xl font-semibold text-blue-600">
+            28 Novembre 2025 (24 ORE, fasce garantite 07:00-10:00 e 18:00-21:00)
           </p>
         </header>
 
@@ -542,7 +542,7 @@ function App() {
                 disabled={!isFlightStandbyActive}
                 className="h-5 w-5 text-indigo-600 border-gray-300 focus:ring-indigo-500"
               />
-              <span className="ml-3 text-base font-medium text-gray-800">Home Standby / Adty</span>
+              <span className="ml-3 text-base font-medium text-gray-800">Home Standby / Adty  - NON CI SONO FASCE DA RISPETTARE - </span>
             </label>
             <label className={`flex items-center p-4 border rounded-lg cursor-pointer transition-all duration-200 ${dutyType === 'reportStrike' ? 'bg-indigo-50 border-indigo-500 ring-2 ring-indigo-300' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'} ${!isLinkActive ? 'opacity-60 cursor-not-allowed' : ''}`}>
               <input
@@ -637,14 +637,14 @@ function App() {
         {dutyType === 'reportStrike' && isLinkActive && (
           <div className="pt-4 border-t">
             <iframe
-              data-tally-src="https://tally.so/embed/wv5NVg?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1"
+              data-tally-src="https://tally.so/r/w4WbQk?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1"
               loading="lazy"
               width="100%"
               height="357"
               frameBorder="0"
               marginHeight="0"
               marginWidth="0"
-              title="Adesione Sciopero 6 Settembre 2025"
+              title="Adesione Sciopero 28 Novembre 2025"
             ></iframe>
           </div>
         )}
