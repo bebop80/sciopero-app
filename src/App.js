@@ -712,7 +712,6 @@ returnFlight.reason = 'poichè collegato all\'andata scioperabile';
             //))}
           //</div>
         //)}
-        )}
 
         <footer className="pt-6 border-t text-center space-y-4">
           <p className="text-sm text-gray-600">
