@@ -626,7 +626,7 @@ function App() {
                 <h3 className="font-bold text-lg">NON SCIOPERABILE</h3>
                 <ul className="list-disc list-inside mt-2 text-sm">
                   <li>Accettare SOLO voli garantiti da ENAC e nelle fasce protette.</li>
-                  <li>NON accettare attività differenti.</li>
+                  <li>NON accettare attività differenti: NO ADTY. </li>
                 </ul>
               </div>
             )}
