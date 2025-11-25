@@ -511,7 +511,7 @@ function App() {
             </label>
             <label className={`flex items-center p-4 border rounded-lg cursor-pointer transition-all duration-200 ${dutyType === 'home' ? 'bg-indigo-50 border-indigo-500 ring-2 ring-indigo-300' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'} ${!isFlightStandbyActive ? 'opacity-60 cursor-not-allowed' : ''}`}>
               <input type="radio" name="dutyType" value="home" checked={dutyType === 'home'} onChange={handleDutyTypeChange} disabled={!isFlightStandbyActive} className="h-5 w-5 text-indigo-600 border-gray-300 focus:ring-indigo-500" />
-              <span className="ml-3 text-base font-medium text-gray-800">Home Standby / Adty  - NON CI SONO FASCE DA RISPETTARE - </span>
+              <span className="ml-3 text-base font-medium text-gray-800">Home Standby / Adty </span>
             </label>
             <label className={`flex items-center p-4 border rounded-lg cursor-pointer transition-all duration-200 ${dutyType === 'reportStrike' ? 'bg-indigo-50 border-indigo-500 ring-2 ring-indigo-300' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'} ${!isLinkActive ? 'opacity-60 cursor-not-allowed' : ''}`}>
               <input type="radio" name="dutyType" value="reportStrike" checked={dutyType === 'reportStrike'} onChange={handleDutyTypeChange} disabled={!isLinkActive} className="h-5 w-5 text-indigo-600 border-gray-300 focus:ring-indigo-500" />
@@ -576,6 +576,7 @@ function App() {
               <div className="p-4 rounded-lg bg-green-100 text-green-800 border border-green-300">
                 <h3 className="font-bold text-lg">SCIOPERABILE</h3>
                 <ul className="list-disc list-inside mt-2 text-sm">
+                  <li>NON CI SONO FASCE DA RISPETTARE</li>
                   <li>Chiamare Crewing prima dell'inizio dello Standby.</li>
                   <li>Verificare la presenza del codice INDA.</li>
                   <li>Non rispondere a eventuali chiamate.</li>
