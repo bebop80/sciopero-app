@@ -428,7 +428,7 @@ function App() {
           //eligible = false;
           //currentReasons.push(`Volo da/per Catania (CTA) protetto al di fuori della fascia scioperabile (${strikeRules.ctaStrikeableBand.start}-${strikeRules.ctaStrikeableBand.end}).`);
         //}
-      } else {
+      else {
         const isInGuaranteedBand = strikeRules.guaranteedTimeBands.some(band => {
           const [startH, startM] = band.start.split(':').map(Number);
           const [endH, endM] = band.end.split(':').map(Number);
