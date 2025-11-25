@@ -279,8 +279,6 @@ const strikeRules = {
 const USBLogo = () => (
   <img src="/logo.svg.png" alt="Logo USB" className="union-logo h-12 w-12" />
 );
-
-
 // Componente principale dell'applicazione
 function App() {
   const [dutyType, setDutyType] = useState(null); // 'flight', 'standby', o 'reportStrike'
@@ -295,14 +293,14 @@ function App() {
 
   // Determina se la data odierna rientra nel periodo di attivazione del link
   const today = new Date();
-  today.setHours(0, 0, 0, 0); // Normalizza la data odierna a mezzanotte per il confronto
+  today.setHours(0, 0, 0, 0); 
 
   const strikeDateObj = new Date(strikeRules.strikeDate);
-  strikeDateObj.setHours(0, 0, 0, 0); // Normalizza la data di sciopero a mezzanotte
+  strikeDateObj.setHours(0, 0, 0, 0); 
 
   const sevenDaysAfterStrikeDateObj = new Date(strikeDateObj);
   sevenDaysAfterStrikeDateObj.setDate(strikeDateObj.getDate() + 7);
-  sevenDaysAfterStrikeDateObj.setHours(23, 59, 59, 999); // Imposta alla fine del 7° giorno
+  sevenDaysAfterStrikeDateObj.setHours(23, 59, 59, 999); 
 
   const isLinkActive = today >= strikeDateObj && today <= sevenDaysAfterStrikeDateObj;
   const isFlightStandbyActive = today <= strikeDateObj;
@@ -336,10 +334,11 @@ function App() {
     if (!base || !num || !destInput) return segments;
     const baseCode = base.toUpperCase();
     const destinations = destInput.toUpperCase().split('-').filter(d => d);
-    if (num === 2 && destinations.length === 1) {
+
+    if (parseInt(num) === 2 && destinations.length === 1) {
       segments.push({ origin: baseCode, destination: destinations[0], type: `settore 1` });
       segments.push({ origin: destinations[0], destination: baseCode, type: `settore 2` });
-    } else if (num === 4 && destinations.length === 2) {
+    } else if (parseInt(num) === 4 && destinations.length === 2) {
       segments.push({ origin: baseCode, destination: destinations[0], type: `settore 1` });
       segments.push({ origin: destinations[0], destination: baseCode, type: `settore 2` });
       segments.push({ origin: baseCode, destination: destinations[1], type: `settore 3` });
@@ -347,7 +346,7 @@ function App() {
     }
     return segments;
   };
-  
+
   // Aggiorna il numero di campi per l'orario quando cambiano i settori
   useEffect(() => {
     const parsedNumSectors = parseInt(numSectors, 10);
@@ -405,30 +404,11 @@ function App() {
 
       const isProtected = strikeRules.protectedFlights.some(pf => pf.origin === segment.origin && pf.destination === segment.destination && pf.time === flightTime);
       
-      // Logica per la nuova regola di CTA
-      //const isCtaFlight = strikeRules.ctaStrikeableBand.airports.includes(segment.origin) || strikeRules.ctaStrikeableBand.airports.includes(segment.destination);
-      //const [ctaStartH, ctaStartM] = strikeRules.ctaStrikeableBand.start.split(':').map(Number);
-      //const [ctaEndH, ctaEndM] = strikeRules.ctaStrikeableBand.end.split(':').map(Number);
-      //const ctaStartTotalM = ctaStartH * 60 + ctaStartM;
-      //const ctaEndTotalM = ctaEndH * 60 + ctaEndM;
-      //const isInCtaStrikeableBand = flightTimeInMinutes >= ctaStartTotalM && flightTimeInMinutes <= ctaEndTotalM;
-
       if (isProtected) {
         currentReasons.push('Volo protetto ENAC: deve essere operato.');
       } else if (!isItalianAirport(segment.origin)) {
         currentReasons.push(`Partenza non da territorio nazionale (${segment.origin}).`);
-      } //else if (isCtaFlight) {
-        //if (isInCtaStrikeableBand) {
-          //eligible = true;
-          //currentReasons.push(`Volo da/per Catania (CTA) nella fascia scioperabile (${strikeRules.ctaStrikeableBand.start}-${strikeRules.ctaStrikeableBand.end}).`);
-          //if (segment.origin !== baseIcao.toUpperCase()) {
-           // currentReasons.push("<strong>(SCIOPERABILE FUORI BASE)</strong>");
-         // }
-        //}// else {
-          //eligible = false;
-          //currentReasons.push(`Volo da/per Catania (CTA) protetto al di fuori della fascia scioperabile (${strikeRules.ctaStrikeableBand.start}-${strikeRules.ctaStrikeableBand.end}).`);
-        //}
-      else {
+      } else {
         const isInGuaranteedBand = strikeRules.guaranteedTimeBands.some(band => {
           const [startH, startM] = band.start.split(':').map(Number);
           const [endH, endM] = band.end.split(':').map(Number);
@@ -447,11 +427,14 @@ function App() {
           }
         }
       }
-      reasonsPerFlight.push({ eligible, reasons: currentReasons, isOutOfBase: segment.origin !== baseIcao.toUpperCase() });
+      // Inizializza isFerryWarning a false per ogni volo
+      reasonsPerFlight.push({ eligible, reasons: currentReasons, isOutOfBase: segment.origin !== baseIcao.toUpperCase(), isFerryWarning: false });
     });
     
+    // Logica per il volo ferry (2 settori)
     if (reasonsPerFlight.length > 1 && reasonsPerFlight[0].eligible && !reasonsPerFlight[1].eligible && reasonsPerFlight[1].isOutOfBase) {
       reasonsPerFlight[1].reasons.push('<br/><span class="text-xs block mt-2"><strong>ATTENZIONE:</strong> Per effettuare questo volo la compagnia deve farvi posizionare su un volo ferry.</span>');
+      reasonsPerFlight[1].isFerryWarning = true; // Attiva l'avviso arancione
     }
 
     reasonsPerFlight.forEach((item, index) => {
@@ -459,33 +442,31 @@ function App() {
         flight: `Volo ${index + 1}: DA ${segments[index].origin} a ${segments[index].destination}`,
         eligible: item.eligible,
         reason: item.reasons.join(' '),
+        isFerryWarning: item.isFerryWarning // Passa lo stato dell'avviso
       });
     });
-// ========= NUOVA REGOLA PER VOLI DI RITORNO INTERNAZIONALI ==========
-    // ==================================================================
+
+    // ========= LOGICA PER VOLI DI RITORNO INTERNAZIONALI ==========
     for (let i = 0; i < newResults.length; i += 2) {
       const outboundFlight = newResults[i];
       const returnFlight = newResults[i + 1];
 
-      // Controlla se il volo di andata è scioperabile (e se esiste un volo di ritorno)
+      // Controlla se il volo di andata è scioperabile e se esiste un ritorno
       if (outboundFlight && outboundFlight.eligible && returnFlight) {
         const outboundSegment = segments[i];
-        
         // Controlla se la destinazione dell'andata non è italiana (volo internazionale)
         if (outboundSegment && !isItalianAirport(outboundSegment.destination)) {
-          
           // Modifica il volo di ritorno
           returnFlight.eligible = true;
           returnFlight.reason = 'poichè collegato all\'andata scioperabile';
           
-          // Manteniamo e integriamo l'avviso ATTENZIONE se era già presente
+          // Se c'era un avviso ferry, assicurati che venga visualizzato
           if (returnFlight.isFerryWarning) {
-            returnFlight.reason += '<br/><span class="text-xs block mt-2"><strong>ATTENZIONE:</strong> Per effettuare questo volo la compagnia deve farvi posizionare su un volo ferry.</span>';
+             returnFlight.reason += '<br/><span class="text-xs block mt-2"><strong>ATTENZIONE:</strong> Per effettuare questo volo la compagnia deve farvi posizionare su un volo ferry.</span>';
           }
         }
       }
     }
-    // ==================================================================
     
     setResults(newResults);
   };
@@ -504,7 +485,6 @@ function App() {
     resetForm();
     setDutyType(e.target.value);
   };
-
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-600 to-blue-300 flex items-center justify-center p-4 font-sans">
@@ -526,39 +506,15 @@ function App() {
           <label className="block text-base font-medium text-gray-700">Seleziona il tipo di attività:</label>
           <div className="space-y-3">
             <label className={`flex items-center p-4 border rounded-lg cursor-pointer transition-all duration-200 ${dutyType === 'volo' ? 'bg-indigo-50 border-indigo-500 ring-2 ring-indigo-300' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'} ${!isFlightStandbyActive ? 'opacity-60 cursor-not-allowed' : ''}`}>
-              <input
-                type="radio"
-                name="dutyType"
-                value="volo"
-                checked={dutyType === 'volo'}
-                onChange={handleDutyTypeChange}
-                disabled={!isFlightStandbyActive}
-                className="h-5 w-5 text-indigo-600 border-gray-300 focus:ring-indigo-500"
-              />
+              <input type="radio" name="dutyType" value="volo" checked={dutyType === 'volo'} onChange={handleDutyTypeChange} disabled={!isFlightStandbyActive} className="h-5 w-5 text-indigo-600 border-gray-300 focus:ring-indigo-500" />
               <span className="ml-3 text-base font-medium text-gray-800">Volo</span>
             </label>
             <label className={`flex items-center p-4 border rounded-lg cursor-pointer transition-all duration-200 ${dutyType === 'home' ? 'bg-indigo-50 border-indigo-500 ring-2 ring-indigo-300' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'} ${!isFlightStandbyActive ? 'opacity-60 cursor-not-allowed' : ''}`}>
-              <input
-                type="radio"
-                name="dutyType"
-                value="home"
-                checked={dutyType === 'home'}
-                onChange={handleDutyTypeChange}
-                disabled={!isFlightStandbyActive}
-                className="h-5 w-5 text-indigo-600 border-gray-300 focus:ring-indigo-500"
-              />
+              <input type="radio" name="dutyType" value="home" checked={dutyType === 'home'} onChange={handleDutyTypeChange} disabled={!isFlightStandbyActive} className="h-5 w-5 text-indigo-600 border-gray-300 focus:ring-indigo-500" />
               <span className="ml-3 text-base font-medium text-gray-800">Home Standby / Adty  - NON CI SONO FASCE DA RISPETTARE - </span>
             </label>
             <label className={`flex items-center p-4 border rounded-lg cursor-pointer transition-all duration-200 ${dutyType === 'reportStrike' ? 'bg-indigo-50 border-indigo-500 ring-2 ring-indigo-300' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'} ${!isLinkActive ? 'opacity-60 cursor-not-allowed' : ''}`}>
-              <input
-                type="radio"
-                name="dutyType"
-                value="reportStrike"
-                checked={dutyType === 'reportStrike'}
-                onChange={handleDutyTypeChange}
-                disabled={!isLinkActive}
-                className="h-5 w-5 text-indigo-600 border-gray-300 focus:ring-indigo-500"
-              />
+              <input type="radio" name="dutyType" value="reportStrike" checked={dutyType === 'reportStrike'} onChange={handleDutyTypeChange} disabled={!isLinkActive} className="h-5 w-5 text-indigo-600 border-gray-300 focus:ring-indigo-500" />
               <span className="ml-3 text-base font-medium text-gray-800">
                 Segnala Adesione Sciopero
                 <span className="ml-2 text-sm font-medium text-gray-600">(attivo solo dal giorno dello sciopero)</span>
@@ -631,7 +587,7 @@ function App() {
                 <h3 className="font-bold text-lg">NON SCIOPERABILE</h3>
                 <ul className="list-disc list-inside mt-2 text-sm">
                   <li>Accettare SOLO voli garantiti da ENAC e nelle fasce protette.</li>
-                  <li>NON accettare attività differenti: NO ADTY. </li>
+                  <li>NON accettare attività differenti: NO ADTY.</li>
                 </ul>
               </div>
             )}
@@ -655,11 +611,11 @@ function App() {
         )}
 
         {/* Risultati Volo */}
-         {results.length > 0 && (
+        {results.length > 0 && (
           <div className="space-y-3 pt-4 border-t">
             <h3 className="text-xl font-bold text-center">Risultati Verifica Volo</h3>
             {results.map((res, index) => {
-              // NUOVE CLASSI DINAMICHE
+              // CLASSI DINAMICHE PER STILE ARANCIONE
               let statusText = '';
               let textColor = '';
               let backgroundClasses = '';
@@ -692,23 +648,9 @@ function App() {
             })}
           </div>
         )}
-        //{results.length > 0 && (
-          //<div className="space-y-3 pt-4 border-t">
-            //<h3 className="text-xl font-bold text-center">Risultati Verifica Volo</h3>
-            //{results.map((res, index) => (
-              //<div key={index} className={`p-4 rounded-lg border ${res.eligible ? 'bg-green-50 border-green-300' : 'bg-red-50 border-red-300'}`}>
-                //<p className="font-bold text-gray-800">{res.flight}</p>
-                //<p className={`font-semibold ${res.eligible ? 'text-green-700' : 'text-red-700'}`}>
-                  //Stato: {res.eligible ? 'SCIOPERABILE' : 'NON SCIOPERABILE'}
-                //</p>
-                //<p className="text-sm text-gray-600 mt-1">
-                  //Motivazione: <span dangerouslySetInnerHTML={{ __html: res.reason }} />
-                //</p>
-              //</div>
-            //))}
-          //</div>
-        //)}
-<footer className="pt-6 border-t text-center space-y-4">
+
+
+        <footer className="pt-6 border-t text-center space-y-4">
           <p className="text-sm text-gray-600">
             In caso di dubbi, necessità o discordanza riscontrata con le modalità di sciopero comunicate, non esitate a contattare i rappresentanti USB.
           </p>
@@ -719,7 +661,7 @@ function App() {
           </p>
         </footer>
 
-      </div> {/* QUI SI CHIUDE IL DIV BIANCO (max-w-2xl) */}
+      </div>
 
       {/* Modale per i messaggi */}
       {isModalOpen && (
@@ -733,10 +675,9 @@ function App() {
           </div>
         </div>
       )}
-
-    </div> {/* QUI SI CHIUDE IL DIV PRINCIPALE (min-h-screen) */}
+    </div>
   );
 }
 
 export default App;
-       
+
