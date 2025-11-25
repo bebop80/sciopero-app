@@ -650,22 +650,59 @@ function App() {
         )}
 
         {/* Risultati Volo */}
-        {results.length > 0 && (
+         {results.length > 0 && (
           <div className="space-y-3 pt-4 border-t">
             <h3 className="text-xl font-bold text-center">Risultati Verifica Volo</h3>
-            {results.map((res, index) => (
-              <div key={index} className={`p-4 rounded-lg border ${res.eligible ? 'bg-green-50 border-green-300' : 'bg-red-50 border-red-300'}`}>
-                <p className="font-bold text-gray-800">{res.flight}</p>
-                <p className={`font-semibold ${res.eligible ? 'text-green-700' : 'text-red-700'}`}>
-                  Stato: {res.eligible ? 'SCIOPERABILE' : 'NON SCIOPERABILE'}
-                </p>
-                <p className="text-sm text-gray-600 mt-1">
-                  Motivazione: <span dangerouslySetInnerHTML={{ __html: res.reason }} />
-                </p>
-              </div>
-            ))}
+            {results.map((res, index) => {
+              // NUOVE CLASSI DINAMICHE
+              let statusText = '';
+              let textColor = '';
+              let backgroundClasses = '';
+
+              if (res.isFerryWarning) {
+                statusText = 'SCIOPERABILE MA ATTENZIONE!';
+                textColor = 'text-orange-700';
+                backgroundClasses = 'bg-orange-50 border-orange-300';
+              } else if (res.eligible) {
+                statusText = 'SCIOPERABILE';
+                textColor = 'text-green-700';
+                backgroundClasses = 'bg-green-50 border-green-300';
+              } else {
+                statusText = 'NON SCIOPERABILE';
+                textColor = 'text-red-700';
+                backgroundClasses = 'bg-red-50 border-red-300';
+              }
+
+              return (
+                <div key={index} className={`p-4 rounded-lg border ${backgroundClasses}`}>
+                  <p className="font-bold text-gray-800">{res.flight}</p>
+                  <p className={`font-semibold ${textColor}`}>
+                    Stato: {statusText}
+                  </p>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Motivazione: <span dangerouslySetInnerHTML={{ __html: res.reason }} />
+                  </p>
+                </div>
+              );
+            })}
           </div>
         )}
+        //{results.length > 0 && (
+          //<div className="space-y-3 pt-4 border-t">
+            //<h3 className="text-xl font-bold text-center">Risultati Verifica Volo</h3>
+            //{results.map((res, index) => (
+              //<div key={index} className={`p-4 rounded-lg border ${res.eligible ? 'bg-green-50 border-green-300' : 'bg-red-50 border-red-300'}`}>
+                //<p className="font-bold text-gray-800">{res.flight}</p>
+                //<p className={`font-semibold ${res.eligible ? 'text-green-700' : 'text-red-700'}`}>
+                  //Stato: {res.eligible ? 'SCIOPERABILE' : 'NON SCIOPERABILE'}
+                //</p>
+                //<p className="text-sm text-gray-600 mt-1">
+                  //Motivazione: <span dangerouslySetInnerHTML={{ __html: res.reason }} />
+                //</p>
+              //</div>
+            //))}
+          //</div>
+        //)}
 
 
         <footer className="pt-6 border-t text-center space-y-4">
