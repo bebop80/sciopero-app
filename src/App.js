@@ -433,7 +433,7 @@ function App() {
     
     // Logica per il volo ferry (2 settori)
     if (reasonsPerFlight.length > 1 && reasonsPerFlight[0].eligible && !reasonsPerFlight[1].eligible && reasonsPerFlight[1].isOutOfBase) {
-      reasonsPerFlight[1].reasons.push('<br/><span class="text-xs block mt-2"><strong>ATTENZIONE:</strong> Per effettuare questo volo la compagnia deve farvi posizionare su un volo ferry o di altro vettore. Quando si chiama crewing si comunica che si sciopera ma disponibili ad effettuare il secondo settore; se l'azienda desidera farci operare il secondo settore dovrà comunicarci durante QUESTA telefonata orari/dettagli/vettore per il posizionamento. In caso contrario INDA tutto il giorno e non si risponde ad ulteriori telefonate.</span>');
+      reasonsPerFlight[1].reasons.push('<br/><span class="text-xs block mt-2"><strong>ATTENZIONE:</strong> Per effettuare questo volo la compagnia deve farvi posizionare su un volo ferry o di altro vettore. Quando si chiama crewing si comunica che si sciopera ma disponibili ad effettuare il secondo settore; se desiderano fare operare il secondo settore dovranno comunicare durante QUESTA telefonata orari/dettagli/ferry o altro vettore per il posizionamento. In caso contrario INDA tutto il giorno e non si risponde ad ulteriori telefonate.</span>');
       reasonsPerFlight[1].isFerryWarning = true; // Attiva l'avviso arancione
     }
 
