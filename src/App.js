@@ -405,15 +405,10 @@ function App() {
           const [endH, endM] = band.end.split(':').map(Number);
           const startTotalM = startH * 60 + startM;
           const endTotalM = endH * 60 + endM;
-
-          // DEBUG CHECK: Verifica i valori numerici nel browser (Premi F12)
-          console.log(`Flight Time (min): ${flightTimeInMinutes}`);
-          console.log(`Band Check (${band.start}-${band.end}): Start=${startTotalM}, End=${endTotalM}`);
           
-          // Se il tuo codice ha accidentalmente trasformato l'orario di fine in NaN o 0, 
-          // il confronto è compromesso.
-          if (isNaN(endTotalM) || endTotalM === 0) {
-              return false; // Evita risultati errati
+          // IGNORA la banda se i valori numerici non sono validi (NaN)
+          if (isNaN(startTotalM) || isNaN(endTotalM)) {
+              return false; 
           }
 
           return flightTimeInMinutes >= startTotalM && flightTimeInMinutes <= endTotalM;
