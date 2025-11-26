@@ -260,13 +260,7 @@ const strikeRules = {
     { start: '07:00', end: '10:00' },
     { start: '18:00', end: '21:00' }
   ],
-  // NUOVA REGOLA: Fascia in cui i voli CTA diventano SCIOPERABILI
-  //ctaStrikeableBand: {
-   // start: '12:00',
-   // end: '16:00',
-    //airports: ['CTA', 'LICC']
-  //},
-  // Voli protetti ENAC temporaneamente disattivati
+ 
   protectedFlights: [
     { origin: 'NAP', destination: 'SSH', time: '14:35' },
     { origin: 'MXP', destination: 'OLB', time: '11:00' },
@@ -410,15 +404,23 @@ function App() {
       } else if (!isItalianAirport(segment.origin)) {
         currentReasons.push(`Partenza non da territorio nazionale (${segment.origin}).`);
       } else {
-        const isInGuaranteedBand = strikeRules.guaranteedTimeBands.some(band => {
-          const [startH, startM] = band.start.split(':').map(Number);
-          const [endH, endM] = band.end.split(':').map(Number);
-          const startTotalM = startH * 60 + startM;
-          const endTotalM = endH * 60 + endM;
-          return flightTimeInMinutes >= startTotalM && flightTimeInMinutes <= endTotalM;
-        });
+        const isInGuaranteedBand = strikeRules.guaranteedTimeBands.some(band => {
+          const [startH, startM] = band.start.split(':').map(Number);
+          const [endH, endM] = band.end.split(':').map(Number); // Controllato per sintassi corretta
+          const startTotalM = startH * 60 + startM;
+          const endTotalM = endH * 60 + endM;
+          
+          // Verifica che i calcoli siano validi (per debug)
+          if (isNaN(startTotalM) || isNaN(endTotalM)) {
+              console.error("Errore di parsing in band time:", band);
+              return false; // Ignora se non valido
+          }
 
-        if (isInGuaranteedBand) {
+          return flightTimeInMinutes >= startTotalM && flightTimeInMinutes <= endTotalM;
+        });
+
+        if (isInGuaranteedBand) {
+          
           currentReasons.push(`L'orario (${flightTime}) rientra in una fascia garantita.`);
         } else {
           eligible = true;
