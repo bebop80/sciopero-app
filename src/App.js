@@ -462,7 +462,7 @@ function App() {
           
           // Se c'era un avviso ferry, assicurati che venga visualizzato
           if (returnFlight.isFerryWarning) {
-             returnFlight.reason += '<br/><span class="text-xs block mt-2"><strong>ATTENZIONE:</strong> Per effettuare questo volo la compagnia deve farvi posizionare su un volo ferry.</span>';
+             returnFlight.reason += '<br/><span class="text-xs block mt-2"><strong>ATTENZIONE:</strong> Per effettuare questo volo la compagnia deve farvi posizionare su un volo ferry o di altro vettore. Quando si chiama crewing si comunica che si sciopera ma disponibili ad effettuare il secondo settore; se desiderano fare operare il secondo settore dovranno comunicare durante QUESTA telefonata orari/dettagli/ferry o altro vettore per il posizionamento. In caso contrario INDA tutto il giorno e non si risponde ad ulteriori telefonate.</span>';
           }
         }
       }
