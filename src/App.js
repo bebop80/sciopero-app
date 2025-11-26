@@ -412,13 +412,12 @@ function App() {
           if (isNaN(startTotalM) || isNaN(endTotalM)) {
               return false; 
           }
-
+         }      
           // Confronto corretto:
           return flightTimeInMinutes >= startTotalM && flightTimeInMinutes <= endTotalM;
         });
 
-        if (isInGuaranteedBand) {
-// ...          
+        if (isInGuaranteedBand) {     
           currentReasons.push(`L'orario (${flightTime}) rientra in una fascia garantita.`);
         } else {
           eligible = true;
