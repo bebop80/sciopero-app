@@ -394,7 +394,7 @@ function App() {
 
     const newResults = [];
     const reasonsPerFlight = [];
-    const ferryWarningText = '<br/><span class="text-xs block mt-2"><strong>ATTENZIONE:</strong> Per effettuare questo volo la compagnia deve farvi posizionare su un volo ferry/dead-head. Il volo è SCIOPERABILE. Si comunica che si sciopera ma si è disponibili ad effettuare il secondo settore, che si comunica essere fuori dalla fascia garantita, qualora la compagnia non riesca ad operarlo.</span>';
+    const ferryWarningText = '<br/><span class="text-xs block mt-2"><strong>ATTENZIONE:</strong> Per effettuare questo volo la compagnia deve farvi posizionare su un volo ferry o di altro vettore. Quando si chiama crewing si comunica che si sciopera ma disponibili ad effettuare il secondo settore; se desiderano fare operare il secondo settore dovranno comunicare durante QUESTA telefonata orari/dettagli/ferry o altro vettore per il posizionamento. In caso contrario INDA tutto il giorno e non si risponde ad ulteriori telefonate.</span>';
 
     segments.forEach((segment, index) => {
       let eligible = false;
