@@ -452,7 +452,6 @@ function App() {
                 returnFlight.isFerryWarning = true;
                 
                 // Aggiorna la motivazione del volo di ritorno
-                const returnSegment = segments[i + 1];
                 let newReason = `L'orario (${scheduledTimes[i + 1]}) era in una fascia garantita, ma il volo è ora scioperabile poichè collegato all\'andata scioperabile.`;
                 
                 returnFlight.reasons = [newReason]; // Sovrascrivi le vecchie motivazioni con la nuova
