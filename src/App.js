@@ -405,17 +405,20 @@ function App() {
           const [endH, endM] = band.end.split(':').map(Number);
           const startTotalM = startH * 60 + startM;
           const endTotalM = endH * 60 + endM;
-          
-          // IGNORA la banda se i valori numerici non sono validi (NaN)
+
+          // CONTROLLE DEFENSA CONTRO ERRORI DI PARSING:
+          // Se il parsing del tempo (es. '07:00') produce un valore non numerico (NaN), 
+          // ignoriamo la banda per evitare una valutazione errata.
           if (isNaN(startTotalM) || isNaN(endTotalM)) {
               return false; 
           }
 
+          // Confronto corretto:
           return flightTimeInMinutes >= startTotalM && flightTimeInMinutes <= endTotalM;
         });
 
         if (isInGuaranteedBand) {
-          
+// ...          
           currentReasons.push(`L'orario (${flightTime}) rientra in una fascia garantita.`);
         } else {
           eligible = true;
