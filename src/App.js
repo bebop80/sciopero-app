@@ -461,8 +461,8 @@ function App() {
           returnFlight.reason = 'poichè collegato all\'andata scioperabile';
           
           // Se c'era un avviso ferry, assicurati che venga visualizzato
-          if (returnFlight.isFerryWarning) {
-             returnFlight.reason += '<br/><span class="text-xs block mt-2"><strong>ATTENZIONE:</strong> Per effettuare questo volo la compagnia deve farvi posizionare su un volo ferry.</span>';
+          //if (returnFlight.isFerryWarning) {
+             //returnFlight.reason += '<br/><span class="text-xs block mt-2"><strong>ATTENZIONE:</strong> Per effettuare questo volo la compagnia deve farvi posizionare su un volo ferry.</span>';
           }
         }
       }
