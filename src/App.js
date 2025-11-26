@@ -399,21 +399,21 @@ function App() {
 
       const isProtected = strikeRules.protectedFlights.some(pf => pf.origin === segment.origin && pf.destination === segment.destination && pf.time === flightTime);
       
-      if (isProtected) {
-        currentReasons.push('Volo protetto ENAC: deve essere operato.');
-      } else if (!isItalianAirport(segment.origin)) {
-        currentReasons.push(`Partenza non da territorio nazionale (${segment.origin}).`);
       } else {
         const isInGuaranteedBand = strikeRules.guaranteedTimeBands.some(band => {
           const [startH, startM] = band.start.split(':').map(Number);
-          const [endH, endM] = band.end.split(':').map(Number); // Controllato per sintassi corretta
+          const [endH, endM] = band.end.split(':').map(Number);
           const startTotalM = startH * 60 + startM;
           const endTotalM = endH * 60 + endM;
+
+          // DEBUG CHECK: Verifica i valori numerici nel browser (Premi F12)
+          console.log(`Flight Time (min): ${flightTimeInMinutes}`);
+          console.log(`Band Check (${band.start}-${band.end}): Start=${startTotalM}, End=${endTotalM}`);
           
-          // Verifica che i calcoli siano validi (per debug)
-          if (isNaN(startTotalM) || isNaN(endTotalM)) {
-              console.error("Errore di parsing in band time:", band);
-              return false; // Ignora se non valido
+          // Se il tuo codice ha accidentalmente trasformato l'orario di fine in NaN o 0, 
+          // il confronto è compromesso.
+          if (isNaN(endTotalM) || endTotalM === 0) {
+              return false; // Evita risultati errati
           }
 
           return flightTimeInMinutes >= startTotalM && flightTimeInMinutes <= endTotalM;
