@@ -260,7 +260,13 @@ const strikeRules = {
     { start: '07:00', end: '10:00' },
     { start: '18:00', end: '21:00' }
   ],
- 
+  // NUOVA REGOLA: Fascia in cui i voli CTA diventano SCIOPERABILI
+  //ctaStrikeableBand: {
+   // start: '12:00',
+   // end: '16:00',
+    //airports: ['CTA', 'LICC']
+  //},
+  // Voli protetti ENAC temporaneamente disattivati
   protectedFlights: [
     { origin: 'NAP', destination: 'SSH', time: '14:35' },
     { origin: 'MXP', destination: 'OLB', time: '11:00' },
@@ -388,7 +394,6 @@ function App() {
 
     const newResults = [];
     const reasonsPerFlight = [];
-    const ferryWarningText = '<br/><span class="text-xs block mt-2"><strong>ATTENZIONE:</strong> Per effettuare questo volo la compagnia deve farvi posizionare su un volo ferry o di altro vettore. Quando si chiama crewing si comunica che si sciopera ma disponibili ad effettuare il secondo settore; se desiderano fare operare il secondo settore dovranno comunicare durante QUESTA telefonata orari/dettagli/ferry o altro vettore per il posizionamento. In caso contrario INDA tutto il giorno e non si risponde ad ulteriori telefonate.</span>';
 
     segments.forEach((segment, index) => {
       let eligible = false;
@@ -399,25 +404,20 @@ function App() {
 
       const isProtected = strikeRules.protectedFlights.some(pf => pf.origin === segment.origin && pf.destination === segment.destination && pf.time === flightTime);
       
-       else {
-        const isInGuaranteedBand = strikeRules.guaranteedTimeBands.some(band => {
-          const [startH, startM] = band.start.split(':').map(Number);
-          const [endH, endM] = band.end.split(':').map(Number);
-          const startTotalM = startH * 60 + startM;
-          const endTotalM = endH * 60 + endM;
+      if (isProtected) {
+        currentReasons.push('Volo protetto ENAC: deve essere operato.');
+      } else if (!isItalianAirport(segment.origin)) {
+        currentReasons.push(`Partenza non da territorio nazionale (${segment.origin}).`);
+      } else {
+        const isInGuaranteedBand = strikeRules.guaranteedTimeBands.some(band => {
+          const [startH, startM] = band.start.split(':').map(Number);
+          const [endH, endM] = band.end.split(':').map(Number);
+          const startTotalM = startH * 60 + startM;
+          const endTotalM = endH * 60 + endM;
+          return flightTimeInMinutes >= startTotalM && flightTimeInMinutes <= endTotalM;
+        });
 
-          // CONTROLLE DEFENSA CONTRO ERRORI DI PARSING:
-          // Se il parsing del tempo (es. '07:00') produce un valore non numerico (NaN), 
-          // ignoriamo la banda per evitare una valutazione errata.
-          if (isNaN(startTotalM) || isNaN(endTotalM)) {
-              return false; 
-          }
-         }      
-          // Confronto corretto:
-          return flightTimeInMinutes >= startTotalM && flightTimeInMinutes <= endTotalM;
-        });
-
-        if (isInGuaranteedBand) {     
+        if (isInGuaranteedBand) {
           currentReasons.push(`L'orario (${flightTime}) rientra in una fascia garantita.`);
         } else {
           eligible = true;
@@ -427,56 +427,46 @@ function App() {
           }
         }
       }
-      reasonsPerFlight.push({ eligible, reasons: currentReasons, isOutOfBase: segment.origin !== baseIcao.toUpperCase(), isFerryWarning: false, isGuaranteed: !eligible });
+      // Inizializza isFerryWarning a false per ogni volo
+      reasonsPerFlight.push({ eligible, reasons: currentReasons, isOutOfBase: segment.origin !== baseIcao.toUpperCase(), isFerryWarning: false });
     });
     
-    // =================================================================================
-    // MODIFICA RICHIESTA: Logica unificata per voli di ritorno che diventano scioperabili
-    // =================================================================================
-    
-    for (let i = 0; i < reasonsPerFlight.length; i += 2) {
-        const outbound = reasonsPerFlight[i];
-        const returnFlight = reasonsPerFlight[i + 1];
-        
-        // Esegui la logica solo se c'è un volo di andata e uno di ritorno
-        if (outbound && returnFlight) {
-            
-            // CONDIZIONE PER VOLO DI ANDATA SCIOPERABILE E RITORNO PROTETTO
-            if (outbound.eligible && returnFlight.isGuaranteed) {
-                // Il volo di ritorno diventa SCIOPERABILE per connessione
-                returnFlight.eligible = true;
-                returnFlight.isGuaranteed = false; // Non è più garantito se è scioperabile
-                
-                // Imposta il messaggio "ATTENZIONE" arancione
-                returnFlight.isFerryWarning = true;
-                
-                // Aggiorna la motivazione del volo di ritorno
-                let newReason = `L'orario (${scheduledTimes[i + 1]}) era in una fascia garantita, ma il volo è ora scioperabile poichè collegato all'andata scioperabile.`;
-                
-                returnFlight.reasons = [newReason]; // Sovrascrivi le vecchie motivazioni con la nuova
-            }
-        }
+    // Logica per il volo ferry (2 settori)
+    if (reasonsPerFlight.length > 1 && reasonsPerFlight[0].eligible && !reasonsPerFlight[1].eligible && reasonsPerFlight[1].isOutOfBase) {
+      reasonsPerFlight[1].reasons.push('<br/><span class="text-xs block mt-2"><strong>ATTENZIONE:</strong> Per effettuare questo volo la compagnia deve farvi posizionare su un volo ferry o di altro vettore. Quando si chiama crewing si comunica che si sciopera ma disponibili ad effettuare il secondo settore; se desiderano fare operare il secondo settore dovranno comunicare durante QUESTA telefonata orari/dettagli/ferry o altro vettore per il posizionamento. In caso contrario INDA tutto il giorno e non si risponde ad ulteriori telefonate.</span>');
+      reasonsPerFlight[1].isFerryWarning = true; // Attiva l'avviso arancione
     }
-    
-    // =================================================================================
-    // Mappa i risultati finali per il rendering
-    // =================================================================================
 
     reasonsPerFlight.forEach((item, index) => {
-      let reasonText = item.reasons.join(' ');
-      
-      // Aggiungi l'avviso dettagliato solo se isFerryWarning è true
-      if (item.isFerryWarning) {
-          reasonText += ferryWarningText;
-      }
-      
       newResults.push({
         flight: `Volo ${index + 1}: DA ${segments[index].origin} a ${segments[index].destination}`,
         eligible: item.eligible,
-        reason: reasonText,
-        isFerryWarning: item.isFerryWarning
+        reason: item.reasons.join(' '),
+        isFerryWarning: item.isFerryWarning // Passa lo stato dell'avviso
       });
     });
+
+    // ========= LOGICA PER VOLI DI RITORNO INTERNAZIONALI ==========
+    for (let i = 0; i < newResults.length; i += 2) {
+      const outboundFlight = newResults[i];
+      const returnFlight = newResults[i + 1];
+
+      // Controlla se il volo di andata è scioperabile e se esiste un ritorno
+      if (outboundFlight && outboundFlight.eligible && returnFlight) {
+        const outboundSegment = segments[i];
+        // Controlla se la destinazione dell'andata non è italiana (volo internazionale)
+        if (outboundSegment && !isItalianAirport(outboundSegment.destination)) {
+          // Modifica il volo di ritorno
+          returnFlight.eligible = true;
+          returnFlight.reason = 'poichè collegato all\'andata scioperabile';
+          
+          // Se c'era un avviso ferry, assicurati che venga visualizzato
+          if (returnFlight.isFerryWarning) {
+             returnFlight.reason += '<br/><span class="text-xs block mt-2"><strong>ATTENZIONE:</strong> Per effettuare questo volo la compagnia deve farvi posizionare su un volo ferry.</span>';
+          }
+        }
+      }
+    }
     
     setResults(newResults);
   };
@@ -691,4 +681,3 @@ function App() {
 }
 
 export default App;
-
