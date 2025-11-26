@@ -454,15 +454,20 @@ function App() {
       // Controlla se il volo di andata è scioperabile e se esiste un ritorno
       if (outboundFlight && outboundFlight.eligible && returnFlight) {
         const outboundSegment = segments[i];
-        // Controlla se la destinazione dell'andata non è italiana (volo internazionale)
+        
+        // 1. Controlla se la destinazione dell'andata non è italiana (volo internazionale)
         if (outboundSegment && !isItalianAirport(outboundSegment.destination)) {
-          // Modifica il volo di ritorno
+          
+          // 2. Modifica il volo di ritorno
           returnFlight.eligible = true;
           returnFlight.reason = 'poichè collegato all\'andata scioperabile';
           
-          // Se c'era un avviso ferry, assicurati che venga visualizzato
-          //if (returnFlight.isFerryWarning) {
-             //returnFlight.reason += '<br/><span class="text-xs block mt-2"><strong>ATTENZIONE:</strong> Per effettuare questo volo la compagnia deve farvi posizionare su un volo ferry.</span>';
+          // Rimuovi l'avviso arancione (isFerryWarning) per questo specifico caso (andata fuori fascia -> ritorno protetto)
+          returnFlight.isFerryWarning = false; 
+          
+          // Rimuovi il testo di ATTENZIONE se presente, dato che l'avviso arancione è stato disattivato
+          if (returnFlight.reason.includes('ATTENZIONE:')) {
+              returnFlight.reason = returnFlight.reason.replace(/<br\/>.*?ATTENZIONE:.*?(<\/span>)/s, '');
           }
         }
       }
