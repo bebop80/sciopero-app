@@ -275,6 +275,11 @@ const USBLogo = () => (
 );
 
 
+// Funzioni di utilità per gli aeroporti
+const isKnownAirport = (code) => italianAirports.some(ap => ap.icao === code || ap.iata === code);
+const isItalianAirport = (code) => italianAirports.some(ap => (ap.icao === code || ap.iata === code) && ap.country === 'Italy');
+
+
 // Componente principale dell'applicazione
 function App() {
   const [dutyType, setDutyType] = useState(null); // 'flight', 'standby', o 'reportStrike'
@@ -349,9 +354,6 @@ function App() {
     setScheduledTimes(Array(segments.length).fill(''));
   }, [numSectors, destinationInput, baseIcao]);
 
-  // Funzioni di utilità per gli aeroporti
-  const isKnownAirport = (code) => italianAirports.some(ap => ap.icao === code || ap.iata === code);
-  const isItalianAirport = (code) => italianAirports.some(ap => (ap.icao === code || ap.iata === code) && ap.country === 'Italy');
 
   // Logica per calcolare l'eleggibilità allo sciopero
   const calculateStrikeEligibility = () => {
@@ -478,7 +480,8 @@ function App() {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-600 to-blue-300 flex items-center justify-center p-4 font-sans">
+    // MODIFICA: Rimosso "items-center" per migliorare la scorrevolezza su schermi piccoli
+    <div className="min-h-screen bg-gradient-to-br from-indigo-600 to-blue-300 flex justify-center p-4 font-sans">
       <div className="w-full max-w-2xl bg-white rounded-2xl shadow-2xl p-6 md:p-8 space-y-6">
         
         <header className="text-center">
@@ -591,8 +594,8 @@ function App() {
               <div className="p-4 rounded-lg bg-green-100 text-green-800 border border-green-300">
                 <h3 className="font-bold text-lg">SCIOPERABILE</h3>
                 <ul className="list-disc list-inside mt-2 text-sm">
-                  <li>NON ESISTONO FASCE PROTETTE PER SBY o ADTY.</li>
-                  <li>Chiamare Crewing prima dell'inizio dello Standby.</li>
+                  <li>NON ESISTONO FASCE PROTETTE PER SBY o ADTY</li>
+                  <li>Chiamare Crewing prima dell'inizio dello Standby.</li>
                   <li>Verificare la presenza del codice INDA.</li>
                   <li>Non rispondere a eventuali chiamate.</li>
                 </ul>
@@ -614,7 +617,7 @@ function App() {
         {dutyType === 'reportStrike' && isLinkActive && (
           <div className="pt-4 border-t">
             <iframe
-              data-tally-src="https://tally.so/r/w4WbQk?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1"
+              data-tally-src="https://tally.so/embed/wv5NVg?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1"
               loading="lazy"
               width="100%"
               height="357"
@@ -641,6 +644,9 @@ function App() {
                 </p>
               </div>
             ))}
+            <p className="text-sm text-center font-medium text-gray-600">
+              Nota: I voli che non sono scioperabili rimangono protetti per legge.
+            </p>
           </div>
         )}
 
