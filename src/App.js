@@ -480,8 +480,11 @@ function App() {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-600 to-blue-300 flex justify-center p-2 sm:p-4 font-sans">
-      <div className="w-full max-w-2xl bg-white rounded-2xl shadow-2xl p-6 md:p-8 space-y-6">
+    
+    {/* OTTIMIZZAZIONE MOBILE 1: Padding esterno quasi zero sui telefoni (p-0) */}
+    <div className="min-h-screen bg-gradient-to-br from-indigo-600 to-blue-300 flex justify-center p-0 md:p-4 font-sans">
+      {/* OTTIMIZZAZIONE MOBILE 2: Assicuriamo w-full, aggiungiamo un piccolo margine (mx-2) e riduciamo il padding interno a p-4. */}
+      <div className="w-full mx-2 sm:mx-0 sm:max-w-xl md:max-w-2xl bg-white rounded-2xl shadow-2xl p-4 md:p-8 space-y-6">
         
         <header className="text-center">
           <div className="flex justify-center items-center gap-4 mb-4">
@@ -491,7 +494,7 @@ function App() {
             Verifica Eleggibilità Sciopero Aereo
           </h1>
           <p className="mt-2 text-lg md:text-xl font-semibold text-blue-600">
-            28 Novembre 2025 (24 ORE, fasce garantite 07:00-10:00 e 18:00-21:00)
+            6 Settembre 2025 (24 ORE, fasce garantite 07:00-10:00 e 18:00-21:00)
           </p>
         </header>
 
@@ -522,7 +525,7 @@ function App() {
               />
               <span className="ml-3 text-base font-medium text-gray-800">Home Standby / Adty</span>
             </label>
-            {/* MODIFICA 2: Cambiato a items-start e aggiunto div flex-1 per gestione testo multiriga */}
+            {/* Correzione per layout mobile */}
             <label className={`flex items-start p-4 border rounded-lg cursor-pointer transition-all duration-200 ${dutyType === 'reportStrike' ? 'bg-indigo-50 border-indigo-500 ring-2 ring-indigo-300' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'} ${!isLinkActive ? 'opacity-60 cursor-not-allowed' : ''}`}>
               <input
                 type="radio"
@@ -627,7 +630,7 @@ function App() {
               frameBorder="0"
               marginHeight="0"
               marginWidth="0"
-              title="Adesione Sciopero 28 Novembre 2025"
+              title="Adesione Sciopero 6 Settembre 2025"
             ></iframe>
           </div>
         )}
@@ -647,6 +650,9 @@ function App() {
                 </p>
               </div>
             ))}
+            <p className="text-sm text-center font-medium text-gray-600">
+              Nota: I voli che non sono scioperabili rimangono protetti per legge.
+            </p>
           </div>
         )}
 
