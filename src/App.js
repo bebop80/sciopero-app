@@ -481,9 +481,8 @@ function App() {
 
   return (
     
-    {/* OTTIMIZZAZIONE MOBILE 1: Padding esterno quasi zero sui telefoni (p-0) */}
+  
     <div className="min-h-screen bg-gradient-to-br from-indigo-600 to-blue-300 flex justify-center p-0 md:p-4 font-sans">
-      {/* OTTIMIZZAZIONE MOBILE 2: Assicuriamo w-full, aggiungiamo un piccolo margine (mx-2) e riduciamo il padding interno a p-4. */}
       <div className="w-full mx-2 sm:mx-0 sm:max-w-xl md:max-w-2xl bg-white rounded-2xl shadow-2xl p-4 md:p-8 space-y-6">
         
         <header className="text-center">
