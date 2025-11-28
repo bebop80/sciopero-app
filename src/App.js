@@ -493,7 +493,7 @@ function App() {
             Verifica Eleggibilità Sciopero Aereo
           </h1>
           <p className="mt-2 text-lg md:text-xl font-semibold text-blue-600">
-            6 Settembre 2025 (24 ORE, fasce garantite 07:00-10:00 e 18:00-21:00)
+            28 Novembre 2025 (24 ORE, fasce garantite 07:00-10:00 e 18:00-21:00)
           </p>
         </header>
 
@@ -600,6 +600,7 @@ function App() {
               <div className="p-4 rounded-lg bg-green-100 text-green-800 border border-green-300">
                 <h3 className="font-bold text-lg">SCIOPERABILE</h3>
                 <ul className="list-disc list-inside mt-2 text-sm">
+                  <li>NON ESISTO FASCE PROTETTE PER ADTY o SBY</li>
                   <li>Chiamare Crewing prima dell'inizio dello Standby.</li>
                   <li>Verificare la presenza del codice INDA.</li>
                   <li>Non rispondere a eventuali chiamate.</li>
@@ -622,14 +623,14 @@ function App() {
         {dutyType === 'reportStrike' && isLinkActive && (
           <div className="pt-4 border-t">
             <iframe
-              data-tally-src="https://tally.so/embed/wv5NVg?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1"
+              data-tally-src="https://tally.so/r/w4WbQk?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1"
               loading="lazy"
               width="100%"
               height="357"
               frameBorder="0"
               marginHeight="0"
               marginWidth="0"
-              title="Adesione Sciopero 6 Settembre 2025"
+              title="Adesione Sciopero 28 Novembre 2025"
             ></iframe>
           </div>
         )}
@@ -649,9 +650,7 @@ function App() {
                 </p>
               </div>
             ))}
-            <p className="text-sm text-center font-medium text-gray-600">
-              Nota: I voli che non sono scioperabili rimangono protetti per legge.
-            </p>
+            
           </div>
         )}
 
