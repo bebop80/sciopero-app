@@ -480,7 +480,6 @@ function App() {
 
 
   return (
-    {/* MODIFICA 1: Ridotto il padding esterno a p-2 per schermi piccoli per massimizzare lo spazio per la card */}
     <div className="min-h-screen bg-gradient-to-br from-indigo-600 to-blue-300 flex justify-center p-2 sm:p-4 font-sans">
       <div className="w-full max-w-2xl bg-white rounded-2xl shadow-2xl p-6 md:p-8 space-y-6">
         
