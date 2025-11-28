@@ -601,9 +601,10 @@ function App() {
                 <h3 className="font-bold text-lg">SCIOPERABILE</h3>
                 <ul className="list-disc list-inside mt-2 text-sm">
                   <li>NON ESISTO FASCE PROTETTE PER ADTY o SBY</li>
-                  <li>Chiamare Crewing prima dell'inizio dello Standby.</li>
+                  <li>Chiamare Crewing prima dell'inizio dello Standby o ADTY.</li>
                   <li>Verificare la presenza del codice INDA.</li>
                   <li>Non rispondere a eventuali chiamate.</li>
+                  <li>A fine sciopero controllare i turni ed accettare i cambi per il giorno successivo, se presenti</li>
                 </ul>
               </div>
             )}
@@ -612,7 +613,7 @@ function App() {
                 <h3 className="font-bold text-lg">NON SCIOPERABILE</h3>
                 <ul className="list-disc list-inside mt-2 text-sm">
                   <li>Accettare SOLO voli garantiti da ENAC e nelle fasce protette.</li>
-                  <li>NON accettare attività differenti.</li>
+                  <li>NON accettare attività differenti: NO ADTY</li>
                 </ul>
               </div>
             )}
