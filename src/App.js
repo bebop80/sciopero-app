@@ -400,7 +400,7 @@ function App() {
       const flightTimeInMinutes = flightHours * 60 + flightMinutes;
 
       const isProtected = strikeRules.protectedFlights.some(pf => pf.origin === segment.origin && pf.destination === segment.destination && pf.time === flightTime);
-      
+      
       
       if (isProtected) {
         currentReasons.push('Volo protetto ENAC: deve essere operato.');
@@ -427,7 +427,7 @@ function App() {
       }
       reasonsPerFlight.push({ eligible, reasons: currentReasons, isOutOfBase: segment.origin !== baseIcao.toUpperCase() });
     });
-    
+    
     if (reasonsPerFlight.length > 1 && reasonsPerFlight[0].eligible && !reasonsPerFlight[1].eligible && reasonsPerFlight[1].isOutOfBase) {
       reasonsPerFlight[1].reasons.push('<br/><span class="text-xs block mt-2"><strong>ATTENZIONE:</strong> Per effettuare questo volo la compagnia deve farvi posizionare su un volo ferry.</span>');
     }
@@ -459,10 +459,10 @@ function App() {
         }
       }
     }
-    
+    
     setResults(newResults);
   };
-  
+  
   const resetForm = () => {
     setBaseIcao('');
     setNumSectors('');
@@ -480,10 +480,10 @@ function App() {
 
 
   return (
-    // MODIFICA: Rimosso "items-center" per migliorare la scorrevolezza su schermi piccoli
-    <div className="min-h-screen bg-gradient-to-br from-indigo-600 to-blue-300 flex justify-center p-4 font-sans">
+    {/* MODIFICA 1: Ridotto il padding esterno a p-2 per schermi piccoli per massimizzare lo spazio per la card */}
+    <div className="min-h-screen bg-gradient-to-br from-indigo-600 to-blue-300 flex justify-center p-2 sm:p-4 font-sans">
       <div className="w-full max-w-2xl bg-white rounded-2xl shadow-2xl p-6 md:p-8 space-y-6">
-        
+        
         <header className="text-center">
           <div className="flex justify-center items-center gap-4 mb-4">
             <USBLogo />
@@ -523,7 +523,8 @@ function App() {
               />
               <span className="ml-3 text-base font-medium text-gray-800">Home Standby / Adty</span>
             </label>
-            <label className={`flex items-center p-4 border rounded-lg cursor-pointer transition-all duration-200 ${dutyType === 'reportStrike' ? 'bg-indigo-50 border-indigo-500 ring-2 ring-indigo-300' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'} ${!isLinkActive ? 'opacity-60 cursor-not-allowed' : ''}`}>
+            {/* MODIFICA 2: Cambiato a items-start e aggiunto div flex-1 per gestione testo multiriga */}
+            <label className={`flex items-start p-4 border rounded-lg cursor-pointer transition-all duration-200 ${dutyType === 'reportStrike' ? 'bg-indigo-50 border-indigo-500 ring-2 ring-indigo-300' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'} ${!isLinkActive ? 'opacity-60 cursor-not-allowed' : ''}`}>
               <input
                 type="radio"
                 name="dutyType"
@@ -531,12 +532,16 @@ function App() {
                 checked={dutyType === 'reportStrike'}
                 onChange={handleDutyTypeChange}
                 disabled={!isLinkActive}
-                className="h-5 w-5 text-indigo-600 border-gray-300 focus:ring-indigo-500"
+                className="h-5 w-5 mt-1 text-indigo-600 border-gray-300 focus:ring-indigo-500"
               />
-              <span className="ml-3 text-base font-medium text-gray-800">
-                Segnala Adesione Sciopero
-                <span className="ml-2 text-sm font-medium text-gray-600">(attivo solo dal giorno dello sciopero)</span>
-              </span>
+              <div className="ml-3 flex-1 min-w-0">
+                <span className="block text-base font-medium text-gray-800">
+                  Segnala Adesione Sciopero
+                </span>
+                <span className="block text-sm font-medium text-gray-600">
+                  (attivo solo dal giorno dello sciopero)
+                </span>
+              </div>
             </label>
           </div>
         </div>
@@ -594,8 +599,7 @@ function App() {
               <div className="p-4 rounded-lg bg-green-100 text-green-800 border border-green-300">
                 <h3 className="font-bold text-lg">SCIOPERABILE</h3>
                 <ul className="list-disc list-inside mt-2 text-sm">
-                  <li>NON ESISTONO FASCE PROTETTE PER SBY o ADTY</li>
-                  <li>Chiamare Crewing prima dell'inizio dello Standby.</li>
+                  <li>Chiamare Crewing prima dell'inizio dello Standby.</li>
                   <li>Verificare la presenza del codice INDA.</li>
                   <li>Non rispondere a eventuali chiamate.</li>
                 </ul>
@@ -612,7 +616,7 @@ function App() {
             )}
           </div>
         )}
-        
+        
         {/* Sezione ADESIONE */}
         {dutyType === 'reportStrike' && isLinkActive && (
           <div className="pt-4 border-t">
@@ -644,9 +648,6 @@ function App() {
                 </p>
               </div>
             ))}
-            <p className="text-sm text-center font-medium text-gray-600">
-              Nota: I voli che non sono scioperabili rimangono protetti per legge.
-            </p>
           </div>
         )}
 
