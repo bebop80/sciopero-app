@@ -439,8 +439,8 @@ function App() {
         reason: item.reasons.join(' '),
       });
     });
-    // ==================================================================
-    // ========= NUOVA REGOLA PER VOLI DI RITORNO INTERNAZIONALI ==========
+        // ==================================================================
+    // ========= REGOLA VOLI DI RITORNO (NAZIONALI E INTERNAZIONALI) ====
     // ==================================================================
     for (let i = 0; i < newResults.length; i += 2) {
       const outboundFlight = newResults[i];
@@ -448,14 +448,11 @@ function App() {
 
       // Controlla se il volo di andata è scioperabile
       if (outboundFlight && outboundFlight.eligible) {
-        const outboundSegment = segments[i];
-        // Controlla se la destinazione dell'andata non è italiana (volo internazionale)
-        if (outboundSegment && !isItalianAirport(outboundSegment.destination)) {
-          // Se le condizioni sono vere, modifica il volo di ritorno
-          if (returnFlight) {
-            returnFlight.eligible = true;
-            returnFlight.reason = 'poichè collegato all\'andata scioperabile';
-          }
+        // La regola ora si applica a TUTTI i voli (rimosso il check !isItalianAirport)
+        if (returnFlight) {
+          returnFlight.eligible = true;
+          // Messaggio aggiornato con warning su positioning/ferry
+          returnFlight.reason = `poichè collegato all'andata scioperabile.<br/><br/><strong>ATTENZIONE: PUÒ ESSERE RICHIESTO DI ANDARE IN POSITIONING MA SOLO CON VOLO FERRY O DI ALTRO VETTORE, SE POSITIONIG CON PASSEGGERI NO</strong>`;
         }
       }
     }
