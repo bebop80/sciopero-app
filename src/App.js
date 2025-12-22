@@ -255,7 +255,7 @@ const italianAirports = [
 ];
 
 const strikeRules = {
-  strikeDate: '2025-11-28', // Data di sciopero: 28 Novembre 2025
+  strikeDate: '2026-1-9', // Data di sciopero: 9 Gennaio 2026
   guaranteedTimeBands: [
     { start: '07:00', end: '10:00' },
     { start: '18:00', end: '21:00' }
