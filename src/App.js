@@ -493,7 +493,7 @@ function App() {
             Verifica Eleggibilità Sciopero Aereo
           </h1>
           <p className="mt-2 text-lg md:text-xl font-semibold text-blue-600">
-            28 Novembre 2025 (24 ORE, fasce garantite 07:00-10:00 e 18:00-21:00)
+            9 Gennaio 2026 (24 ORE, fasce garantite 07:00-10:00 e 18:00-21:00)
           </p>
         </header>
 
@@ -631,7 +631,7 @@ function App() {
               frameBorder="0"
               marginHeight="0"
               marginWidth="0"
-              title="Adesione Sciopero 28 Novembre 2025"
+              title="Adesione Sciopero 9 Gennaio 2026"
             ></iframe>
           </div>
         )}
