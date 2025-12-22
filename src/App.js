@@ -439,7 +439,7 @@ function App() {
         reason: item.reasons.join(' '),
       });
     });
-        // ==================================================================
+      // ==================================================================
     // ========= REGOLA VOLI DI RITORNO (NAZIONALI E INTERNAZIONALI) ====
     // ==================================================================
     for (let i = 0; i < newResults.length; i += 2) {
@@ -448,10 +448,9 @@ function App() {
 
       // Controlla se il volo di andata è scioperabile
       if (outboundFlight && outboundFlight.eligible) {
-        // La regola ora si applica a TUTTI i voli (rimosso il check !isItalianAirport)
         if (returnFlight) {
           returnFlight.eligible = true;
-          // Messaggio aggiornato con warning su positioning/ferry
+          returnFlight.isWarning = true; // <--- NUOVO FLAG PER IL COLORE ARANCIONE
           returnFlight.reason = `poichè collegato all'andata scioperabile.<br/><br/><strong>ATTENZIONE: PUÒ ESSERE RICHIESTO DI ANDARE IN POSITIONING MA SOLO CON VOLO FERRY O DI ALTRO VETTORE, SE POSITIONIG CON PASSEGGERI NO</strong>`;
         }
       }
@@ -459,6 +458,7 @@ function App() {
     
     setResults(newResults);
   };
+
   
   const resetForm = () => {
     setBaseIcao('');
@@ -637,10 +637,25 @@ function App() {
         {results.length > 0 && (
           <div className="space-y-3 pt-4 border-t">
             <h3 className="text-xl font-bold text-center">Risultati Verifica Volo</h3>
-            {results.map((res, index) => (
-              <div key={index} className={`p-4 rounded-lg border ${res.eligible ? 'bg-green-50 border-green-300' : 'bg-red-50 border-red-300'}`}>
+                        {results.map((res, index) => (
+              <div 
+                key={index} 
+                className={`p-4 rounded-lg border ${
+                  res.isWarning 
+                    ? 'bg-orange-100 border-orange-500' // CASO ARANCIONE (Warning)
+                    : res.eligible 
+                      ? 'bg-green-50 border-green-300'  // CASO VERDE (Standard)
+                      : 'bg-red-50 border-red-300'      // CASO ROSSO (Non scioperabile)
+                }`}
+              >
                 <p className="font-bold text-gray-800">{res.flight}</p>
-                <p className={`font-semibold ${res.eligible ? 'text-green-700' : 'text-red-700'}`}>
+                <p className={`font-semibold ${
+                  res.isWarning 
+                    ? 'text-orange-900' // Testo scuro per arancione
+                    : res.eligible 
+                      ? 'text-green-700' 
+                      : 'text-red-700'
+                }`}>
                   Stato: {res.eligible ? 'SCIOPERABILE' : 'NON SCIOPERABILE'}
                 </p>
                 <p className="text-sm text-gray-600 mt-1">
