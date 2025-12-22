@@ -451,7 +451,7 @@ function App() {
         if (returnFlight) {
           returnFlight.eligible = true;
           returnFlight.isWarning = true; // <--- NUOVO FLAG PER IL COLORE ARANCIONE
-          returnFlight.reason = `poichè collegato all'andata scioperabile.<br/><br/><strong>ATTENZIONE: PUÒ ESSERE RICHIESTO DI ANDARE IN POSITIONING MA SOLO CON VOLO FERRY O DI ALTRO VETTORE, SE POSITIONIG CON PASSEGGERI NO</strong>`;
+          returnFlight.reason = `poichè collegato all'andata scioperabile.<br/><br/><strong>ATTENZIONE: PUÒ ESSERE RICHIESTO DI OPERARE IL VOLO. IL POSITIONING RELATIVO DOVRA' ESSERE SU VOLO FERRY (SENZA PASSEGGERI) O DI ALTRO VETTORE !!!NO POSITIONING CON PASSEGGERI!!!</strong>`;
         }
       }
     }
