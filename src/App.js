@@ -355,7 +355,7 @@ function App() {
   }, [numSectors, destinationInput, baseIcao]);
 
 
-  // Logica per calcolare l'eleggibilità allo sciopero
+   // Logica per calcolare l'eleggibilità allo sciopero
   const calculateStrikeEligibility = () => {
     setResults([]);
     setMessage('');
@@ -399,9 +399,10 @@ function App() {
       const [flightHours, flightMinutes] = flightTime.split(':').map(Number);
       const flightTimeInMinutes = flightHours * 60 + flightMinutes;
 
-      const isProtected = strikeRules.protectedFlights.some(pf => pf.origin === segment.origin && pf.destination === segment.destination && pf.time === flightTime);
-      
-      
+      const isProtected = strikeRules.protectedFlights.some(
+        pf => pf.origin === segment.origin && pf.destination === segment.destination && pf.time === flightTime
+      );
+
       if (isProtected) {
         currentReasons.push('Volo protetto ENAC: deve essere operato.');
       } else if (!isItalianAirport(segment.origin)) {
@@ -421,15 +422,27 @@ function App() {
           eligible = true;
           currentReasons.push(`L'orario (${flightTime}) è fuori dalle fasce garantite.`);
           if (segment.origin !== baseIcao.toUpperCase()) {
-            currentReasons.push("<strong>(SCIOPERABILE FUORI BASE)</strong>");
+            currentReasons.push('<strong>(SCIOPERABILE FUORI BASE)</strong>');
           }
         }
       }
-      reasonsPerFlight.push({ eligible, reasons: currentReasons, isOutOfBase: segment.origin !== baseIcao.toUpperCase() });
+
+      reasonsPerFlight.push({
+        eligible,
+        reasons: currentReasons,
+        isOutOfBase: segment.origin !== baseIcao.toUpperCase(),
+      });
     });
-    
-    if (reasonsPerFlight.length > 1 && reasonsPerFlight[0].eligible && !reasonsPerFlight[1].eligible && reasonsPerFlight[1].isOutOfBase) {
-      reasonsPerFlight[1].reasons.push('<br/><span class="text-xs block mt-2"><strong>ATTENZIONE:</strong> Per effettuare questo volo la compagnia deve farvi posizionare su un volo ferry.</span>');
+
+    if (
+      reasonsPerFlight.length > 1 &&
+      reasonsPerFlight[0].eligible &&
+      !reasonsPerFlight[1].eligible &&
+      reasonsPerFlight[1].isOutOfBase
+    ) {
+      reasonsPerFlight[1].reasons.push(
+        '<br/><span class="text-xs block mt-2"><strong>ATTENZIONE:</strong> Per effettuare questo volo la compagnia deve farvi posizionare su un volo ferry.</span>'
+      );
     }
 
     reasonsPerFlight.forEach((item, index) => {
@@ -439,7 +452,8 @@ function App() {
         reason: item.reasons.join(' '),
       });
     });
-         // ==================================================================
+
+    // ==================================================================
     // ==== REGOLA VOLI DI RITORNO (NAZIONALI E INTERNAZIONALI) + FASCE ==
     // ==================================================================
     for (let i = 0; i < newResults.length; i += 2) {
@@ -448,17 +462,17 @@ function App() {
 
       if (!outboundFlight || !returnFlight) continue;
 
-      // Se l'andata NON è scioperabile, non applichiamo nessuna regola speciale
+      // se l'andata NON è scioperabile, non applichiamo la regola speciale
       if (!outboundFlight.eligible) continue;
 
-      // Ricaviamo l'orario del volo di ritorno
+      // orario del volo di ritorno (secondo settore della coppia)
       const returnTime = scheduledTimes[i + 1];
       if (!returnTime) continue;
 
       const [retH, retM] = returnTime.split(':').map(Number);
       const returnTimeInMinutes = retH * 60 + retM;
 
-      // Verifichiamo se il ritorno è in fascia garantita
+      // controlliamo se il ritorno è in fascia garantita
       const isReturnInGuaranteedBand = strikeRules.guaranteedTimeBands.some(band => {
         const [startH, startM] = band.start.split(':').map(Number);
         const [endH, endM] = band.end.split(':').map(Number);
@@ -467,19 +481,22 @@ function App() {
         return returnTimeInMinutes >= startTotalM && returnTimeInMinutes <= endTotalM;
       });
 
-      // Se il ritorno è in fascia garantita, NON lo rendiamo scioperabile
+      // se il ritorno è in fascia garantita, NON lo rendiamo scioperabile
       if (isReturnInGuaranteedBand) continue;
 
-      // Solo se il ritorno è fuori fascia, applichiamo la regola di collegamento
+      // solo se fuori fascia: scioperabile + warning arancione
       returnFlight.eligible = true;
       returnFlight.isWarning = true;
-      returnFlight.reason = `poichè collegato all'andata scioperabile.<br/><br/><strong>ATTENZIONE: PUÒ ESSERE RICHIESTO DI OPERARE IL VOLO. IL POSITIONING RELATIVO DOVRA' ESSERE SU VOLO FERRY (SENZA PASSEGGERI) O DI ALTRO VETTORE !!!NO POSITIONING CON PASSEGGERI!!!</strong>`;
+      returnFlight.reason =
+        `poichè collegato all'andata scioperabile.` +
+        `<br/><br/><strong>ATTENZIONE: PUÒ ESSERE RICHIESTO DI OPERARE IL VOLO. ` +
+        `IL POSITIONING RELATIVO DOVRÀ ESSERE SU VOLO FERRY (SENZA PASSEGGERI) ` +
+        `O DI ALTRO VETTORE. NO POSITIONING CON PASSEGGERI.</strong>`;
     }
 
     setResults(newResults);
   };
-
-  
+ 
   const resetForm = () => {
     setBaseIcao('');
     setNumSectors('');
