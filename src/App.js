@@ -439,23 +439,43 @@ function App() {
         reason: item.reasons.join(' '),
       });
     });
-      // ==================================================================
-    // ========= REGOLA VOLI DI RITORNO (NAZIONALI E INTERNAZIONALI) ====
+         // ==================================================================
+    // ==== REGOLA VOLI DI RITORNO (NAZIONALI E INTERNAZIONALI) + FASCE ==
     // ==================================================================
     for (let i = 0; i < newResults.length; i += 2) {
       const outboundFlight = newResults[i];
       const returnFlight = newResults[i + 1];
 
-      // Controlla se il volo di andata è scioperabile
-      if (outboundFlight && outboundFlight.eligible) {
-        if (returnFlight) {
-          returnFlight.eligible = true;
-          returnFlight.isWarning = true; // <--- NUOVO FLAG PER IL COLORE ARANCIONE
-          returnFlight.reason = `poichè collegato all'andata scioperabile.<br/><br/><strong>ATTENZIONE: PUÒ ESSERE RICHIESTO DI OPERARE IL VOLO. IL POSITIONING RELATIVO DOVRA' ESSERE SU VOLO FERRY (SENZA PASSEGGERI) O DI ALTRO VETTORE !!!NO POSITIONING CON PASSEGGERI!!!</strong>`;
-        }
-      }
+      if (!outboundFlight || !returnFlight) continue;
+
+      // Se l'andata NON è scioperabile, non applichiamo nessuna regola speciale
+      if (!outboundFlight.eligible) continue;
+
+      // Ricaviamo l'orario del volo di ritorno
+      const returnTime = scheduledTimes[i + 1];
+      if (!returnTime) continue;
+
+      const [retH, retM] = returnTime.split(':').map(Number);
+      const returnTimeInMinutes = retH * 60 + retM;
+
+      // Verifichiamo se il ritorno è in fascia garantita
+      const isReturnInGuaranteedBand = strikeRules.guaranteedTimeBands.some(band => {
+        const [startH, startM] = band.start.split(':').map(Number);
+        const [endH, endM] = band.end.split(':').map(Number);
+        const startTotalM = startH * 60 + startM;
+        const endTotalM = endH * 60 + endM;
+        return returnTimeInMinutes >= startTotalM && returnTimeInMinutes <= endTotalM;
+      });
+
+      // Se il ritorno è in fascia garantita, NON lo rendiamo scioperabile
+      if (isReturnInGuaranteedBand) continue;
+
+      // Solo se il ritorno è fuori fascia, applichiamo la regola di collegamento
+      returnFlight.eligible = true;
+      returnFlight.isWarning = true;
+      returnFlight.reason = `poichè collegato all'andata scioperabile.<br/><br/><strong>ATTENZIONE: PUÒ ESSERE RICHIESTO DI OPERARE IL VOLO. IL POSITIONING RELATIVO DOVRA' ESSERE SU VOLO FERRY (SENZA PASSEGGERI) O DI ALTRO VETTORE !!!NO POSITIONING CON PASSEGGERI!!!</strong>`;
     }
-    
+
     setResults(newResults);
   };
 
