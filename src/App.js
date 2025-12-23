@@ -481,25 +481,25 @@ function App() {
         return returnTimeInMinutes >= startTotalM && returnTimeInMinutes <= endTotalM;
       });
 
-          // se il ritorno è FUORI fascia garantita:
-    // resta la logica standard già calcolata prima (verde/rosso),
-    // quindi non lo tocchiamo
-    if (!isReturnInGuaranteedBand) continue;
+             // se il ritorno è FUORI fascia garantita:
+      // resta la logica standard già calcolata prima (verde/rosso),
+      // quindi non lo tocchiamo
+      if (!isReturnInGuaranteedBand) continue;
 
-    // solo se il ritorno è IN fascia garantita:
-    // lo rendiamo NON scioperabile ma con warning arancione sul positioning
-    returnFlight.eligible = false;
-    returnFlight.isWarning = true;
-    returnFlight.reason =
-      `poichè collegato all'andata scioperabile.` +
-      `<br/><br/><strong>ATTENZIONE: PUÒ ESSERE RICHIESTO DI OPERARE IL VOLO. ` +
-      `IL POSITIONING RELATIVO DOVRÀ ESSERE SU VOLO FERRY (SENZA PASSEGGERI) ` +
-      `O DI ALTRO VETTORE. NO POSITIONING CON PASSEGGERI.</strong>`;
-
+      // solo se il ritorno è IN fascia garantita:
+      // lo rendiamo SCIOPERABILE ma con warning arancione sul positioning
+      returnFlight.eligible = true;
+      returnFlight.isWarning = true;
+      returnFlight.reason =
+        `poichè collegato all'andata scioperabile.` +
+        `<br/><br/><strong>ATTENZIONE: PUÒ ESSERE RICHIESTO DI OPERARE IL VOLO. ` +
+        `IL POSITIONING RELATIVO DOVRÀ ESSERE SU VOLO FERRY (SENZA PASSEGGERI) ` +
+        `O DI ALTRO VETTORE. NO POSITIONING CON PASSEGGERI.</strong>`;
     }
 
     setResults(newResults);
   };
+
  
   const resetForm = () => {
     setBaseIcao('');
