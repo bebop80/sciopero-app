@@ -283,6 +283,9 @@ const isItalianAirport = (code) => italianAirports.some(ap => (ap.icao === code 
 // Componente principale dell'applicazione
 function App() {
   const [dutyType, setDutyType] = useState(null); // 'flight', 'standby', o 'reportStrike'
+  // --- AGGIUNGI QUESTA RIGA QUI SOTTO: ---
+  const [visitCount, setVisitCount] = useState(0); 
+  // ---------------------------------------
   const [baseIcao, setBaseIcao] = useState('');
   const [numSectors, setNumSectors] = useState('');
   const [destinationInput, setDestinationInput] = useState('');
