@@ -329,6 +329,27 @@ function App() {
     }
   }, [dutyType]);
 
+    // --- NUOVO: Contatore visite semplice ---
+  useEffect(() => {
+    const namespace = 'sciopero-usb-app-2026'; // Puoi personalizzare questo nome
+    const key = 'visits';
+    
+    // Evita doppi conteggi sullo stesso refresh di pagina
+    const hasCounted = sessionStorage.getItem('hasCountedVisit');
+    
+    if (!hasCounted) {
+      // Nota: CountAPI è un servizio pubblico gratuito.
+      // Se vuoi testarlo subito, prova a visitare l'URL nel browser prima.
+      fetch(`https://api.countapi.xyz/hit/${namespace}/${key}`)
+        .then(() => {
+           sessionStorage.setItem('hasCountedVisit', 'true');
+           console.log("Visita registrata");
+        })
+        .catch(err => console.error("Errore contatore (API potrebbe essere offline):", err));
+    }
+  }, []);
+
+
   // Funzione per generare i segmenti di volo
   const generateFlightSegments = (base, num, destInput) => {
     const segments = [];
