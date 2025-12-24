@@ -329,23 +329,28 @@ function App() {
     }
   }, [dutyType]);
 
-    // --- NUOVO: Contatore visite semplice ---
+  // --- Contatore visite VISIBILE ---
   useEffect(() => {
-    const namespace = 'sciopero-usb-app-2026'; // Puoi personalizzare questo nome
-    const key = 'visits';
-    
-    // Evita doppi conteggi sullo stesso refresh di pagina
+    const counterId = 'sciopero-usb-app-2026-v1'; // Cambia questo nome per azzerare (es. ...-v2)
     const hasCounted = sessionStorage.getItem('hasCountedVisit');
-    
+
     if (!hasCounted) {
-      // Nota: CountAPI è un servizio pubblico gratuito.
-      // Se vuoi testarlo subito, prova a visitare l'URL nel browser prima.
-      fetch(`https://api.countapi.xyz/hit/${namespace}/${key}`)
-        .then(() => {
+      // Se è una nuova visita: INCREMENTA (+1)
+      fetch(`https://api.counterapi.dev/v1/${counterId}/up`)
+        .then(res => res.json())
+        .then(data => {
            sessionStorage.setItem('hasCountedVisit', 'true');
-           console.log("Visita registrata");
+           setVisitCount(data.count); // Aggiorna lo stato per mostrarlo
         })
-        .catch(err => console.error("Errore contatore (API potrebbe essere offline):", err));
+        .catch(err => console.error("Errore incremento:", err));
+    } else {
+      // Se l'utente ha già visitato: LEGGI SOLO IL TOTALE (senza incrementare)
+      fetch(`https://api.counterapi.dev/v1/${counterId}/`)
+        .then(res => res.json())
+        .then(data => {
+           setVisitCount(data.count); // Aggiorna lo stato per mostrarlo
+        })
+        .catch(err => console.error("Errore lettura:", err));
     }
   }, []);
 
@@ -734,6 +739,12 @@ function App() {
           <p className="text-sm text-gray-600">
             In caso di dubbi, necessità o discordanza riscontrata con le modalità di sciopero comunicate, non esitate a contattare i rappresentanti USB.
           </p>
+          
+          {/* NUOVO: Contatore visibile */}
+          <div className="text-xs text-gray-500 font-mono bg-gray-100 inline-block px-2 py-1 rounded-full">
+            Visite totali: {visitCount > 0 ? visitCount : '...'}
+          </div>
+
           <p className="text-xs text-gray-400">
             © 2025 scioperousb.netlify.app – Tutti i diritti riservati. Il design, il codice e i contenuti di questa web app sono protetti da copyright. È vietata la riproduzione o diffusione non autorizzata.
           </p>
