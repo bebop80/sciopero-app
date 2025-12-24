@@ -339,7 +339,7 @@ function App() {
 
     if (!hasCounted) {
       // Se è una nuova visita: INCREMENTA (+1)
-      fetch(`https://api.counterapi.dev/v1/${counterId}/up`)
+      fetch(`https://api.counterapi.dev/v2/${counterId}/up`)
         .then(res => res.json())
         .then(data => {
            sessionStorage.setItem('hasCountedVisit', 'true');
