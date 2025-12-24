@@ -332,30 +332,7 @@ function App() {
     }
   }, [dutyType]);
 
-  // --- Contatore visite VISIBILE ---
-  useEffect(() => {
-    const counterId = 'sciopero-usb-app-2026-v1'; // Cambia questo nome per azzerare (es. ...-v2)
-    const hasCounted = sessionStorage.getItem('hasCountedVisit');
-
-    if (!hasCounted) {
-      // Se è una nuova visita: INCREMENTA (+1)
-      fetch(`https://api.counterapi.dev/v2/${counterId}/up`)
-        .then(res => res.json())
-        .then(data => {
-           sessionStorage.setItem('hasCountedVisit', 'true');
-           setVisitCount(data.count); // Aggiorna lo stato per mostrarlo
-        })
-        .catch(err => console.error("Errore incremento:", err));
-    } else {
-      // Se l'utente ha già visitato: LEGGI SOLO IL TOTALE (senza incrementare)
-      fetch(`https://api.counterapi.dev/v1/${counterId}/`)
-        .then(res => res.json())
-        .then(data => {
-           setVisitCount(data.count); // Aggiorna lo stato per mostrarlo
-        })
-        .catch(err => console.error("Errore lettura:", err));
-    }
-  }, []);
+  
 
 
   // Funzione per generare i segmenti di volo
@@ -743,9 +720,12 @@ function App() {
             In caso di dubbi, necessità o discordanza riscontrata con le modalità di sciopero comunicate, non esitate a contattare i rappresentanti USB.
           </p>
           
-          {/* NUOVO: Contatore visibile */}
-          <div className="text-xs text-gray-500 font-mono bg-gray-100 inline-block px-2 py-1 rounded-full">
-            Visite totali: {visitCount > 0 ? visitCount : '...'}
+             {/* Contatore Visite Badge */}
+          <div className="flex justify-center my-2">
+            <img 
+              src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https://sciopero-usb-2026-app.netlify.app&count_bg=%234F46E5&title_bg=%23555555&title=VISITE&edge_flat=false" 
+              alt="Contatore Visite" 
+            />
           </div>
 
           <p className="text-xs text-gray-400">
