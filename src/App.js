@@ -717,13 +717,16 @@ function App() {
             In caso di dubbi, necessità o discordanza riscontrata con le modalità di sciopero comunicate, non esitate a contattare i rappresentanti USB.
           </p>
           
-             {/* Contatore Visite Badge */}
+         {/* Contatore Visite Badge (hits.sh) */}
           <div className="flex justify-center my-2">
-            <img 
-              src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https://sciopero-usb-2026-app.netlify.app&count_bg=%234F46E5&title_bg=%23555555&title=VISITE&edge_flat=false" 
-              alt="Contatore Visite" 
-            />
+             <a href="https://hits.sh/scioperousb.netlify.app/">
+              <img 
+                alt="Hits" 
+                src="https://hits.sh/scioperousb.netlify.app.svg?style=flat-square&label=VISITE&extraCount=0&color=4F46E5" 
+              />
+            </a>
           </div>
+
 
           <p className="text-xs text-gray-400">
             © 2025 scioperousb.netlify.app – Tutti i diritti riservati. Il design, il codice e i contenuti di questa web app sono protetti da copyright. È vietata la riproduzione o diffusione non autorizzata.
