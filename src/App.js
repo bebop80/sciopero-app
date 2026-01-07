@@ -262,10 +262,11 @@ const strikeRules = {
   ],
   
   protectedFlights: [
+    { origin: 'CTA', destination: 'NAP', time: '21:25' },
+    { origin: 'MXP', destination: 'OLB', time: '11:20' },
+    { origin: 'OLB', destination: 'MXP', time: '13:15' },
     { origin: 'NAP', destination: 'SSH', time: '14:35' },
-    { origin: 'MXP', destination: 'OLB', time: '11:00' },
-    { origin: 'OLB', destination: 'MXP', time: '12:55' },
-    { origin: 'MXP', destination: 'RAK', time: '06:40' },
+    { origin: 'MXP', destination: 'RAK', time: '05:45' },
   ],
 };
 
