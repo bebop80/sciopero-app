@@ -457,12 +457,13 @@ function App() {
       });
     });
 
-    // ==================================================================
+        // ==================================================================
     // ==== REGOLA VOLI DI RITORNO (NAZIONALI E INTERNAZIONALI) + FASCE ==
     // ==================================================================
     for (let i = 0; i < newResults.length; i += 2) {
       const outboundFlight = newResults[i];
       const returnFlight = newResults[i + 1];
+      const returnSegment = segments[i + 1]; // Recuperiamo info sul segmento per capire l'origine
 
       if (!outboundFlight || !returnFlight) continue;
 
@@ -476,7 +477,7 @@ function App() {
       const [retH, retM] = returnTime.split(':').map(Number);
       const returnTimeInMinutes = retH * 60 + retM;
 
-      // controlliamo se il ritorno è in fascia garantita
+      // 1. Controlliamo se è in fascia garantita
       const isReturnInGuaranteedBand = strikeRules.guaranteedTimeBands.some(band => {
         const [startH, startM] = band.start.split(':').map(Number);
         const [endH, endM] = band.end.split(':').map(Number);
@@ -485,13 +486,16 @@ function App() {
         return returnTimeInMinutes >= startTotalM && returnTimeInMinutes <= endTotalM;
       });
 
-             // se il ritorno è FUORI fascia garantita:
-      // resta la logica standard già calcolata prima (verde/rosso),
-      // quindi non lo tocchiamo
-      if (!isReturnInGuaranteedBand) continue;
+      // 2. Controlliamo se è una partenza dall'estero (Es. BOD, PRG...)
+      // Nota: segments[i+1].origin ci dice da dove parte il ritorno
+      const isInternationalDeparture = !isItalianAirport(returnSegment.origin);
 
-      // solo se il ritorno è IN fascia garantita:
-      // lo rendiamo SCIOPERABILE ma con warning arancione sul positioning
+      // REGOLA:
+      // Se il ritorno è "normale" (Partenza Italiana E fuori fascia), lo lasciamo verde standard.
+      // Se INVECE è in fascia garantita OPPURE parte dall'estero -> attiviamo il Warning Arancione.
+      if (!isReturnInGuaranteedBand && !isInternationalDeparture) continue;
+
+      // Applichiamo la regola Arancione (SCIOPERABILE con Warning)
       returnFlight.eligible = true;
       returnFlight.isWarning = true;
       returnFlight.reason =
@@ -503,6 +507,7 @@ function App() {
 
     setResults(newResults);
   };
+
 
  
   const resetForm = () => {
